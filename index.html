@@ -101,7 +101,7 @@
   .card{
     background: var(--card-bg);
     border-radius: 24px;
-    padding: 20px 18px 24px 18px; /* Increased bottom padding for balance */
+    padding: 20px 18px 24px 18px;
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
     transition: background 0.3s ease;
@@ -180,7 +180,7 @@
   .dropdown-item:hover { background: var(--btn-bg); }
   .dropdown-item.selected { color: var(--accent); font-weight: 600; background: rgba(128,128,128,0.1); }
   
-  /* CALCULATOR UI */
+  /* CALCULATOR UI - REFINED */
   .sc-switch{
     position: relative; width: 60px; height: 28px; background: var(--input-bg);
     border-radius: 20px; cursor: pointer; border: 1px solid var(--border);
@@ -193,19 +193,29 @@
   .sc-switch.on .sc-knob{ transform: translateX(30px); background: var(--accent); }
   .sc-label{ position: absolute; right: 8px; font-size: 0.65rem; font-weight: 600; color: var(--muted); pointer-events: none; }
 
-  /* HISTORY TAPE */
-  .calc-history {
-    max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
-    display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
-    margin-bottom: 8px; padding-right: 4px;
+  .calc-display{
+    background: var(--input-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px; 
+    text-align: right; position: relative; /* Enabled for absolute positioning */
+    min-height: 120px; display: flex; flex-direction: column; justify-content: flex-end;
   }
-  .calc-history.show { max-height: 80px; overflow-y: auto; }
-  .hist-item { font-size: 0.8rem; color: var(--muted); cursor: pointer; }
+  
+  /* HISTORY - MOVED TO TOP LEFT */
+  .history-label {
+    position: absolute; top: 12px; left: 16px;
+    font-size: 0.65rem; font-weight: 700; color: var(--accent); 
+    letter-spacing: 1px; text-transform: uppercase; display: none;
+  }
+  .calc-history {
+    position: absolute; top: 28px; left: 16px; width: 60%;
+    max-height: 70px; overflow-y: auto;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+    pointer-events: auto; z-index: 10;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .calc-history.show { opacity: 1; }
+  .hist-item { font-size: 0.8rem; color: var(--muted); cursor: pointer; white-space: nowrap; }
   .hist-item:hover { color: var(--accent); }
 
-  .calc-display{
-    background: var(--input-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: right;
-  }
   .calc-expression{ font-size: 0.9rem; color: var(--muted); min-height: 20px; }
   .calc-result{ font-size: 2.2rem; font-weight: 500; color: var(--text); }
   .calc-grid{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -220,11 +230,10 @@
   .small{ font-size: 0.9rem; padding: 10px; }
   .btn.active-mode { border: 1px solid var(--accent); color: var(--accent); }
   
-  /* FIXED SPACING FOR ACTION BUTTONS */
   .btn-action { margin-top: 15px; margin-bottom: 5px; width: 100%; }
 
   .row{ display: flex; gap: 10px; align-items: center; width: 100%; }
-  .flex-1{ flex: 1; min-width: 0; /* Fix flex collapse */ }
+  .flex-1{ flex: 1; min-width: 0; }
   .field{ display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
   .mini{ font-size: 0.75rem; color: var(--muted); padding-left: 4px;}
   .result-text{ margin-top: 8px; font-size: 0.95rem; font-weight: 500; line-height: 1.5; }
@@ -299,7 +308,7 @@
       <div class="card-header">
         <div class="title-group">
           <div class="card-title">Calculator</div>
-          <div class="card-sub">Scientific Mode & History.</div>
+          <div class="card-sub">Scientific Mode & Smart History.</div>
         </div>
         <div id="sc-switch" class="sc-switch">
           <span class="sc-label">SCI</span>
@@ -308,7 +317,9 @@
       </div>
 
       <div class="calc-display">
+        <div id="hist-lbl" class="history-label">History</div>
         <div id="calc-history" class="calc-history"></div>
+        
         <div id="calc-expression" class="calc-expression"></div>
         <div id="calc-result" class="calc-result">0</div>
       </div>
@@ -364,7 +375,9 @@
         <button id="cur-swap" class="btn small" style="width:50px; margin-top:10px;">⇄</button>
       </div>
       <div id="cur-res" class="result-text"></div>
-      <div id="cur-source" class="muted-text" style="display:none;"><a href="https://www.frankfurter.app" target="_blank" class="link-btn">Data Source: Frankfurter API</a></div>
+      <div id="cur-source" class="muted-text" style="display:none;">
+        <span id="cur-date"></span> | <a href="https://www.frankfurter.app" target="_blank" class="link-btn">Source: Frankfurter API</a>
+      </div>
     </section>
 
     <section class="card">
@@ -410,7 +423,7 @@
 
       <div class="category-label">Health</div>
       <div class="chips">
-        <button class="chip-btn" data-panel="health-panel">Health Station</button>
+        <button class="chip-btn" data-panel="health-panel">Health Station (BMI/BMR)</button>
       </div>
 
       <div class="category-label">Other Tools</div>
@@ -424,8 +437,8 @@
       <div id="health-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Health Station (BMI, BMR, Protein)</div>
-           <div class="card-sub">Complete health analysis.</div>
+           <div class="card-title">Health Station</div>
+           <div class="card-sub">BMI, BMR, Water & Protein Analysis.</div>
         </div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Age</label><input id="h-age" type="number" placeholder="25"></div>
@@ -560,7 +573,9 @@
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">SIP Calculator</div><div class="card-sub">Estimate returns.</div></div>
         <div class="row">
-           <div class="field" style="width:80px"><label class="mini">Currency</label><select id="sip-currency"><option value="₹">₹</option><option value="$">$</option><option value="€">€</option><option value="£">£</option><option value="¥">¥</option></select></div>
+           <div class="field" style="width:80px"><label class="mini">Currency</label>
+           <select id="sip-currency"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option></select>
+           </div>
           <div class="field flex-1"><label class="mini">Monthly</label><input id="sip-amt" type="number" placeholder="5000"></div>
         </div>
         <div class="row">
@@ -618,7 +633,6 @@
     
     chips.forEach(chip => {
       const label = chip.textContent.toLowerCase();
-      // Match text or data-panel keywords
       if(label.includes(term) || chip.dataset.panel.includes(term)) {
         chip.classList.remove('hidden');
       } else {
@@ -626,7 +640,6 @@
       }
     });
     
-    // Hide category labels if all their chips are hidden
     document.querySelectorAll('.category-label').forEach(lbl => {
       const nextChips = lbl.nextElementSibling;
       const visible = nextChips.querySelectorAll('.chip-btn:not(.hidden)').length > 0;
@@ -634,7 +647,7 @@
     });
   });
 
-  /* --- 2. CALCULATOR LOGIC & HISTORY --- */
+  /* --- 2. CALCULATOR LOGIC & SMART HISTORY --- */
   let expr = ''; 
   let useDeg = true; 
   let history = []; 
@@ -646,6 +659,7 @@
     const tape = $('calc-history');
     tape.innerHTML = history.map(h => `<div class="hist-item">${h}</div>`).join('');
     tape.classList.add('show');
+    $('hist-lbl').style.display = 'block'; // Show Label
     tape.scrollTop = tape.scrollHeight;
     
     tape.querySelectorAll('.hist-item').forEach(item => {
@@ -683,7 +697,19 @@
     } catch { $('calc-result').textContent="Err"; } 
   };
   
-  $('calc-clear').onclick = () => { expr=''; upd(); $('calc-result').textContent='0'; };
+  // SMART AC BUTTON
+  $('calc-clear').onclick = () => { 
+    if(expr === '' && $('calc-result').textContent === '0') {
+        // Double Click Logic: Clear History
+        history = [];
+        $('calc-history').innerHTML = '';
+        $('hist-lbl').style.display = 'none';
+    } else {
+        // Single Click Logic: Clear Current
+        expr=''; upd(); $('calc-result').textContent='0'; 
+    }
+  };
+
   $('calc-back').onclick = () => { expr=expr.slice(0,-1); upd(); };
   
   $('calc-copy').onclick = () => {
@@ -749,7 +775,6 @@
   };
 
   /* --- 4. TOP TOOLS LOGIC --- */
-  // Age
   $('age-btn').onclick = () => {
     const dVal=$('dob-input').value; if(!dVal)return;
     const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
@@ -757,12 +782,17 @@
     $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
   };
 
-  // Currency (Now Fixed at Top)
+  // Currency (Now shows Date)
   $('cur-btn').onclick = async () => {
     const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
     $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
-    try{ const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); const d=await r.json();
-    $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; $('cur-source').style.display='block'; }catch{ $('cur-res').textContent="Err"; }
+    try{ 
+        const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); 
+        const d=await r.json();
+        $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; 
+        $('cur-date').textContent = `Updated: ${d.date}`; // Show Date
+        $('cur-source').style.display='block'; 
+    }catch{ $('cur-res').textContent="Err"; }
   };
   $('cur-swap').onclick = () => {
      const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp;
@@ -778,7 +808,7 @@
     $('qr-image').src = url;
   }
 
-  /* --- 5. UNIT CONVERTER (FIXED) --- */
+  /* --- 5. UNIT CONVERTER --- */
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
       let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
@@ -789,28 +819,24 @@
     speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
   };
 
-  // Robust Renderer to prevent Black Border/Disappearing Dropdowns
   function renderUnits(){
     const type = $('u-type').value; const data = uData[type];
     const fS = $('u-from'); const tS = $('u-to');
     
-    // 1. Reset Native Selects
     fS.innerHTML = ''; tS.innerHTML = '';
     
-    // 2. Remove ANY existing custom wrappers specifically for these two
+    // Remove old wrappers safely
     [fS, tS].forEach(el => {
         el.removeAttribute('data-customized');
-        el.style.display = 'block'; // Ensure native is visible briefly
+        el.style.display = 'block'; 
         if(el.nextElementSibling && el.nextElementSibling.classList.contains('custom-dropdown')) {
             el.nextElementSibling.remove();
         }
     });
 
-    // 3. Populate Options
     data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
     if(tS.options.length > 1) tS.selectedIndex = 1;
 
-    // 4. Re-Initialize Custom Dropdowns for the Unit Panel
     initCustomDropdowns($('unit-panel'));
   }
   
@@ -828,7 +854,6 @@
   }
 
   /* --- 6. OTHER TOOLS --- */
-  // Bill Splitter
   $('bill-btn').onclick = () => {
     const amt = parseFloat($('bill-amt').value);
     const tip = parseFloat($('bill-tip').value) || 0;
@@ -840,7 +865,6 @@
     $('bill-res').innerHTML = `Tip: ${formatNum(totalTip)} | Total: ${formatNum(total)}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${formatNum(perPerson)}</span>`;
   };
 
-  // Compound Interest
   $('ci-btn').onclick = () => {
     const p = parseFloat($('ci-p').value);
     const r = parseFloat($('ci-r').value)/100;
@@ -852,7 +876,6 @@
     $('ci-res').innerHTML = `Invested: ${Math.round(p)} | Interest: <span style="color:#22c55e">+${Math.round(interest)}</span><br><span style="font-size:1.1rem; font-weight:600">Total: ${Math.round(amount)}</span>`;
   };
 
-  // EMI
   $('emi-calc').onclick = () => {
     const cur = $('emi-currency').value;
     const p = parseFloat($('emi-principal').value);
@@ -867,7 +890,6 @@
     $('emi-result').style.whiteSpace = 'pre-wrap';
   };
   
-  // GST
   const calcGST = (mode) => {
     const amt = parseFloat($('gst-amt').value); const rate = parseFloat($('gst-rate').value);
     if(isNaN(amt)||isNaN(rate)) return;
@@ -878,7 +900,6 @@
   };
   $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
 
-  // SIP
   $('sip-btn').onclick = () => {
      const cur = $('sip-currency').value;
      const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
@@ -886,7 +907,6 @@
      $('sip-res').textContent = `Total Value: ${cur}${Math.round(val)}`;
   }
 
-  // Time, Text, GPA
   $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
   $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
   $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
