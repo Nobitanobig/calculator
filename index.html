@@ -1,3 +1,10 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Smart AI Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     /* DARK THEME VARIABLES */
@@ -260,6 +267,7 @@
   .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
   @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.3); } 60% { transform: scale(1); } 100% { transform: scale(1); } }
 </style>
+</head>
 <body data-theme="dark">
 
 <div class="app">
@@ -599,16 +607,12 @@
   $('tool-search').addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
     const chips = document.querySelectorAll('.chip-btn');
-    let found = false;
     
     chips.forEach(chip => {
       const label = chip.textContent.toLowerCase();
       // Match text or data-panel keywords
       if(label.includes(term) || chip.dataset.panel.includes(term)) {
         chip.classList.remove('hidden');
-        if(!found && term.length > 0) {
-           // Optional: Auto-click first result? No, just show them.
-        }
       } else {
         chip.classList.add('hidden');
       }
@@ -724,7 +728,6 @@
     const water = (w / 30).toFixed(1);
     
     // 4. Protein (0.8g to 1.6g based on activity)
-    // Scale factor: 1.2 is base, 1.9 is max. Map to 0.8g - 1.8g
     const pFactor = 0.8 + (act - 1.2); 
     const protein = Math.round(w * pFactor);
 
@@ -802,6 +805,16 @@
     $('gst-res').innerHTML=`Net: ${formatNum(net)} | GST: ${formatNum(gst)} | <b style="color:var(--accent)">Total: ${formatNum(total)}</b>`;
   };
   $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
+
+  // Percentage
+  $('pct-calc').onclick = () => {
+    const amt = parseFloat($('pct-amount').value);
+    const pct = parseFloat($('pct-percent').value);
+    if(isNaN(amt) || isNaN(pct)) return;
+    const save = (amt * pct) / 100;
+    const final = amt - save;
+    $('pct-result').textContent = `Discounted Price: ${formatNum(final)} | You Save: ${formatNum(save)}`;
+  }
   
   // Converters
   const uData = {
@@ -840,6 +853,52 @@
      f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
      if($('u-val').value) $('u-btn').click();
   }
+
+  // Currency
+  $('cur-btn').onclick = async () => {
+    const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
+    $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
+    try{ const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); const d=await r.json();
+    $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; $('cur-source').style.display='block'; }catch{ $('cur-res').textContent="Err"; }
+  };
+  $('cur-swap').onclick = () => {
+     const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp;
+     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
+  }
+
+  // SIP
+  $('sip-btn').onclick = () => {
+     const cur = $('sip-currency').value;
+     const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
+     const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
+     $('sip-res').textContent = `Total Value: ${cur}${Math.round(val)}`;
+  }
+
+  // QR
+  $('qr-btn').onclick = () => {
+    const txt = $('qr-text').value; if(!txt) return;
+    $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
+    $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
+    $('qr-image').src = url;
+  }
+
+  // Time
+  $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
+  
+  // Text
+  $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
+  
+  // GPA
+  $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
+
+  // Age
+  $('age-btn').onclick = () => {
+    const dVal=$('dob-input').value; if(!dVal)return;
+    const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
+    if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
+    $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
+  };
 
   // System
   function initCustomDropdowns(scope = document) {
