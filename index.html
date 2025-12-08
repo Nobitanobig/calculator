@@ -202,10 +202,11 @@
   .modal-card .custom-dropdown { margin-bottom: 20px; text-align: left; }
   .info-list { text-align: left; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.6; }
   
-  /* TABS */
+  /* TABS (FIXED DIVIDER) */
   .tab-bar {
     display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; 
-    padding-bottom: 4px;
+    padding-bottom: 8px; /* Extra padding */
+    border-bottom: 1px solid var(--border); /* THE MISSING LINE */
   }
   .tab-btn {
     background: transparent; color: var(--muted); border: none;
@@ -284,11 +285,11 @@
   .chip-btn.active{ background: var(--accent-bg); color: var(--accent-text); border-color: transparent; font-weight: 600; }
   .chip-btn.hidden { display: none; }
 
-  /* PANEL LOGIC (FIXED) */
+  /* PANEL LOGIC */
   .panel{ display: none !important; animation: fadeIn 0.3s ease; }
   .panel.active{ display: block !important; }
   
-  /* DIVIDER (Visible) */
+  /* INNER DIVIDER */
   .divider{ 
     height: 1px;
     background: var(--border); 
@@ -314,7 +315,7 @@
   }
   .info-icon:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
   
-  /* SHARE BUTTON (Hidden by default) */
+  /* SHARE BUTTON */
   .share-btn {
     position: absolute; right: 0; top: 0;
     font-size: 1.2rem; color: var(--accent); cursor: pointer;
@@ -354,7 +355,7 @@
   <div class="modal-card">
     <div id="info-title" class="card-title" style="margin-bottom:10px; font-size:1.1rem;"></div>
     <div id="info-content" class="info-list" style="color:var(--muted); font-size:0.9rem; text-align:left;"></div>
-    <button id="info-close-btn" class="btn btn-accent" style="width:100%;">Got it</button>
+    <button id="info-close-btn" class="btn btn-accent" style="width:100%; margin-top:15px;">Got it</button>
   </div>
 </div>
 
@@ -491,8 +492,9 @@
         </div>
       </div>
 
+      <div class="divider"></div>
+
       <div id="loan-panel" class="panel active">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">Monthly payments.</div></div>
         <div class="field"><label class="mini">Loan Amount</label><input id="emi-principal" type="number" placeholder="100000"></div>
         <div class="row">
@@ -505,7 +507,6 @@
       </div>
 
       <div id="gst-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="gst-title">GST / VAT</div><div class="card-sub">Add or Remove Tax.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Amount</label><input id="gst-amt" type="number" placeholder="1000"></div>
@@ -519,7 +520,6 @@
       </div>
 
       <div id="invest-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="sip-title">SIP Calculator</div><div class="card-sub">Estimate returns.</div></div>
         <div class="field"><label class="mini">Monthly Amount</label><input id="sip-amt" type="number" placeholder="5000"></div>
         <div class="row">
@@ -531,7 +531,6 @@
       </div>
 
       <div id="goal-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Goal Planner</div><div class="card-sub">Target investment.</div></div>
         <div class="field"><label class="mini">Target Amount</label><input id="goal-target" type="number" placeholder="10000000"></div>
         <div class="row">
@@ -543,7 +542,6 @@
       </div>
 
       <div id="discount-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Discount Stacker</div><div class="card-sub">Sale price calculator.</div></div>
         <div class="field"><label class="mini">Original Price</label><input id="disc-price" type="number" placeholder="2000"></div>
         <div class="row">
@@ -555,7 +553,6 @@
       </div>
 
       <div id="bill-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Bill Splitter</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Total Bill</label><input id="bill-amt" type="number" placeholder="2500"></div>
@@ -567,7 +564,6 @@
       </div>
 
       <div id="ci-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Compound Interest</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Principal</label><input id="ci-p" type="number" placeholder="10000"></div>
@@ -582,7 +578,6 @@
       </div>
 
       <div id="health-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Health Station (BMI/BMR)</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Age</label><input id="h-age" type="number" placeholder="25"></div>
@@ -609,8 +604,7 @@
       </div>
 
       <div id="sleep-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Sleep Cycle</div><div class="card-sub">Optimize your sleep schedule.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Sleep Cycle</div><div class="card-sub">Find perfect sleep timing based on 90-min cycles.</div></div>
         <div class="field">
           <label class="mini">Mode</label>
           <select id="sleep-mode">
@@ -619,12 +613,11 @@
           </select>
         </div>
         <div class="field"><label class="mini">Time</label><input id="sleep-time" type="time"></div>
-        <button id="sleep-btn" class="btn btn-accent btn-action">Calculate</button>
+        <button id="sleep-btn" class="btn btn-accent btn-action">Calculate Times</button>
         <div id="sleep-res" class="result-text"></div>
       </div>
 
       <div id="fuel-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Fuel Cost Calculator</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Distance (km)</label><input id="fuel-dist" type="number" placeholder="300"></div>
@@ -636,7 +629,6 @@
       </div>
 
       <div id="eta-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Trip ETA</div><div class="card-sub">When will I arrive?</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Distance (km)</label><input id="eta-dist" type="number" placeholder="200"></div>
@@ -648,7 +640,6 @@
       </div>
 
       <div id="zone-panel" class="panel">
-        <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Time Zone Converter</div><div class="card-sub">Check world time.</div></div>
         <div class="field"><label class="mini">Select Region</label>
           <select id="zone-sel">
@@ -667,7 +658,7 @@
       </div>
 
       <div id="unit-panel" class="panel">
-        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div></div>
         <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
         <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
         <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
@@ -676,34 +667,34 @@
       </div>
 
       <div id="text-panel" class="panel">
-        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Text Analysis</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Text Analysis</div></div>
         <div class="field"><textarea id="txt-in" rows="4" placeholder="Type or paste..."></textarea></div>
         <div class="text-stats" style="margin-bottom:10px;"><div class="stat-box"><div id="txt-words" class="stat-val">0</div><div class="stat-lbl">Words</div></div><div class="stat-box"><div id="txt-chars" class="stat-val">0</div><div class="stat-lbl">Characters</div></div></div>
         <div class="row" style="gap:5px;"><button id="txt-upper" class="btn small flex-1">UPPER</button><button id="txt-lower" class="btn small flex-1">lower</button><button id="txt-clear" class="btn small flex-1">Clear</button></div>
       </div>
 
       <div id="password-panel" class="panel">
-        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Password Generator</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Password Generator</div></div>
         <div class="row"><div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div><button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button></div>
         <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
       </div>
 
       <div id="base-panel" class="panel">
-        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Base Converter</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Base Converter</div></div>
         <div class="row"><div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div><div class="field flex-1"><label class="mini">From Base</label><select id="base-from"><option value="10">Decimal</option><option value="2">Binary</option><option value="16">Hex</option></select></div></div>
         <button id="base-btn" class="btn btn-accent btn-action">Convert</button>
         <div id="base-res" class="result-text"></div>
       </div>
 
       <div id="time-panel" class="panel">
-        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div></div>
         <div class="row"><div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div><div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div></div>
         <button id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
         <div id="time-result" class="result-text"></div>
       </div>
 
       <div id="gpa-panel" class="panel">
-        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div></div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
         <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
         <div id="gpa-res" class="result-text"></div>
@@ -751,6 +742,7 @@
       
       const taxBtn = $('btn-tax'), invBtn = $('btn-invest'), gstTitle = $('gst-title'), sipTitle = $('sip-title');
 
+      // Smart Naming
       if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) { taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator"; } 
       else if (['€', '£'].includes(sym)) { taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator"; } 
       else { taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator"; }
@@ -774,6 +766,7 @@
         ocean:  { bg: 'linear-gradient(135deg, #06b6d4, #3b82f6)', solid: '#3b82f6' }
     };
     
+    // Logic for Mono/Default
     if(themeName === 'mono') {
        const isLight = document.body.dataset.theme === 'light';
        const acc = isLight ? '#000000' : '#ffffff';
@@ -807,6 +800,7 @@
       } catch (err) { console.log(err); }
   }
 
+  // Helper to show result and enable share button
   function showResult(id, html, shareTitle, shareMsg) {
       const el = $(id);
       el.innerHTML = html + `<button class="share-btn" style="display:block;">➦</button>`;
@@ -816,7 +810,7 @@
   /* --- 3. CUSTOM INFO MODAL --- */
   function showInfoModal(title, content) {
       $('info-title').textContent = title;
-      $('info-content').innerHTML = content; // Allows HTML like <br>
+      $('info-content').innerHTML = content;
       $('info-modal').classList.add('show');
   }
   $('info-close-btn').onclick = () => $('info-modal').classList.remove('show');
@@ -827,9 +821,11 @@
     btn.onclick = () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
       btn.classList.add('active');
       const content = $(btn.dataset.tab);
       content.classList.add('active');
+      
       const firstChip = content.querySelector('.chip-btn');
       if(firstChip) firstChip.click();
     };
@@ -926,7 +922,7 @@
     $('h-msg').textContent = `Status: ${bmi<18.5?"Underweight":bmi<25?"Healthy":bmi<30?"Overweight":"Obese"}`;
   };
   
-  // MODERN INFO POPUP
+  // BMI INFO CLICK
   $('bmi-info').onclick = (e) => { 
       e.stopPropagation(); 
       showInfoModal("BMI Categories (WHO)", "• <b>< 18.5:</b> Underweight<br>• <b>18.5 - 24.9:</b> Normal<br>• <b>25 - 29.9:</b> Overweight<br>• <b>30+:</b> Obese");
@@ -942,25 +938,23 @@
       d.setHours(h); d.setMinutes(m);
       
       let d1, d2, msg, title;
-      const format = (date) => date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const format = (date) => date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true}); // FORCE 12H
 
       if (mode === 'wake') {
-          // "I want to wake up at X" -> Calc backwards
-          // Subtract 15m (fall asleep) then 6 cycles (9h) or 5 cycles (7.5h)
+          // Backward: Subtract 15m (fall asleep) then 9h or 7.5h
           d1 = new Date(d.getTime() - (9 * 60 * 60 * 1000) - (15 * 60 * 1000));
           d2 = new Date(d.getTime() - (7.5 * 60 * 60 * 1000) - (15 * 60 * 1000));
           title = "Bedtime Calculator";
-          msg = `To wake up refreshed at <b>${timeStr}</b>:<br><br>😴 Fall asleep by: <b>${format(d1)}</b> (9h)<br>😄 Fall asleep by: <b>${format(d2)}</b> (7.5h)`;
+          msg = `To wake up refreshed at <b>${format(d)}</b>:<br><br>😴 Fall asleep by: <b>${format(d1)}</b> (9h)<br>😄 Fall asleep by: <b>${format(d2)}</b> (7.5h)`;
       } else {
-          // "I am sleeping at X" -> Calc forwards
-          // Add 15m (fall asleep) then 5 cycles or 6 cycles
+          // Forward: Add 15m (fall asleep) then 7.5h or 9h
           d1 = new Date(d.getTime() + (15 * 60 * 1000) + (7.5 * 60 * 60 * 1000));
           d2 = new Date(d.getTime() + (15 * 60 * 1000) + (9 * 60 * 60 * 1000));
           title = "Wake Up Calculator";
-          msg = `If you sleep at <b>${timeStr}</b>:<br><br>😄 Wake up at: <b>${format(d1)}</b> (7.5h)<br>😴 Wake up at: <b>${format(d2)}</b> (9h)`;
+          msg = `If you sleep at <b>${format(d)}</b>:<br><br>😄 Wake up at: <b>${format(d1)}</b> (7.5h)<br>😴 Wake up at: <b>${format(d2)}</b> (9h)`;
       }
       
-      showResult('sleep-res', mode==='wake' ? `${format(d2)} or ${format(d1)}` : `${format(d1)} or ${format(d2)}`, title, msg.replace(/<br>/g, "\n").replace(/<b>/g,"").replace(/<\/b>/g,""));
+      showResult('sleep-res', `${format(d2)} or ${format(d1)}`, title, msg.replace(/<br>/g, "\n").replace(/<b>/g,"").replace(/<\/b>/g,""));
   };
 
   /* --- 7. FINANCE TOOLS --- */
@@ -969,7 +963,7 @@
     const n = u==='years'?t*12:t; const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
     const msg = `EMI: ${globalSym}${Math.round(emi)}\nInterest: ${globalSym}${Math.round((emi*n)-p)}\nTotal: ${globalSym}${Math.round(emi*n)}`;
     $('emi-result').textContent = msg; $('emi-result').style.whiteSpace = 'pre-wrap';
-    showResult('emi-result', msg, "Loan EMI", msg); // Re-adds button
+    showResult('emi-result', msg, "Loan EMI", msg);
   };
 
   $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
@@ -1021,7 +1015,7 @@
       if(!d||!s||!start) return;
       const now = new Date(); const [h,m] = start.split(':');
       now.setHours(h); now.setMinutes(m); now.setMinutes(now.getMinutes() + ((d/s)*60));
-      const arr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const arr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true}); // FORCE 12H
       showResult('eta-res', `Arrival: ${arr}`, "Trip ETA", `Start: ${start}\nArrival: ${arr}`);
   };
 
@@ -1091,7 +1085,7 @@
   document.addEventListener('click',()=>document.querySelectorAll('.custom-dropdown').forEach(d=>d.classList.remove('active')));
   updateThemeColors('mono'); initCustomDropdowns(); renderUnits();
   
-  // Force Tabs Init
+  // FORCE OPEN FIRST TAB
   document.querySelector('[data-tab="tab-finance"]').click();
   
 </script>
