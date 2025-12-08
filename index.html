@@ -33,8 +33,6 @@
     --text: #000000;
     --muted: #666666;
     
-    /* Light Mode Accent is handled dynamically by JS now */
-
     --card-bg: #ffffff;
     --input-bg: #f2f2f7;
     --btn-bg: #e5e5ea;
@@ -188,7 +186,7 @@
   .dropdown-item:hover { background: var(--btn-bg); }
   .dropdown-item.selected { color: var(--accent); font-weight: 600; background: rgba(128,128,128,0.1); }
   
-  /* CURRENCY MODAL */
+  /* MODALS (Currency & Info) */
   .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: var(--modal-bg); z-index: 999;
@@ -202,6 +200,7 @@
     text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
   }
   .modal-card .custom-dropdown { margin-bottom: 20px; text-align: left; }
+  .info-list { text-align: left; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.6; }
   
   /* TABS */
   .tab-bar {
@@ -285,15 +284,11 @@
   .chip-btn.active{ background: var(--accent-bg); color: var(--accent-text); border-color: transparent; font-weight: 600; }
   .chip-btn.hidden { display: none; }
 
-  .panel{ display: none; animation: fadeIn 0.3s ease; }
-  .panel.active{ display: block; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
-  
-  /* FIXED ALIGNMENT DIVIDER (Thinner & Centered) */
+  /* FIXED: Increased spacing to create visual separation */
   .divider{ 
     height: 0.5px;
     background: var(--border); 
-    margin: 16px 0 20px 0; 
+    margin: 20px 0 16px 0; /* Wider top margin */
     width: 100%;
   }
 
@@ -314,11 +309,12 @@
   }
   .info-icon:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
   
-  /* SHARE BUTTON */
+  /* SHARE BUTTON (Hidden by default) */
   .share-btn {
     position: absolute; right: 0; top: 0;
     font-size: 1.2rem; color: var(--accent); cursor: pointer;
     background: none; border: none; padding: 0;
+    display: none; /* Only shown via JS after calc */
   }
 
   .qr-container {
@@ -349,6 +345,14 @@
   </div>
 </div>
 
+<div id="info-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div id="info-title" class="card-title" style="margin-bottom:10px; font-size:1.1rem;"></div>
+    <div id="info-content" class="info-list" style="color:var(--muted); font-size:0.9rem; text-align:left;"></div>
+    <button id="info-close-btn" class="btn btn-accent" style="width:100%;">Got it</button>
+  </div>
+</div>
+
 <div class="app">
   
   <header>
@@ -359,8 +363,7 @@
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
       <select id="theme-color">
-        <option value="mono" selected>Default (Mono)</option>
-        <option value="blue">Blue</option><option value="red">Red</option><option value="green">Green</option>
+        <option value="mono" selected>Default</option> <option value="blue">Blue</option><option value="red">Red</option><option value="green">Green</option>
         <option value="orange">Orange</option><option value="sunset">Sunset</option><option value="ocean">Ocean</option>
       </select>
     </div>
@@ -450,7 +453,8 @@
           <button class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> 
           <button class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button>
           <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
-          <button class="chip-btn" data-panel="discount-panel">Discount</button> <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
+          <button class="chip-btn" data-panel="discount-panel">Discount</button>
+          <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
           <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
         </div>
       </div>
@@ -458,13 +462,16 @@
       <div id="tab-health" class="tab-content">
         <div class="chips">
           <button class="chip-btn" data-panel="health-panel">Health Station</button>
-          <button class="chip-btn" data-panel="sleep-panel">Sleep Cycle</button> </div>
+          <button class="chip-btn" data-panel="sleep-panel">Sleep Cycle</button>
+        </div>
       </div>
 
       <div id="tab-travel" class="tab-content">
         <div class="chips">
           <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
-          <button class="chip-btn" data-panel="eta-panel">Trip ETA</button> <button class="chip-btn" data-panel="zone-panel">Time Zone</button> </div>
+          <button class="chip-btn" data-panel="eta-panel">Trip ETA</button>
+          <button class="chip-btn" data-panel="zone-panel">Time Zone</button>
+        </div>
       </div>
 
       <div id="tab-tools" class="tab-content">
@@ -597,9 +604,16 @@
 
       <div id="sleep-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Sleep Cycle</div><div class="card-sub">Find the best time to wake up.</div></div>
-        <div class="field"><label class="mini">I want to wake up at</label><input id="sleep-time" type="time"></div>
-        <button id="sleep-btn" class="btn btn-accent btn-action">Calculate Bedtime</button>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Sleep Cycle</div><div class="card-sub">Optimize your sleep schedule.</div></div>
+        <div class="field">
+          <label class="mini">I want to...</label>
+          <select id="sleep-mode">
+            <option value="wake">Wake up at...</option>
+            <option value="sleep">Go to sleep at...</option>
+          </select>
+        </div>
+        <div class="field"><label class="mini">Time</label><input id="sleep-time" type="time"></div>
+        <button id="sleep-btn" class="btn btn-accent btn-action">Calculate</button>
         <div id="sleep-res" class="result-text"><button class="share-btn" id="share-sleep">➦</button></div>
       </div>
 
@@ -632,11 +646,14 @@
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Time Zone Converter</div><div class="card-sub">Check world time.</div></div>
         <div class="field"><label class="mini">Select Region</label>
           <select id="zone-sel" style="display:block !important">
+            <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
             <option value="America/New_York">🇺🇸 New York (EST)</option>
             <option value="Europe/London">🇬🇧 London (GMT)</option>
             <option value="Asia/Dubai">🇦🇪 Dubai (GST)</option>
             <option value="Asia/Tokyo">🇯🇵 Tokyo (JST)</option>
             <option value="Australia/Sydney">🇦🇺 Sydney (AEDT)</option>
+            <option value="America/Los_Angeles">🇺🇸 Los Angeles (PST)</option>
+            <option value="Europe/Paris">🇫🇷 Paris (CET)</option>
           </select>
         </div>
         <button id="zone-btn" class="btn btn-accent btn-action">Get Time</button>
@@ -703,32 +720,21 @@
   let history = []; 
   let globalSym = '₹'; 
 
-  /* --- 1. SHARE FUNCTIONALITY (NEW) --- */
-  async function smartShare(title, text) {
-      const shareData = {
-          title: "Smart AI Calculator",
-          text: `📊 *${title}*\n${text}\n\n_Generated by Smart AI Calculator_`
-      };
-      
-      try {
-          if (navigator.share) {
-              await navigator.share(shareData);
-          } else {
-              // Fallback for Desktop: Copy to Clipboard
-              await navigator.clipboard.writeText(shareData.text);
-              alert("Result copied to clipboard!");
-          }
-      } catch (err) {
-          console.log("Share failed:", err);
-      }
+  /* --- 1. GLOBAL CURRENCY & THEME --- */
+  
+  const savedCurr = localStorage.getItem('calc_currency');
+  if (savedCurr) {
+      setGlobalCurrency(savedCurr);
+  } else {
+      setTimeout(() => $('currency-modal').classList.add('show'), 500);
   }
 
-  /* --- 2. GLOBAL CURRENCY & THEME --- */
-  const savedCurr = localStorage.getItem('calc_currency');
-  if (savedCurr) setGlobalCurrency(savedCurr);
-  else setTimeout(() => $('currency-modal').classList.add('show'), 500);
+  $('modal-save-btn').onclick = () => {
+      const selected = $('modal-currency-select').value;
+      setGlobalCurrency(selected);
+      $('currency-modal').classList.remove('show');
+  };
 
-  $('modal-save-btn').onclick = () => { setGlobalCurrency($('modal-currency-select').value); $('currency-modal').classList.remove('show'); };
   $('global-currency').onchange = (e) => setGlobalCurrency(e.target.value);
 
   function setGlobalCurrency(sym) {
@@ -738,16 +744,17 @@
       $('modal-currency-select').value = sym;
       
       const taxBtn = $('btn-tax'), invBtn = $('btn-invest'), gstTitle = $('gst-title'), sipTitle = $('sip-title');
-      
-      if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) { taxBtn.textContent="GST"; gstTitle.textContent="GST Calculator"; } 
-      else if (['€', '£'].includes(sym)) { taxBtn.textContent="VAT"; gstTitle.textContent="VAT Calculator"; } 
-      else { taxBtn.textContent="Tax"; gstTitle.textContent="Tax Calculator"; }
 
-      if (sym === '₹') { invBtn.textContent="SIP"; sipTitle.textContent="SIP Calculator"; } 
-      else { invBtn.textContent="Invest"; sipTitle.textContent="Investment Calc"; }
+      if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) { taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator"; } 
+      else if (['€', '£'].includes(sym)) { taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator"; } 
+      else { taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator"; }
+
+      if (sym === '₹') { invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator"; } 
+      else { invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; }
       
-      // Refresh active calculation to show new symbol
-      document.querySelector('.panel.active button.btn-accent')?.click();
+      // Refresh active calculation
+      const activeBtn = document.querySelector('.panel.active .btn-accent');
+      if(activeBtn) activeBtn.click();
   }
 
   function updateThemeColors(themeName) {
@@ -760,10 +767,20 @@
         sunset: { bg: 'linear-gradient(135deg, #f97316, #ef4444)', solid: '#ef4444' },
         ocean:  { bg: 'linear-gradient(135deg, #06b6d4, #3b82f6)', solid: '#3b82f6' }
     };
-    const t = themes[themeName] || themes.blue;
-    root.style.setProperty('--accent-bg', themeName==='mono' ? (document.body.dataset.theme==='light'?'#000':'#fff') : t.bg);
-    root.style.setProperty('--accent', themeName==='mono' ? (document.body.dataset.theme==='light'?'#000':'#fff') : t.solid);
-    root.style.setProperty('--accent-text', themeName==='mono' ? (document.body.dataset.theme==='light'?'#fff':'#000') : '#fff');
+    
+    if(themeName === 'mono') {
+       const isLight = document.body.dataset.theme === 'light';
+       const acc = isLight ? '#000000' : '#ffffff';
+       const txt = isLight ? '#ffffff' : '#000000';
+       root.style.setProperty('--accent-bg', acc);
+       root.style.setProperty('--accent', acc);
+       root.style.setProperty('--accent-text', txt);
+    } else {
+       const t = themes[themeName] || themes.blue;
+       root.style.setProperty('--accent-bg', t.bg);
+       root.style.setProperty('--accent', t.solid);
+       root.style.setProperty('--accent-text', '#ffffff');
+    }
   }
   
   $('toggle-theme').onclick = () => { 
@@ -772,17 +789,41 @@
   };
   $('theme-color').onchange = (e) => updateThemeColors(e.target.value);
 
-  /* --- 3. TABS & NAVIGATION --- */
+  /* --- 2. SMART SHARE SYSTEM --- */
+  async function smartShare(title, text) {
+      const shareData = {
+          title: "Smart AI Calculator",
+          text: `📊 *${title}*\n${text}\n\n_Generated by Smart AI Calculator_`
+      };
+      try {
+          if (navigator.share) { await navigator.share(shareData); } 
+          else { await navigator.clipboard.writeText(shareData.text); alert("Result copied!"); }
+      } catch (err) { console.log(err); }
+  }
+
+  function showResult(id, html, shareTitle, shareMsg) {
+      const el = $(id);
+      el.innerHTML = html + `<button class="share-btn" style="display:block;">➦</button>`;
+      el.querySelector('.share-btn').onclick = () => smartShare(shareTitle, shareMsg);
+  }
+
+  /* --- 3. CUSTOM INFO MODAL --- */
+  function showInfoModal(title, content) {
+      $('info-title').textContent = title;
+      $('info-content').innerHTML = content; // Allows HTML like <br>
+      $('info-modal').classList.add('show');
+  }
+  $('info-close-btn').onclick = () => $('info-modal').classList.remove('show');
+  $('info-modal').onclick = (e) => { if(e.target === $('info-modal')) $('info-modal').classList.remove('show'); }
+
+  /* --- 4. NAVIGATION & TABS --- */
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      
       btn.classList.add('active');
       const content = $(btn.dataset.tab);
       content.classList.add('active');
-      
-      // Auto-open first tool in tab
       const firstChip = content.querySelector('.chip-btn');
       if(firstChip) firstChip.click();
     };
@@ -797,7 +838,31 @@
       }
   });
 
-  /* --- 4. CALCULATOR LOGIC --- */
+  $('tool-search').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const chips = document.querySelectorAll('.chip-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const tabBar = document.querySelector('.tab-bar');
+    
+    if (term.length > 0) {
+      tabContents.forEach(c => c.style.display = 'block');
+      tabBar.style.display = 'none';
+      chips.forEach(chip => {
+        const label = chip.textContent.toLowerCase();
+        if(label.includes(term) || chip.dataset.panel.includes(term)) chip.classList.remove('hidden');
+        else chip.classList.add('hidden');
+      });
+    } else {
+      tabContents.forEach(c => c.style.display = '');
+      tabBar.style.display = 'flex';
+      chips.forEach(c => c.classList.remove('hidden'));
+      const activeTabId = document.querySelector('.tab-btn.active').dataset.tab;
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      $(activeTabId).classList.add('active');
+    }
+  });
+
+  /* --- 5. CALCULATOR LOGIC --- */
   const updateHistory = (expression, result) => {
     history.push(`${expression} = ${result}`);
     if(history.length > 3) history.shift(); 
@@ -832,69 +897,15 @@
   $('calc-clear').onclick = () => { if(expr===''&&$('calc-result').textContent==='0'){history=[];$('calc-history').innerHTML='';$('hist-lbl').style.display='none';}else{expr='';upd();$('calc-result').textContent='0';} };
   $('calc-back').onclick = () => { expr=expr.slice(0,-1); upd(); };
   $('calc-copy').onclick = () => { navigator.clipboard.writeText($('calc-result').textContent); };
+  $('sc-switch').onclick = function(){ this.classList.toggle('on'); $('sci-keys').style.display = this.classList.contains('on')?'grid':'none'; };
+  document.querySelectorAll('#sci-keys .btn:not(#deg-toggle)').forEach(b => {
+    b.onclick = () => { const fn = b.dataset.fn; if(fn === 'pi') expr += 'π'; else if(fn === 'pow') expr += '**'; else if(fn === 'sqrt') expr += '√('; else expr += `${fn}(`; upd(); }
+  });
+  const degBtn = $('deg-toggle');
+  degBtn.onclick = () => { useDeg = !useDeg; degBtn.textContent = useDeg ? "DEG" : "RAD"; degBtn.classList.toggle('active-mode', useDeg); };
+  degBtn.classList.add('active-mode');
 
-  /* --- 5. FINANCE TOOLS --- */
-  $('emi-calc').onclick = () => {
-    const p=parseFloat($('emi-principal').value), r=parseFloat($('emi-rate').value)/1200, t=parseFloat($('emi-time').value), u=$('emi-unit').value;
-    if(!p) return;
-    const n = u==='years'?t*12:t;
-    const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    const msg = `EMI: ${globalSym}${Math.round(emi)}\nInterest: ${globalSym}${Math.round((emi*n)-p)}\nTotal: ${globalSym}${Math.round(emi*n)}`;
-    $('emi-result').textContent = msg; $('emi-result').style.whiteSpace = 'pre-wrap';
-    $('share-emi').onclick = () => smartShare("Loan EMI", msg);
-  };
-
-  $('sip-btn').onclick = () => {
-     const p=$('sip-amt').value, i=$('sip-rate').value/1200, n=$('sip-years').value*12;
-     const val = Math.round(p * ((Math.pow(1+i, n) - 1) / i) * (1 + i));
-     const msg = `Invested: ${globalSym}${p*n}\nValue: ${globalSym}${val}\nProfit: ${globalSym}${val-(p*n)}`;
-     $('sip-res').innerHTML = `Value: ${globalSym}${val}<button class="share-btn" id="share-sip">➦</button>`;
-     $('share-sip').onclick = () => smartShare("SIP Investment", msg);
-  }
-
-  $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
-  const calcGST = (mode) => {
-    const amt=parseFloat($('gst-amt').value), rate=parseFloat($('gst-rate').value); if(!amt)return;
-    let net, gst, total; if(mode==='add'){gst=(amt*rate)/100; total=amt+gst;}else{net=(amt*100)/(100+rate); gst=amt-net; total=amt;}
-    const msg = `Net: ${formatNum(mode==='add'?amt:net)}\nTax: ${formatNum(gst)}\nTotal: ${formatNum(total)}`;
-    $('gst-res').innerHTML = `Tax: ${formatNum(gst)} | <b>Total: ${globalSym}${formatNum(total)}</b><button class="share-btn" id="share-gst">➦</button>`;
-    $('share-gst').onclick = () => smartShare("Tax Calculation", msg);
-  };
-
-  $('goal-btn').onclick = () => {
-    const target=parseFloat($('goal-target').value), t=parseFloat($('goal-time').value), r=parseFloat($('goal-rate').value); if(!target)return;
-    const i=r/1200, n=t*12, factor=((Math.pow(1+i,n)-1)/i)*(1+i);
-    const res = Math.round(target/factor);
-    $('goal-res').innerHTML = `SIP Needed: ${globalSym}${res}/mo<button class="share-btn" id="share-goal">➦</button>`;
-    $('share-goal').onclick = () => smartShare("Goal Planner", `Target: ${globalSym}${target}\nTime: ${t} Years\nRequired SIP: ${globalSym}${res}/mo`);
-  };
-
-  // Discount Stacker (NEW)
-  $('disc-btn').onclick = () => {
-    const p=parseFloat($('disc-price').value), d1=parseFloat($('disc-1').value)||0, d2=parseFloat($('disc-2').value)||0; if(!p)return;
-    const p1 = p * (1 - d1/100);
-    const final = p1 * (1 - d2/100);
-    const saved = p - final;
-    const msg = `Original: ${globalSym}${p}\n- ${d1}% Off\n- ${d2}% Extra Off\n\nFinal Price: ${globalSym}${Math.round(final)}\nYou Save: ${globalSym}${Math.round(saved)}`;
-    $('disc-res').innerHTML = `Final: ${globalSym}${Math.round(final)} (Save ${Math.round(saved)})<button class="share-btn" id="share-disc">➦</button>`;
-    $('share-disc').onclick = () => smartShare("Discount Calculation", msg);
-  };
-
-  $('bill-btn').onclick = () => {
-    const amt=parseFloat($('bill-amt').value), tip=parseFloat($('bill-tip').value)||0, ppl=parseFloat($('bill-ppl').value)||1; if(!amt)return;
-    const total=amt+(amt*tip/100); const per=total/ppl;
-    $('bill-res').innerHTML = `Total: ${globalSym}${Math.round(total)} | Per: ${globalSym}${Math.round(per)}<button class="share-btn" id="share-bill">➦</button>`;
-    $('share-bill').onclick = () => smartShare("Bill Split", `Bill: ${globalSym}${amt}\nTip: ${tip}%\nTotal: ${globalSym}${total}\nPer Person: ${globalSym}${per}`);
-  };
-
-  $('ci-btn').onclick = () => {
-    const p=parseFloat($('ci-p').value), r=parseFloat($('ci-r').value)/100, t=parseFloat($('ci-t').value), n=parseFloat($('ci-n').value); if(!p)return;
-    const amt=Math.round(p*Math.pow((1+r/n),(n*t)));
-    $('ci-res').innerHTML = `Total: ${globalSym}${amt}<button class="share-btn" id="share-ci">➦</button>`;
-    $('share-ci').onclick = () => smartShare("Compound Interest", `Invested: ${globalSym}${p}\nRate: ${r*100}%\nTotal Value: ${globalSym}${amt}`);
-  };
-
-  /* --- 6. HEALTH TOOLS --- */
+  /* --- 6. HEALTH & SLEEP --- */
   $('h-btn').onclick = () => {
     const age=parseFloat($('h-age').value), w=parseFloat($('h-weight').value), h=parseFloat($('h-height').value), act=parseFloat($('h-activity').value), gender=$('h-gender').value;
     if(!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
@@ -908,123 +919,143 @@
     $('res-water').textContent=(w/30).toFixed(1); $('res-protein').textContent=Math.round(w*(0.8+(act-1.2)));
     $('h-msg').textContent = `Status: ${bmi<18.5?"Underweight":bmi<25?"Healthy":bmi<30?"Overweight":"Obese"}`;
   };
-  $('bmi-info').onclick = (e) => { e.stopPropagation(); alert("BMI Categories:\n< 18.5: Underweight\n18.5-24.9: Normal\n25-29.9: Overweight\n30+: Obese"); };
+  
+  // MODERN INFO POPUP
+  $('bmi-info').onclick = (e) => { 
+      e.stopPropagation(); 
+      showInfoModal("BMI Categories (WHO)", "• <b>< 18.5:</b> Underweight<br>• <b>18.5 - 24.9:</b> Normal<br>• <b>25 - 29.9:</b> Overweight<br>• <b>30+:</b> Obese");
+  };
 
-  // Sleep Cycle (NEW)
+  // SMART SLEEP CYCLE
   $('sleep-btn').onclick = () => {
-      const timeStr = $('sleep-time').value;
+      const timeStr = $('sleep-time').value; const mode = $('sleep-mode').value;
       if(!timeStr) return;
       
       const d = new Date();
       const [h, m] = timeStr.split(':');
       d.setHours(h); d.setMinutes(m);
       
-      // Calculate 5 and 6 cycles back (90 mins each)
-      // 5 cycles = 7.5 hours, 6 cycles = 9 hours. Plus 15 mins to fall asleep.
-      const d1 = new Date(d.getTime() - (9 * 60 * 60 * 1000) - (15 * 60 * 1000));
-      const d2 = new Date(d.getTime() - (7.5 * 60 * 60 * 1000) - (15 * 60 * 1000));
-      
+      let d1, d2, msg, title;
       const format = (date) => date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      const msg = `To wake up at ${timeStr}, fall asleep at:\n\n😴 ${format(d1)} (9h sleep)\n😄 ${format(d2)} (7.5h sleep)`;
-      $('sleep-res').innerHTML = `${format(d2)} or ${format(d1)}<button class="share-btn" id="share-sleep">➦</button>`;
-      $('share-sleep').onclick = () => smartShare("Sleep Cycle", msg);
+
+      if (mode === 'wake') {
+          // "I want to wake up at X" -> Calc backwards
+          // Subtract 15m (fall asleep) then 6 cycles (9h) or 5 cycles (7.5h)
+          d1 = new Date(d.getTime() - (9 * 60 * 60 * 1000) - (15 * 60 * 1000));
+          d2 = new Date(d.getTime() - (7.5 * 60 * 60 * 1000) - (15 * 60 * 1000));
+          title = "Bedtime Calculator";
+          msg = `To wake up refreshed at <b>${timeStr}</b>:<br><br>😴 Fall asleep by: <b>${format(d1)}</b> (9h)<br>😄 Fall asleep by: <b>${format(d2)}</b> (7.5h)`;
+      } else {
+          // "I am sleeping at X" -> Calc forwards
+          // Add 15m (fall asleep) then 5 cycles or 6 cycles
+          d1 = new Date(d.getTime() + (15 * 60 * 1000) + (7.5 * 60 * 60 * 1000));
+          d2 = new Date(d.getTime() + (15 * 60 * 1000) + (9 * 60 * 60 * 1000));
+          title = "Wake Up Calculator";
+          msg = `If you sleep at <b>${timeStr}</b>:<br><br>😄 Wake up at: <b>${format(d1)}</b> (7.5h)<br>😴 Wake up at: <b>${format(d2)}</b> (9h)`;
+      }
+      
+      showResult('sleep-res', mode==='wake' ? `${format(d2)} or ${format(d1)}` : `${format(d1)} or ${format(d2)}`, title, msg.replace(/<br>/g, "\n").replace(/<b>/g,"").replace(/<\/b>/g,""));
   };
 
-  /* --- 7. TRAVEL TOOLS --- */
+  /* --- 7. FINANCE TOOLS --- */
+  $('emi-calc').onclick = () => {
+    const p=parseFloat($('emi-principal').value), r=parseFloat($('emi-rate').value)/1200, t=parseFloat($('emi-time').value), u=$('emi-unit').value; if(!p)return;
+    const n = u==='years'?t*12:t; const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+    const msg = `EMI: ${globalSym}${Math.round(emi)}\nTotal: ${globalSym}${Math.round(emi*n)}`;
+    $('emi-result').textContent = msg; $('emi-result').style.whiteSpace = 'pre-wrap';
+    showResult('emi-result', msg, "Loan EMI", msg); // Re-adds button
+  };
+
+  $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
+  const calcGST = (mode) => {
+    const amt=parseFloat($('gst-amt').value), rate=parseFloat($('gst-rate').value); if(!amt)return;
+    let net, gst, total; if(mode==='add'){gst=(amt*rate)/100; total=amt+gst; net=amt;}else{net=(amt*100)/(100+rate); gst=amt-net; total=amt;}
+    showResult('gst-res', `Tax: ${formatNum(gst)} | <b>Total: ${globalSym}${formatNum(total)}</b>`, "Tax Calc", `Net: ${formatNum(net)}\nTax: ${formatNum(gst)}\nTotal: ${formatNum(total)}`);
+  };
+
+  $('sip-btn').onclick = () => {
+     const p=$('sip-amt').value, i=$('sip-rate').value/1200, n=$('sip-years').value*12;
+     const val = Math.round(p * ((Math.pow(1+i, n) - 1) / i) * (1 + i));
+     showResult('sip-res', `Value: ${globalSym}${val}`, "SIP", `Invested: ${globalSym}${p*n}\nValue: ${globalSym}${val}`);
+  }
+
+  $('goal-btn').onclick = () => {
+    const target=parseFloat($('goal-target').value), t=parseFloat($('goal-time').value), r=parseFloat($('goal-rate').value); if(!target)return;
+    const i=r/1200, n=t*12, factor=((Math.pow(1+i,n)-1)/i)*(1+i); const res = Math.round(target/factor);
+    showResult('goal-res', `SIP Needed: ${globalSym}${res}/mo`, "Goal Plan", `Target: ${globalSym}${target}\nSIP Needed: ${globalSym}${res}/mo`);
+  };
+
+  $('disc-btn').onclick = () => {
+    const p=parseFloat($('disc-price').value), d1=parseFloat($('disc-1').value)||0, d2=parseFloat($('disc-2').value)||0; if(!p)return;
+    const final = (p * (1 - d1/100)) * (1 - d2/100);
+    showResult('disc-res', `Final: ${globalSym}${Math.round(final)} (Save ${Math.round(p-final)})`, "Discount", `Price: ${p}\nFinal: ${Math.round(final)}`);
+  };
+
+  $('bill-btn').onclick = () => {
+    const amt=parseFloat($('bill-amt').value), tip=parseFloat($('bill-tip').value)||0, ppl=parseFloat($('bill-ppl').value)||1; if(!amt)return;
+    const total=amt+(amt*tip/100);
+    showResult('bill-res', `Total: ${globalSym}${Math.round(total)} | Per: ${globalSym}${Math.round(total/ppl)}`, "Bill Split", `Total: ${total}\nPer Person: ${total/ppl}`);
+  };
+
+  $('ci-btn').onclick = () => {
+    const p=parseFloat($('ci-p').value), r=parseFloat($('ci-r').value)/100, t=parseFloat($('ci-t').value), n=parseFloat($('ci-n').value); if(!p)return;
+    const amt=Math.round(p*Math.pow((1+r/n),(n*t)));
+    showResult('ci-res', `Total: ${globalSym}${amt}`, "Compound Int", `Principal: ${p}\nAmount: ${amt}`);
+  };
+
+  /* --- 8. TRAVEL & OTHER --- */
   $('fuel-btn').onclick = () => {
     const d=parseFloat($('fuel-dist').value), m=parseFloat($('fuel-mil').value), p=parseFloat($('fuel-price').value); if(!d)return;
     const cost = Math.round((d/m)*p);
-    $('fuel-res').innerHTML = `Cost: ${globalSym}${cost}<button class="share-btn" id="share-fuel">➦</button>`;
-    $('share-fuel').onclick = () => smartShare("Fuel Cost", `Trip: ${d}km\nMileage: ${m}\nTotal Cost: ${globalSym}${cost}`);
+    showResult('fuel-res', `Cost: ${globalSym}${cost}`, "Fuel Cost", `Dist: ${d}km\nCost: ${globalSym}${cost}`);
   };
 
-  // Trip ETA (NEW)
   $('eta-btn').onclick = () => {
       const d=parseFloat($('eta-dist').value), s=parseFloat($('eta-speed').value), start=$('eta-start').value;
       if(!d||!s||!start) return;
-      const hours = d/s;
-      const now = new Date();
-      const [h,m] = start.split(':');
-      now.setHours(h); now.setMinutes(m);
-      now.setMinutes(now.getMinutes() + (hours*60));
-      
+      const now = new Date(); const [h,m] = start.split(':');
+      now.setHours(h); now.setMinutes(m); now.setMinutes(now.getMinutes() + ((d/s)*60));
       const arr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      $('eta-res').innerHTML = `Arrival: ${arr}<button class="share-btn" id="share-eta">➦</button>`;
-      $('share-eta').onclick = () => smartShare("Trip ETA", `Distance: ${d}km\nSpeed: ${s}km/h\nStart: ${start}\n\n📍 Arrival: ${arr}`);
+      showResult('eta-res', `Arrival: ${arr}`, "Trip ETA", `Start: ${start}\nArrival: ${arr}`);
   };
 
-  // Time Zone (NEW)
   $('zone-btn').onclick = () => {
       const tz = $('zone-sel').value;
       const time = new Date().toLocaleTimeString('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: true });
       $('zone-res').textContent = `Current Time: ${time}`;
   };
 
-  /* --- 8. OTHER TOOLS & INIT --- */
   $('age-btn').onclick = () => {
     const dVal=$('dob-input').value; if(!dVal)return;
     const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
     if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
-    const msg = `${y} Years, ${m} Months, ${days} Days`;
-    $('age-result').innerHTML = `${msg}<button class="share-btn" id="share-age">➦</button>`;
-    $('share-age').onclick = () => smartShare("Age Calculator", `DOB: ${dVal}\nAge: ${msg}`);
+    showResult('age-result', `${y} Years, ${m} Months, ${days} Days`, "Age", `DOB: ${dVal}\nAge: ${y} Y, ${m} M`);
   };
 
   $('cur-btn').onclick = async () => {
     const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
     $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
     try{ const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); const d=await r.json();
-    const res = `${a} ${f} = ${d.rates[t]} ${t}`;
-    $('cur-res').innerHTML=`${res}<button class="share-btn" id="share-cur">➦</button>`; 
-    $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display='block'; 
-    $('share-cur').onclick = () => smartShare("Currency Converter", res);
-    }catch{ $('cur-res').textContent="Err"; }
+    const txt = `${a} ${f} = ${d.rates[t]} ${t}`;
+    showResult('cur-res', txt, "Currency", txt);
+    $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display='block'; }catch{ $('cur-res').textContent="Err"; }
   };
   $('cur-swap').onclick = () => { const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
 
-  // Converters
-  const uData = {
-    length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => { let m=v; if(f==='cm')m=v/100; if(f==='ft')m=v/3.2808; if(f==='in')m=v/39.37; if(t==='m')return m; if(t==='cm')return m*100; if(t==='ft')return m*3.2808; if(t==='in')return m*39.37; } },
-    weight: { opts: ['kg','lb'], fn: (v,f,t) => f===t?v : (f==='kg'?v*2.2046:v/2.2046) },
-    temp: { opts: ['C','F'], fn: (v,f,t) => f===t?v : (f==='C'?v*1.8+32 : (v-32)/1.8) },
-    speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
-  };
-  function renderUnits(){
-    const type = $('u-type').value, data = uData[type];
-    const fS = $('u-from'), tS = $('u-to');
-    fS.innerHTML = ''; tS.innerHTML = '';
-    const panel = $('unit-panel');
-    panel.querySelectorAll('.custom-dropdown').forEach(d => d.remove());
-    panel.querySelectorAll('select').forEach(s => s.removeAttribute('data-customized'));
-    data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
-    if(tS.options.length > 1) tS.selectedIndex = 1;
-    initCustomDropdowns(panel);
-  }
-  $('u-type').onchange = renderUnits;
   $('u-btn').onclick = () => { 
-      const v=parseFloat($('u-val').value); 
-      if(!isNaN(v)) {
-          const res = `${formatNum(uData[$('u-type').value].fn(v,$('u-from').value,$('u-to').value))} ${$('u-to').value}`;
-          $('u-res').innerHTML = `${res}<button class="share-btn" id="share-unit">➦</button>`;
-          $('share-unit').onclick = () => smartShare("Unit Converter", `${v} ${$('u-from').value} = ${res}`);
-      }
+      const v=parseFloat($('u-val').value); if(!isNaN(v)) {
+      const txt = `${formatNum(uData[$('u-type').value].fn(v,$('u-from').value,$('u-to').value))} ${$('u-to').value}`;
+      showResult('u-res', txt, "Convert", `${v} ${$('u-from').value} = ${txt}`); }
   };
-  $('u-swap').onclick = () => { const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); if($('u-val').value) $('u-btn').click(); };
-
-  // Init Helpers
+  
+  // Helpers
   $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
-  $('pw-btn').onclick = () => { const chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"; let p=""; for(let i=0;i<$('pw-len').value;i++) p+=chars.charAt(Math.floor(Math.random()*chars.length)); $('pw-res').textContent=p; };
+  $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); showResult('pw-res', o, "Password", o); };
   $('base-btn').onclick = () => { try { const dec=parseInt($('base-num').value,parseInt($('base-from').value)); if(isNaN(dec)) throw new Error(); $('base-res').innerHTML=`DEC: ${dec}<br>BIN: ${dec.toString(2)}<br>HEX: ${dec.toString(16).toUpperCase()}`; } catch { $('base-res').textContent="Invalid"; } };
   $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
-  $('qr-btn').onclick = () => {
-    const txt = $('qr-text').value; if(!txt) return;
-    $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
-    $('qr-image').src = url;
-  }
+  $('qr-btn').onclick = () => { const txt=$('qr-text').value; if(!txt)return; $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block'; const url=`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`; $('qr-image').onload=()=>{ $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});}; $('qr-image').src=url; }
 
-  // System Init
+  // Init
   function initCustomDropdowns(scope=document){
     scope.querySelectorAll('select:not([data-customized])').forEach(s => {
       s.setAttribute('data-customized','true');
@@ -1041,12 +1072,21 @@
       w.appendChild(t); w.appendChild(m); s.parentNode.insertBefore(w,s.nextSibling);
     });
   }
+  
+  // Converters Setup
+  const uData={length:{opts:['m','cm','ft','in'],fn:(v,f,t)=>{let m=v;if(f==='cm')m=v/100;if(f==='ft')m=v/3.2808;if(f==='in')m=v/39.37;if(t==='m')return m;if(t==='cm')return m*100;if(t==='ft')return m*3.2808;if(t==='in')return m*39.37;}},weight:{opts:['kg','lb'],fn:(v,f,t)=>f===t?v:(f==='kg'?v*2.2046:v/2.2046)},temp:{opts:['C','F'],fn:(v,f,t)=>f===t?v:(f==='C'?v*1.8+32:(v-32)/1.8)},speed:{opts:['kmph','mph'],fn:(v,f,t)=>f===t?v:(f==='kmph'?v*0.6213:v/0.6213)}};
+  function renderUnits(){ const t=$('u-type').value, d=uData[t], f=$('u-from'), to=$('u-to'); f.innerHTML=''; to.innerHTML=''; [f,to].forEach(e=>{e.removeAttribute('data-customized'); if(e.nextSibling?.classList?.contains('custom-dropdown'))e.nextSibling.remove();}); d.opts.forEach(o=>{f.add(new Option(o,o)); to.add(new Option(o,o));}); if(to.options.length>1)to.selectedIndex=1; initCustomDropdowns($('unit-panel')); }
+  $('u-type').onchange=renderUnits; $('u-swap').onclick=()=>{const f=$('u-from'),t=$('u-to'),tm=f.value;f.value=t.value;t.value=tm;f.dispatchEvent(new Event('change'));t.dispatchEvent(new Event('change'));};
+  
+  // Text Stats
+  const txtStats=()=>{ const v=$('txt-in').value; $('txt-chars').textContent=v.length; $('txt-words').textContent=v.trim().split(/\s+/).filter(w=>w.length>0).length; };
+  $('txt-in').oninput=txtStats; $('txt-upper').onclick=()=>{$('txt-in').value=$('txt-in').value.toUpperCase();txtStats();}; $('txt-lower').onclick=()=>{$('txt-in').value=$('txt-in').value.toLowerCase();txtStats();}; $('txt-clear').onclick=()=>{$('txt-in').value='';txtStats();};
+
   document.addEventListener('click',()=>document.querySelectorAll('.custom-dropdown').forEach(d=>d.classList.remove('active')));
   updateThemeColors('mono'); initCustomDropdowns(); renderUnits();
   
-  // FIX: Force reset tabs on load (Open Loan Panel)
+  // Force Tabs Init
   document.querySelector('[data-tab="tab-finance"]').click();
-  
 </script>
 </body>
 </html>
