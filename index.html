@@ -49,7 +49,6 @@
     font-family:"Poppins",system-ui,-apple-system,sans-serif;
   }
   
-  /* STOP FLICKER FIX */
   html { overflow-y: scroll; } 
   
   body{
@@ -260,8 +259,8 @@
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
   .divider{ height: 1px; background: var(--border); margin: 16px 0; }
 
-  /* HEALTH STATS GRID & INFO ICON */
-  .health-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+  /* HEALTH & TEXT STATS GRID */
+  .health-stats, .text-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
   .stat-box { 
     background: var(--input-bg); border-radius: 12px; padding: 12px; 
     display: flex; flex-direction: column; align-items: center; text-align: center; 
@@ -380,30 +379,16 @@
         <div class="field flex-1"><label class="mini">Amount</label><input id="cur-amt" type="number" placeholder="1"></div>
         <div class="field flex-1"><label class="mini">From</label>
           <select id="cur-from">
-            <option value="USD" selected>USD</option>
-            <option value="EUR">EUR</option>
-            <option value="INR">INR</option>
-            <option value="GBP">GBP</option>
-            <option value="JPY">JPY</option>
-            <option value="AUD">AUD</option>
-            <option value="CAD">CAD</option>
-            <option value="CNY">CNY</option>
-            <option value="CHF">CHF</option>
-            <option value="NZD">NZD</option>
+            <option value="USD" selected>USD</option><option value="EUR">EUR</option><option value="INR">INR</option>
+            <option value="GBP">GBP</option><option value="JPY">JPY</option><option value="AUD">AUD</option>
+            <option value="CAD">CAD</option><option value="CNY">CNY</option><option value="CHF">CHF</option><option value="NZD">NZD</option>
           </select>
         </div>
         <div class="field flex-1"><label class="mini">To</label>
           <select id="cur-to">
-            <option value="INR" selected>INR</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="JPY">JPY</option>
-            <option value="AUD">AUD</option>
-            <option value="CAD">CAD</option>
-            <option value="CNY">CNY</option>
-            <option value="CHF">CHF</option>
-            <option value="NZD">NZD</option>
+            <option value="INR" selected>INR</option><option value="USD">USD</option><option value="EUR">EUR</option>
+            <option value="GBP">GBP</option><option value="JPY">JPY</option><option value="AUD">AUD</option>
+            <option value="CAD">CAD</option><option value="CNY">CNY</option><option value="CHF">CHF</option><option value="NZD">NZD</option>
           </select>
         </div>
       </div>
@@ -446,7 +431,7 @@
 
       <div class="search-box">
         <div class="search-icon"></div>
-        <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, BMI, Tip)...">
+        <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, Fuel, Base)...">
       </div>
 
       <div class="category-label">Finance</div>
@@ -454,6 +439,7 @@
         <button class="chip-btn active" data-panel="loan-panel">Loan / EMI</button>
         <button class="chip-btn" data-panel="gst-panel">GST / VAT</button>
         <button class="chip-btn" data-panel="invest-panel">SIP / Invest</button>
+        <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
         <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
         <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
       </div>
@@ -462,13 +448,99 @@
       <div class="chips">
         <button class="chip-btn" data-panel="health-panel">Health Station (BMI/BMR)</button>
       </div>
+      
+      <div class="category-label">Travel</div>
+      <div class="chips">
+        <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
+      </div>
 
       <div class="category-label">Other Tools</div>
       <div class="chips">
         <button class="chip-btn" data-panel="unit-panel">Converters</button>
         <button class="chip-btn" data-panel="time-panel">Day Counter</button>
-        <button class="chip-btn" data-panel="text-panel">Password</button>
+        <button class="chip-btn" data-panel="text-panel">Text Tools</button>
+        <button class="chip-btn" data-panel="base-panel">Base Converter</button>
         <button class="chip-btn" data-panel="gpa-panel">GPA</button>
+      </div>
+
+      <div id="fuel-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Fuel Cost Calculator</div>
+           <div class="card-sub">Calculate trip cost & fuel required.</div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Distance (km)</label><input id="fuel-dist" type="number" placeholder="300"></div>
+           <div class="field flex-1"><label class="mini">Mileage (km/l)</label><input id="fuel-mil" type="number" placeholder="15"></div>
+        </div>
+        <div class="field"><label class="mini">Fuel Price (per liter)</label><input id="fuel-price" type="number" placeholder="100"></div>
+        <button id="fuel-btn" class="btn btn-accent btn-action">Calculate Cost</button>
+        <div id="fuel-res" class="result-text"></div>
+      </div>
+
+      <div id="goal-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Goal Planner</div>
+           <div class="card-sub">How much to invest to reach a goal?</div>
+        </div>
+        <div class="field"><label class="mini">Target Amount</label><input id="goal-target" type="number" placeholder="10000000"></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Years</label><input id="goal-time" type="number" placeholder="10"></div>
+           <div class="field flex-1"><label class="mini">Exp. Rate %</label><input id="goal-rate" type="number" placeholder="12"></div>
+        </div>
+        <button id="goal-btn" class="btn btn-accent btn-action">Calculate Monthly SIP</button>
+        <div id="goal-res" class="result-text"></div>
+      </div>
+
+      <div id="text-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Text Analysis</div>
+           <div class="card-sub">Word count & transformation.</div>
+        </div>
+        <div class="field">
+           <textarea id="txt-in" rows="4" placeholder="Type or paste text here..."></textarea>
+        </div>
+        <div class="text-stats" style="margin-bottom:10px;">
+           <div class="stat-box"><div id="txt-words" class="stat-val">0</div><div class="stat-lbl">Words</div></div>
+           <div class="stat-box"><div id="txt-chars" class="stat-val">0</div><div class="stat-lbl">Characters</div></div>
+        </div>
+        <div class="row" style="gap:5px;">
+           <button id="txt-upper" class="btn small flex-1" style="font-size:0.8rem;">UPPER</button>
+           <button id="txt-lower" class="btn small flex-1" style="font-size:0.8rem;">lower</button>
+           <button id="txt-clear" class="btn small flex-1" style="font-size:0.8rem;">Clear</button>
+        </div>
+
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Password Generator</div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
+           <button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button>
+        </div>
+        <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
+      </div>
+
+      <div id="base-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Number Base Converter</div>
+           <div class="card-sub">Decimal, Binary & Hexadecimal.</div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div>
+           <div class="field flex-1"><label class="mini">From Base</label>
+             <select id="base-from">
+               <option value="10">Decimal (10)</option>
+               <option value="2">Binary (1010)</option>
+               <option value="16">Hex (A)</option>
+             </select>
+           </div>
+        </div>
+        <button id="base-btn" class="btn btn-accent btn-action">Convert</button>
+        <div id="base-res" class="result-text"></div>
       </div>
 
       <div id="health-panel" class="panel">
@@ -511,10 +583,7 @@
 
       <div id="bill-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Bill Splitter</div>
-           <div class="card-sub">Split bills & calculate tips.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Bill Splitter</div><div class="card-sub">Split bills & calculate tips.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Total Bill</label><input id="bill-amt" type="number" placeholder="2500"></div>
            <div class="field flex-1"><label class="mini">Tip %</label><input id="bill-tip" type="number" placeholder="10"></div>
@@ -526,23 +595,14 @@
 
       <div id="ci-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Compound Interest</div>
-           <div class="card-sub">Calculate wealth growth.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Compound Interest</div><div class="card-sub">Calculate wealth growth.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Principal</label><input id="ci-p" type="number" placeholder="10000"></div>
            <div class="field flex-1"><label class="mini">Rate %</label><input id="ci-r" type="number" placeholder="8"></div>
         </div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Years</label><input id="ci-t" type="number" placeholder="10"></div>
-           <div class="field flex-1"><label class="mini">Compounded</label>
-             <select id="ci-n">
-               <option value="1">Yearly</option>
-               <option value="4">Quarterly</option>
-               <option value="12">Monthly</option>
-             </select>
-           </div>
+           <div class="field flex-1"><label class="mini">Compounded</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12">Monthly</option></select></div>
         </div>
         <button id="ci-btn" class="btn btn-accent btn-action">Calculate Amount</button>
         <div id="ci-res" class="result-text"></div>
@@ -581,29 +641,12 @@
       <div id="unit-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div><div class="card-sub">Length, weight, temp & speed.</div></div>
-        
-        <div class="field">
-            <label class="mini">Type</label>
-            <select id="u-type">
-                <option value="length">Length</option>
-                <option value="weight">Weight</option>
-                <option value="temp">Temperature</option>
-                <option value="speed">Speed</option>
-            </select>
-        </div>
-        
+        <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
         <div class="row">
-          <div class="field flex-1">
-              <label class="mini">From</label>
-              <select id="u-from"></select>
-          </div>
+          <div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div>
           <button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button>
-          <div class="field flex-1">
-              <label class="mini">To</label>
-              <select id="u-to"></select>
-          </div>
+          <div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div>
         </div>
-        
         <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
         <button id="u-btn" class="btn btn-accent btn-action">Convert</button>
         <div id="u-res" class="result-text"></div>
@@ -613,9 +656,7 @@
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">SIP Calculator</div><div class="card-sub">Estimate returns.</div></div>
         <div class="row">
-           <div class="field" style="width:80px"><label class="mini">Currency</label>
-           <select id="sip-currency"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option></select>
-           </div>
+           <div class="field" style="width:80px"><label class="mini">Currency</label><select id="sip-currency"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option></select></div>
           <div class="field flex-1"><label class="mini">Monthly</label><input id="sip-amt" type="number" placeholder="5000"></div>
         </div>
         <div class="row">
@@ -635,16 +676,6 @@
         </div>
         <button id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
         <div id="time-result" class="result-text"></div>
-      </div>
-
-      <div id="text-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Password</div><div class="card-sub">Secure passwords.</div></div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
-           <button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button>
-        </div>
-        <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
       </div>
 
       <div id="gpa-panel" class="panel">
@@ -737,7 +768,6 @@
     } catch { $('calc-result').textContent="Err"; } 
   };
   
-  // SMART AC BUTTON
   $('calc-clear').onclick = () => { 
     if(expr === '' && $('calc-result').textContent === '0') {
         history = [];
@@ -810,13 +840,84 @@
     $('h-msg').textContent = `Status: ${msg}`;
   };
 
-  // BMI INFO ICON CLICK
   $('bmi-info').onclick = (e) => {
-      e.stopPropagation(); // Prevent bubbling
-      alert("BMI Categories (WHO):\n\n• Below 18.5: Underweight\n• 18.5 - 24.9: Normal\n• 25.0 - 29.9: Overweight\n• 30.0 and Above: Obese");
+      e.stopPropagation();
+      alert("BMI Categories (WHO):\n\n• Below 18.5: Underweight\n• 18.5 - 24.9: Normal\n• 25.0 - 29.9: Overweight\n• 30.0+: Obese");
   };
 
-  /* --- 4. TOP TOOLS LOGIC --- */
+  /* --- 4. NEW TOOLS (v1.6) --- */
+  
+  // Fuel Cost
+  $('fuel-btn').onclick = () => {
+    const d = parseFloat($('fuel-dist').value);
+    const m = parseFloat($('fuel-mil').value);
+    const p = parseFloat($('fuel-price').value);
+    if(!d || !m || !p) return;
+    const fuelNeeded = d / m;
+    const cost = fuelNeeded * p;
+    $('fuel-res').innerHTML = `Fuel Needed: ${formatNum(fuelNeeded)} L<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Total Cost: ₹${Math.round(cost)}</span>`;
+  };
+
+  // Goal Planner (Reverse SIP)
+  $('goal-btn').onclick = () => {
+    const target = parseFloat($('goal-target').value);
+    const t = parseFloat($('goal-time').value); // Years
+    const r = parseFloat($('goal-rate').value); // Yearly %
+    
+    if(!target || !t || !r) return;
+    
+    const i = r / 1200; // Monthly Rate
+    const n = t * 12;   // Months
+    
+    // SIP Formula: FV = P * [ (1+i)^n - 1 ] / i * (1+i)
+    // Reverse: P = FV / ( [ (1+i)^n - 1 ] / i * (1+i) )
+    
+    const factor = ( (Math.pow(1+i, n) - 1) / i ) * (1+i);
+    const monthly = target / factor;
+    
+    $('goal-res').innerHTML = `To reach goal in ${t} years:<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Invest ₹${Math.round(monthly)} / month</span>`;
+  };
+
+  // Text Tools
+  const updateTextStats = () => {
+    const txt = $('txt-in').value;
+    $('txt-chars').textContent = txt.length;
+    // Split by whitespace and filter empty strings
+    const words = txt.trim().split(/\s+/).filter(w => w.length > 0).length;
+    $('txt-words').textContent = words;
+  };
+  $('txt-in').addEventListener('input', updateTextStats);
+  
+  $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); updateTextStats(); };
+  $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); updateTextStats(); };
+  $('txt-clear').onclick = () => { $('txt-in').value = ''; updateTextStats(); };
+
+  // Base Converter
+  $('base-btn').onclick = () => {
+    const num = $('base-num').value;
+    const from = parseInt($('base-from').value);
+    if(!num) return;
+    
+    try {
+      const dec = parseInt(num, from);
+      if(isNaN(dec)) throw new Error();
+      
+      const bin = dec.toString(2);
+      const oct = dec.toString(8); // Optional
+      const hex = dec.toString(16).toUpperCase();
+      const decVal = dec.toString(10);
+      
+      $('base-res').innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>DEC:</span> <b>${decVal}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>BIN:</span> <b>${bin}</b></div>
+        <div style="display:flex; justify-content:space-between;"><span>HEX:</span> <b>${hex}</b></div>
+      `;
+    } catch {
+      $('base-res').textContent = "Invalid Number for Base";
+    }
+  };
+
+  /* --- 5. TOP & EXISTING TOOLS --- */
   $('age-btn').onclick = () => {
     const dVal=$('dob-input').value; if(!dVal)return;
     const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
@@ -848,7 +949,7 @@
     $('qr-image').src = url;
   }
 
-  /* --- 5. UNIT CONVERTER (FIXED) --- */
+  // Converters (Ghost Dropdown Fix)
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
       let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
@@ -859,14 +960,12 @@
     speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
   };
 
-  // Robust Renderer to prevent Black Border Bug
   function renderUnits(){
     const type = $('u-type').value; const data = uData[type];
     const fS = $('u-from'); const tS = $('u-to');
     
     fS.innerHTML = ''; tS.innerHTML = '';
     
-    // Explicitly remove ONLY the custom dropdowns next to these specific inputs
     [fS, tS].forEach(el => {
         el.removeAttribute('data-customized');
         el.style.display = 'block'; 
@@ -878,10 +977,8 @@
     data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
     if(tS.options.length > 1) tS.selectedIndex = 1;
 
-    // Re-init Custom Dropdowns specifically for the Unit Panel
     initCustomDropdowns($('unit-panel'));
   }
-  
   $('u-type').onchange = renderUnits;
   
   $('u-btn').onclick = () => {
@@ -895,7 +992,6 @@
      if($('u-val').value) $('u-btn').click();
   }
 
-  /* --- 6. OTHER TOOLS --- */
   $('bill-btn').onclick = () => {
     const amt = parseFloat($('bill-amt').value);
     const tip = parseFloat($('bill-tip').value) || 0;
