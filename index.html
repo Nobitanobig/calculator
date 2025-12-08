@@ -1,333 +1,380 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Smart AI Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f172a;
-    --bg-alt: #111827;
-    --card: #111827;
-    --card-alt: #020617;
-    --muted: #9ca3af;
+  :root{
+    /* DARK THEME DEFAULT */
+    --bg: #050816;
+    --bg-alt: #020617;
+    --card: #0b1120;
+    --card-soft: #020617;
     --text: #f9fafb;
-    --accent: #ef4444;
-    --accent-2: #7f1d1d;
-    --card-border: rgba(15,23,42,0.6);
-    --radius: 18px;
-    --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.7);
+    --muted: #9ca3af;
+    --accent: #f97316;   /* iOS-like orange */
+    --accent-2: #fb923c;
+    --chip-bg: #020617;
+    --chip-active-bg: #f97316;
+    --chip-active-text: #020617;
+    --border-subtle: rgba(148,163,184,0.35);
+    --shadow-soft: 0 18px 38px rgba(15,23,42,0.9);
   }
-  body[data-theme="light"] {
+  body[data-theme="light"]{
     --bg: #e5e7eb;
-    --bg-alt: #d1d5db;
+    --bg-alt: #cbd5f5;
     --card: #f9fafb;
-    --card-alt: #e5e7eb;
-    --muted: #6b7280;
+    --card-soft: #e5e7eb;
     --text: #020617;
-    --card-border: rgba(148,163,184,0.5);
+    --muted: #6b7280;
+    --accent: #f97316;
+    --accent-2: #ea580c;
+    --chip-bg: #e5e7eb;
+    --chip-active-bg: #f97316;
+    --chip-active-text: #020617;
+    --border-subtle: rgba(148,163,184,0.6);
+    --shadow-soft: 0 14px 32px rgba(15,23,42,0.25);
   }
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    height:100%;
+    font-family:"Poppins",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  body{
     background:
       radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 55%),
-      radial-gradient(circle at bottom right, rgba(148,163,184,0.15), transparent 55%),
+      radial-gradient(circle at bottom right, rgba(148,163,184,0.18), transparent 55%),
       linear-gradient(145deg, var(--bg), var(--bg-alt));
-    color: var(--text);
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    padding:14px;
   }
-  body {
-    display: flex;
-    justify-content: center;
-    padding: 14px;
-    box-sizing: border-box;
+  .app{
+    width:100%;
+    max-width:960px;
+    background:linear-gradient(180deg,var(--card-soft),var(--card));
+    border-radius:26px;
+    border:1px solid var(--border-subtle);
+    padding:14px 14px 10px;
+    box-shadow:var(--shadow-soft);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
   }
-  .app {
-    width: 100%;
-    max-width: 960px;
-    background: linear-gradient(180deg, rgba(15,23,42,0.95), rgba(15,23,42,0.92));
-    background: radial-gradient(circle at top left, rgba(255,255,255,0.04), transparent 55%), var(--card-alt);
-    border-radius: 24px;
-    border: 1px solid var(--card-border);
-    box-shadow: var(--shadow-soft);
-    padding: 14px 14px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--border-subtle);
   }
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    border-bottom: 1px solid var(--card-border);
-    padding-bottom: 8px;
-  }
-  @media (max-width: 640px) {
-    header {
-      flex-direction: column;
-      align-items: flex-start;
+  @media(max-width:640px){
+    header{
+      flex-direction:column;
+      align-items:flex-start;
+      gap:8px;
     }
   }
-  .brand {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+  .brand{
+    display:flex;
+    gap:10px;
+    align-items:center;
   }
-  .logo {
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: #020617;
-    box-shadow: 0 10px 22px rgba(0,0,0,0.6);
+  .logo{
+    width:42px;
+    height:42px;
+    border-radius:16px;
+    background:radial-gradient(circle at 25% 20%, var(--accent-2), var(--accent));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#020617;
+    font-weight:700;
+    font-size:1.3rem;
+    box-shadow:0 10px 24px rgba(0,0,0,0.7);
   }
-  h1 {
-    margin: 0;
-    font-size: 1.25rem;
+  h1{
+    font-size:1.25rem;
   }
-  .subtitle {
-    margin-top: 2px;
-    font-size: 0.82rem;
-    color: var(--muted);
+  .subtitle{
+    font-size:0.8rem;
+    color:var(--muted);
+    margin-top:2px;
   }
-  .theme-block {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-items: flex-end;
+  .theme-block{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:4px;
   }
-  .pill {
-    border-radius: 999px;
-    padding: 6px 12px;
-    border: 1px solid rgba(148,163,184,0.5);
-    background: rgba(15,23,42,0.9);
-    color: var(--text);
-    font-size: 0.8rem;
-    cursor: pointer;
+  .pill{
+    border-radius:999px;
+    padding:6px 14px;
+    border:1px solid var(--border-subtle);
+    background:var(--chip-bg);
+    color:var(--text);
+    font-size:0.8rem;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:110px;
   }
-  .pill:hover {
-    border-color: var(--accent);
+  .pill:hover{
+    border-color:var(--accent);
   }
-  .theme-select {
-    border-radius: 999px;
-    padding: 5px 10px;
-    border: 1px solid rgba(148,163,184,0.6);
-    background: rgba(15,23,42,0.95);
-    color: var(--text);
-    font-size: 0.78rem;
-    outline: none;
+  .theme-label{
+    font-size:0.72rem;
+    color:var(--muted);
   }
-  .theme-label {
-    font-size: 0.7rem;
-    color: var(--muted);
+  .theme-select{
+    border-radius:999px;
+    padding:5px 10px;
+    border:1px solid var(--border-subtle);
+    background:var(--chip-bg);
+    color:var(--text);
+    font-size:0.8rem;
+    outline:none;
   }
-  main {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-top: 4px;
+
+  main{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    padding-top:4px;
   }
-  .card {
-    background: linear-gradient(135deg, rgba(15,23,42,0.98), rgba(15,23,42,0.94));
-    border-radius: var(--radius);
-    border: 1px solid var(--card-border);
-    padding: 12px;
-    box-shadow: 0 12px 30px rgba(15,23,42,0.7);
+  .card{
+    background:linear-gradient(145deg,var(--card),var(--card-soft));
+    border-radius:20px;
+    border:1px solid var(--border-subtle);
+    padding:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.75);
   }
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 6px;
+  .card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:6px;
   }
-  .card-title {
-    font-size: 0.96rem;
-    font-weight: 600;
+  .card-title{
+    font-size:0.95rem;
+    font-weight:600;
   }
-  .card-sub {
-    font-size: 0.78rem;
-    color: var(--muted);
+  .card-sub{
+    font-size:0.78rem;
+    color:var(--muted);
   }
-  .toggle-wrap {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.75rem;
+
+  /* fancy scientific switch */
+  .sc-switch{
+    position:relative;
+    width:70px;
+    height:30px;
+    border-radius:999px;
+    border:1px solid var(--border-subtle);
+    background:var(--chip-bg);
+    display:flex;
+    align-items:center;
+    padding:0 4px;
+    cursor:pointer;
+    overflow:hidden;
+    transition:background 0.2s ease, border-color 0.2s ease;
   }
-  .toggle-wrap input {
-    transform: scale(1.05);
+  .sc-switch-label{
+    flex:1;
+    text-align:center;
+    font-size:0.7rem;
+    color:var(--muted);
+    z-index:1;
   }
-  .calc-display {
-    margin-top: 8px;
-    background: radial-gradient(circle at top left, rgba(255,255,255,0.05), rgba(15,23,42,0.98));
-    border-radius: 14px;
-    border: 1px solid rgba(148,163,184,0.5);
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-height: 64px;
+  .sc-knob{
+    position:absolute;
+    width:26px;
+    height:26px;
+    border-radius:999px;
+    background:linear-gradient(145deg,var(--accent),var(--accent-2));
+    top:1.5px;
+    left:2px;
+    box-shadow:0 6px 16px rgba(0,0,0,0.6);
+    transition:transform 0.22s cubic-bezier(0.4,0.0,0.2,1);
   }
-  .calc-expression {
-    font-size: 0.82rem;
-    color: var(--muted);
-    min-height: 18px;
-    word-wrap: break-word;
+  .sc-switch.on{
+    background:rgba(249,115,22,0.2);
+    border-color:var(--accent);
   }
-  .calc-result {
-    font-size: 1.5rem;
-    text-align: right;
-    font-weight: 600;
+  .sc-switch.on .sc-knob{
+    transform:translateX(38px);
   }
-  .calc-grid {
-    margin-top: 8px;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
+  .sc-switch.on .sc-switch-label{
+    color:var(--accent-2);
   }
-  .btn {
-    border-radius: 999px;
-    border: 1px solid rgba(148,163,184,0.4);
-    background: rgba(15,23,42,0.95);
-    color: var(--text);
-    padding: 8px 0;
-    font-size: 0.9rem;
-    cursor: pointer;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.6);
-    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+  .calc-display{
+    margin-top:8px;
+    background:radial-gradient(circle at top left, rgba(255,255,255,0.05), rgba(15,23,42,0.98));
+    border-radius:18px;
+    border:1px solid var(--border-subtle);
+    padding:10px 12px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-height:64px;
   }
-  .btn:hover {
-    transform: translateY(-1px);
-    border-color: var(--accent);
-    box-shadow: 0 12px 26px rgba(0,0,0,0.7);
+  .calc-expression{
+    font-size:0.82rem;
+    color:var(--muted);
+    min-height:18px;
+    word-wrap:break-word;
   }
-  .btn:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.7);
+  .calc-result{
+    font-size:1.6rem;
+    font-weight:600;
+    text-align:right;
   }
-  .btn-accent {
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #020617;
-    border-color: transparent;
+  .calc-grid{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:8px;
   }
-  .btn-span-2 {
-    grid-column: span 2;
+  .btn{
+    border-radius:999px;
+    border:1px solid rgba(148,163,184,0.45);
+    background:rgba(15,23,42,0.96);
+    color:var(--text);
+    padding:9px 0;
+    font-size:0.9rem;
+    cursor:pointer;
+    box-shadow:0 8px 18px rgba(0,0,0,0.72);
+    transition:transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
   }
-  .small {
-    font-size: 0.78rem;
-    padding: 6px 10px;
+  .btn:hover{
+    transform:translateY(-1px);
+    border-color:var(--accent);
+    box-shadow:0 12px 28px rgba(0,0,0,0.8);
   }
-  .mini {
-    font-size: 0.76rem;
-    color: var(--muted);
+  .btn:active{
+    transform:translateY(0);
+    box-shadow:0 6px 16px rgba(0,0,0,0.75);
   }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 6px;
+  .btn-accent{
+    background:linear-gradient(145deg,var(--accent),var(--accent-2));
+    color:#020617;
+    border-color:transparent;
   }
-  .row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
+  .btn-round{
+    border-radius:999px;
   }
-  .flex-1 {
-    flex: 1 1 0;
+  .small{
+    font-size:0.78rem;
+    padding:7px 12px;
+  }
+  .flex-1{flex:1 1 0;}
+
+  .row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    margin-bottom:6px;
+  }
+  .mini{
+    font-size:0.75rem;
+    color:var(--muted);
   }
   input[type="number"],
   input[type="text"],
   input[type="date"],
   input[type="datetime-local"],
   select,
-  textarea {
-    width: 100%;
-    padding: 7px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(148,163,184,0.5);
-    background: rgba(15,23,42,0.98);
-    color: var(--text);
-    font-size: 0.82rem;
-    outline: none;
+  textarea{
+    width:100%;
+    padding:7px 10px;
+    border-radius:999px;
+    border:1px solid rgba(148,163,184,0.55);
+    background:rgba(15,23,42,0.98);
+    color:var(--text);
+    font-size:0.82rem;
+    outline:none;
   }
-  textarea {
-    border-radius: 12px;
-    min-height: 60px;
+  textarea{
+    border-radius:12px;
+    min-height:60px;
   }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 1px rgba(239,68,68,0.6);
+  input:focus, select:focus, textarea:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 1px rgba(249,115,22,0.7);
   }
-  .result-text {
-    margin-top: 2px;
-    font-size: 0.82rem;
+  .result-text{
+    margin-top:2px;
+    font-size:0.82rem;
   }
-  .muted {
-    color: var(--muted);
-    font-size: 0.78rem;
+  .muted{
+    color:var(--muted);
+    font-size:0.78rem;
   }
-  .divider {
-    height: 1px;
-    background: rgba(148,163,184,0.35);
-    margin: 8px 0;
+  .divider{
+    height:1px;
+    background:var(--border-subtle);
+    margin:8px 0;
   }
-  .chips {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 4px;
+
+  .chips{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    padding-bottom:4px;
   }
-  .chip-btn {
-    white-space: nowrap;
-    border-radius: 999px;
-    border: 1px solid rgba(148,163,184,0.5);
-    background: rgba(15,23,42,0.98);
-    padding: 6px 10px;
-    font-size: 0.78rem;
-    cursor: pointer;
+  .chip-btn{
+    border-radius:999px;
+    border:1px solid var(--border-subtle);
+    background:var(--chip-bg);
+    color:var(--text);
+    padding:6px 10px;
+    font-size:0.78rem;
+    cursor:pointer;
+    white-space:nowrap;
   }
-  .chip-btn.active {
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #020617;
-    border-color: transparent;
+  .chip-btn.active{
+    background:var(--chip-active-bg);
+    color:var(--chip-active-text);
+    border-color:transparent;
   }
-  .panel {
-    display: none;
-    margin-top: 8px;
+  .panel{display:none;margin-top:8px;}
+  .panel.active{display:block;}
+
+  footer{
+    margin-top:6px;
+    padding-top:8px;
+    border-top:1px solid var(--border-subtle);
+    text-align:center;
+    font-size:0.78rem;
+    color:var(--muted);
   }
-  .panel.active {
-    display: block;
+  .heart{
+    display:inline-block;
+    animation:heartbeat 1.2s ease-in-out infinite;
+    margin:0 2px;
   }
-  footer {
-    margin-top: 6px;
-    padding-top: 8px;
-    border-top: 1px solid var(--card-border);
-    text-align: center;
-    font-size: 0.78rem;
-    color: var(--muted);
-  }
-  .heart {
-    display: inline-block;
-    animation: heartbeat 1.2s ease-in-out infinite;
-    margin: 0 2px;
-  }
-  @keyframes heartbeat {
-    0% { transform: scale(1); }
-    20% { transform: scale(1.25); }
-    40% { transform: scale(1); }
-    60% { transform: scale(1.18); }
-    80% { transform: scale(1); }
-    100% { transform: scale(1); }
+  @keyframes heartbeat{
+    0%{transform:scale(1);}
+    20%{transform:scale(1.25);}
+    40%{transform:scale(1);}
+    60%{transform:scale(1.15);}
+    80%{transform:scale(1);}
+    100%{transform:scale(1);}
   }
 </style>
 </head>
@@ -338,14 +385,14 @@
       <div class="logo">Σ</div>
       <div>
         <h1>Smart AI Calculator</h1>
-        <div class="subtitle">Minimal, powerful tools — themed & mobile first.</div>
+        <div class="subtitle">Minimal, iOS-like design — tuned for mobile.</div>
       </div>
     </div>
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
-      <div class="theme-label">Accent Theme</div>
+      <div class="theme-label">Accent theme</div>
       <select id="theme-color" class="theme-select">
-        <option value="red">Red</option>
+        <option value="orange">Orange (default)</option>
         <option value="blue">Midnight Blue</option>
         <option value="green">Emerald</option>
         <option value="purple">Purple</option>
@@ -354,17 +401,17 @@
   </header>
 
   <main>
-    <!-- 1. BASIC / SCIENTIFIC CALCULATOR -->
+    <!-- BASIC / SCIENTIFIC CALCULATOR -->
     <section class="card">
       <div class="card-header">
         <div>
           <div class="card-title">Basic Calculator</div>
-          <div class="card-sub">Keyboard friendly — enable scientific when needed.</div>
+          <div class="card-sub">Tap Sci for scientific keys — iOS-style bubbles.</div>
         </div>
-        <label class="toggle-wrap">
-          <span>Scientific</span>
-          <input type="checkbox" id="sc-toggle">
-        </label>
+        <div id="sc-switch" class="sc-switch" role="button" aria-pressed="false">
+          <div class="sc-knob"></div>
+          <span class="sc-switch-label">Sci</span>
+        </div>
       </div>
 
       <div class="calc-display">
@@ -381,7 +428,7 @@
         <button id="calc-copy" class="btn small">Copy</button>
       </div>
 
-      <div id="sci-keys" class="row" style="margin-top:8px; display:none; flex-wrap:wrap;">
+      <div id="sci-keys" class="row" style="margin-top:8px;display:none;flex-wrap:wrap;">
         <button class="btn small" data-fn="sin">sin</button>
         <button class="btn small" data-fn="cos">cos</button>
         <button class="btn small" data-fn="tan">tan</button>
@@ -393,12 +440,12 @@
       </div>
     </section>
 
-    <!-- 2. AGE CALCULATOR -->
+    <!-- AGE CALCULATOR -->
     <section class="card">
       <div class="card-header">
         <div>
           <div class="card-title">Age Calculator</div>
-          <div class="card-sub">Quickly find your age in years, months & days.</div>
+          <div class="card-sub">Find your exact age in years, months and days.</div>
         </div>
       </div>
       <div class="field">
@@ -412,37 +459,29 @@
       <div id="age-error" class="result-text" style="color:#fecaca;"></div>
     </section>
 
-    <!-- 3. CURRENCY CONVERTER -->
+    <!-- CURRENCY CONVERTER -->
     <section class="card">
       <div class="card-header">
         <div>
           <div class="card-title">Currency Converter</div>
-          <div class="card-sub">Uses latest daily rates from Frankfurter API.</div>
+          <div class="card-sub">Uses daily rates from Frankfurter API.</div>
         </div>
       </div>
       <div class="row">
         <div class="field flex-1">
           <label class="mini">Amount</label>
-          <input type="number" id="cur-amt" placeholder="1">
+          <input id="cur-amt" type="number" placeholder="1">
         </div>
         <div class="field" style="width:120px">
           <label class="mini">From</label>
           <select id="cur-from">
-            <option>USD</option>
-            <option>EUR</option>
-            <option>INR</option>
-            <option>GBP</option>
-            <option>JPY</option>
+            <option>USD</option><option>EUR</option><option>INR</option><option>GBP</option><option>JPY</option>
           </select>
         </div>
         <div class="field" style="width:120px">
           <label class="mini">To</label>
           <select id="cur-to">
-            <option>INR</option>
-            <option>USD</option>
-            <option>EUR</option>
-            <option>GBP</option>
-            <option>JPY</option>
+            <option>INR</option><option>USD</option><option>EUR</option><option>GBP</option><option>JPY</option>
           </select>
         </div>
       </div>
@@ -454,23 +493,23 @@
       <div id="cur-meta" class="muted"></div>
     </section>
 
-    <!-- 4. QR GENERATOR -->
+    <!-- QR GENERATOR -->
     <section class="card">
       <div class="card-header">
         <div>
           <div class="card-title">QR Code Generator</div>
-          <div class="card-sub">Generate a quick QR for any link or text.</div>
+          <div class="card-sub">Create a QR for any link or text.</div>
         </div>
       </div>
       <div class="field">
         <label class="mini">Text or URL</label>
-        <input type="text" id="qr-text" placeholder="https://example.com">
+        <input id="qr-text" type="text" placeholder="https://example.com">
       </div>
       <div class="row">
         <button id="qr-btn" class="btn btn-accent flex-1">Generate</button>
         <a id="qr-link" class="btn small" href="#" target="_blank" rel="noopener noreferrer">Open QR</a>
       </div>
-      <div class="muted mini">Opens a generated QR image in a new tab.</div>
+      <div class="muted mini">Uses api.qrserver.com (no key required).</div>
     </section>
 
     <!-- MORE CALCULATORS (TABBED) -->
@@ -478,18 +517,18 @@
       <div class="card-header">
         <div>
           <div class="card-title">More Calculators</div>
-          <div class="card-sub">Tap a button to open a focused calculator panel.</div>
+          <div class="card-sub">Tap a chip to open a focused calculator panel.</div>
         </div>
       </div>
 
       <div class="chips">
         <button class="chip-btn active" data-panel="loan-panel">Loan / EMI</button>
-        <button class="chip-btn" data-panel="unit-panel">Unit Converters</button>
+        <button class="chip-btn" data-panel="unit-panel">Converters</button>
         <button class="chip-btn" data-panel="health-panel">Health & BMI</button>
         <button class="chip-btn" data-panel="time-panel">Time & Date</button>
         <button class="chip-btn" data-panel="invest-panel">Investments</button>
         <button class="chip-btn" data-panel="text-panel">Text & Random</button>
-        <button class="chip-btn" data-panel="gpa-panel">GPA / CGPA</button>
+        <button class="chip-btn" data-panel="gpa-panel">GPA</button>
       </div>
 
       <!-- Loan / EMI + Percentage -->
@@ -501,17 +540,19 @@
             <label class="mini">Principal</label>
             <input id="emi-principal" type="number" placeholder="100000">
           </div>
-          <div class="field" style="width:110px">
+          <div class="field" style="width:120px">
             <label class="mini">Rate % p.a.</label>
             <input id="emi-rate" type="number" step="0.01" placeholder="7.5">
           </div>
-          <div class="field" style="width:110px">
+          <div class="field" style="width:120px">
             <label class="mini">Tenure (years)</label>
             <input id="emi-years" type="number" placeholder="5">
           </div>
         </div>
         <div class="row">
           <button id="emi-calc" class="btn btn-accent flex-1">Calculate EMI</button>
+        </div>
+        <div class="row">
           <button id="emi-reset" class="btn small">Reset</button>
         </div>
         <div id="emi-result" class="result-text"></div>
@@ -546,25 +587,17 @@
           <div class="field" style="width:100px">
             <label class="mini">From</label>
             <select id="len-from">
-              <option value="m">m</option>
-              <option value="cm">cm</option>
-              <option value="ft">ft</option>
-              <option value="in">in</option>
+              <option value="m">m</option><option value="cm">cm</option><option value="ft">ft</option><option value="in">in</option>
             </select>
           </div>
           <div class="field" style="width:100px">
             <label class="mini">To</label>
             <select id="len-to">
-              <option value="cm">cm</option>
-              <option value="m">m</option>
-              <option value="ft">ft</option>
-              <option value="in">in</option>
+              <option value="cm">cm</option><option value="m">m</option><option value="ft">ft</option><option value="in">in</option>
             </select>
           </div>
         </div>
-        <div class="row">
-          <button id="len-btn" class="btn btn-accent flex-1">Convert</button>
-        </div>
+        <div class="row"><button id="len-btn" class="btn btn-accent flex-1">Convert</button></div>
         <div id="len-res" class="result-text"></div>
 
         <div class="divider"></div>
@@ -576,22 +609,14 @@
           </div>
           <div class="field" style="width:100px">
             <label class="mini">From</label>
-            <select id="wt-from">
-              <option value="kg">kg</option>
-              <option value="lb">lb</option>
-            </select>
+            <select id="wt-from"><option value="kg">kg</option><option value="lb">lb</option></select>
           </div>
           <div class="field" style="width:100px">
             <label class="mini">To</label>
-            <select id="wt-to">
-              <option value="lb">lb</option>
-              <option value="kg">kg</option>
-            </select>
+            <select id="wt-to"><option value="lb">lb</option><option value="kg">kg</option></select>
           </div>
         </div>
-        <div class="row">
-          <button id="wt-btn" class="btn btn-accent flex-1">Convert</button>
-        </div>
+        <div class="row"><button id="wt-btn" class="btn btn-accent flex-1">Convert</button></div>
         <div id="wt-res" class="result-text"></div>
 
         <div class="divider"></div>
@@ -603,22 +628,14 @@
           </div>
           <div class="field" style="width:100px">
             <label class="mini">From</label>
-            <select id="tmp-from">
-              <option value="C">°C</option>
-              <option value="F">°F</option>
-            </select>
+            <select id="tmp-from"><option value="C">°C</option><option value="F">°F</option></select>
           </div>
           <div class="field" style="width:100px">
             <label class="mini">To</label>
-            <select id="tmp-to">
-              <option value="F">°F</option>
-              <option value="C">°C</option>
-            </select>
+            <select id="tmp-to"><option value="F">°F</option><option value="C">°C</option></select>
           </div>
         </div>
-        <div class="row">
-          <button id="tmp-btn" class="btn btn-accent flex-1">Convert</button>
-        </div>
+        <div class="row"><button id="tmp-btn" class="btn btn-accent flex-1">Convert</button></div>
         <div id="tmp-res" class="result-text"></div>
 
         <div class="divider"></div>
@@ -627,9 +644,7 @@
           <div class="field flex-1">
             <label class="mini">Type</label>
             <select id="u-type">
-              <option value="speed">Speed</option>
-              <option value="area">Area</option>
-              <option value="volume">Volume</option>
+              <option value="speed">Speed</option><option value="area">Area</option><option value="volume">Volume</option>
             </select>
           </div>
           <div class="field flex-1">
@@ -647,9 +662,7 @@
             <select id="u-to"></select>
           </div>
         </div>
-        <div class="row">
-          <button id="u-btn" class="btn btn-accent flex-1">Convert</button>
-        </div>
+        <div class="row"><button id="u-btn" class="btn btn-accent flex-1">Convert</button></div>
         <div id="u-res" class="result-text"></div>
 
         <div class="divider"></div>
@@ -662,23 +675,17 @@
           <div class="field" style="width:100px">
             <label class="mini">From</label>
             <select id="dunit">
-              <option value="KB">KB</option>
-              <option value="MB">MB</option>
-              <option value="GB">GB</option>
+              <option value="KB">KB</option><option value="MB">MB</option><option value="GB">GB</option>
             </select>
           </div>
           <div class="field" style="width:100px">
             <label class="mini">To</label>
             <select id="dunit-to">
-              <option value="MB">MB</option>
-              <option value="GB">GB</option>
-              <option value="KB">KB</option>
+              <option value="MB">MB</option><option value="GB">GB</option><option value="KB">KB</option>
             </select>
           </div>
         </div>
-        <div class="row">
-          <button id="d-btn" class="btn btn-accent flex-1">Convert</button>
-        </div>
+        <div class="row"><button id="d-btn" class="btn btn-accent flex-1">Convert</button></div>
         <div id="d-res" class="result-text"></div>
       </div>
 
@@ -707,19 +714,14 @@
         <div class="row">
           <div class="field" style="width:120px">
             <label class="mini">Gender</label>
-            <select id="ibw-g">
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
+            <select id="ibw-g"><option value="male">Male</option><option value="female">Female</option></select>
           </div>
           <div class="field flex-1">
             <label class="mini">Height (cm)</label>
             <input id="ibw-h" type="number" placeholder="175">
           </div>
         </div>
-        <div class="row">
-          <button id="ibw-btn" class="btn btn-accent flex-1">Calculate</button>
-        </div>
+        <div class="row"><button id="ibw-btn" class="btn btn-accent flex-1">Calculate</button></div>
         <div id="ibw-res" class="result-text"></div>
       </div>
 
@@ -735,9 +737,8 @@
           <label class="mini">End</label>
           <input id="time-end" type="datetime-local">
         </div>
-        <div class="row">
-          <button id="time-diff" class="btn btn-accent flex-1">Calculate Duration</button>
-        </div>
+        <div class="row"><button id="time-diff" class="btn btn-accent flex-1">Calculate Duration</button></div>
+
         <div class="divider"></div>
         <div class="card-title" style="font-size:0.9rem;">Date Add</div>
         <div class="row">
@@ -745,7 +746,7 @@
             <label class="mini">Days from today</label>
             <input id="date-add-days" type="number" placeholder="45">
           </div>
-          <button id="date-add" class="btn small" style="margin-top:18px">Add Days</button>
+          <button id="date-add" class="btn small" style="margin-top:18px;">Add Days</button>
         </div>
         <div id="time-result" class="result-text"></div>
       </div>
@@ -768,9 +769,7 @@
             <input id="ci-years" type="number" placeholder="5">
           </div>
         </div>
-        <div class="row">
-          <button id="ci-btn" class="btn btn-accent flex-1">Calculate</button>
-        </div>
+        <div class="row"><button id="ci-btn" class="btn btn-accent flex-1">Calculate</button></div>
         <div id="ci-res" class="result-text"></div>
 
         <div class="divider"></div>
@@ -789,9 +788,7 @@
             <input id="sip-years" type="number" placeholder="10">
           </div>
         </div>
-        <div class="row">
-          <button id="sip-btn" class="btn btn-accent flex-1">Calculate SIP</button>
-        </div>
+        <div class="row"><button id="sip-btn" class="btn btn-accent flex-1">Calculate SIP</button></div>
         <div id="sip-res" class="result-text"></div>
       </div>
 
@@ -812,9 +809,7 @@
             </select>
           </div>
         </div>
-        <div class="row">
-          <button id="pw-btn" class="btn btn-accent flex-1">Generate</button>
-        </div>
+        <div class="row"><button id="pw-btn" class="btn btn-accent flex-1">Generate</button></div>
         <div id="pw-res" class="result-text"></div>
 
         <div class="divider"></div>
@@ -848,7 +843,7 @@
             <label class="mini">Hex</label>
             <input id="hex-in" type="text" placeholder="#ff0000">
           </div>
-          <button id="hex-btn" class="btn small" style="margin-top:18px">Convert</button>
+          <button id="hex-btn" class="btn small" style="margin-top:18px;">Convert</button>
         </div>
         <div id="hex-res" class="result-text"></div>
       </div>
@@ -861,9 +856,7 @@
           <label class="mini">Semester grades (comma separated)</label>
           <input id="gpa-in" type="text" placeholder="8.5,9,7.5">
         </div>
-        <div class="row">
-          <button id="gpa-btn" class="btn btn-accent flex-1">Calculate Average</button>
-        </div>
+        <div class="row"><button id="gpa-btn" class="btn btn-accent flex-1">Calculate Average</button></div>
         <div id="gpa-res" class="result-text"></div>
       </div>
     </section>
@@ -877,421 +870,336 @@
 <script>
   const $ = id => document.getElementById(id);
 
-  /* THEME TOGGLE + ACCENT DROPDOWN */
+  /* THEME TOGGLE + ACCENT */
   const bodyEl = document.body;
   $('toggle-theme').addEventListener('click', () => {
     bodyEl.dataset.theme = bodyEl.dataset.theme === 'light' ? 'dark' : 'light';
   });
 
-  function applyAccent(name) {
-    let a1, a2;
-    if (name === 'red') { a1 = '#ef4444'; a2 = '#7f1d1d'; }
-    if (name === 'blue') { a1 = '#0ea5e9'; a2 = '#0369a1'; }
-    if (name === 'green') { a1 = '#10b981'; a2 = '#065f46'; }
-    if (name === 'purple') { a1 = '#8b5cf6'; a2 = '#5b21b6'; }
-    document.documentElement.style.setProperty('--accent', a1);
-    document.documentElement.style.setProperty('--accent-2', a2);
+  function setAccent(which){
+    let a1,a2;
+    if(which==='blue'){a1='#38bdf8';a2='#0ea5e9';}
+    else if(which==='green'){a1='#22c55e';a2='#16a34a';}
+    else if(which==='purple'){a1='#a855f7';a2='#7c3aed';}
+    else {a1='#f97316';a2='#fb923c';}
+    document.documentElement.style.setProperty('--accent',a1);
+    document.documentElement.style.setProperty('--accent-2',a2);
   }
-  applyAccent('red');
-  $('theme-color').addEventListener('change', e => applyAccent(e.target.value));
+  setAccent('orange');
+  $('theme-color').addEventListener('change',e=>setAccent(e.target.value));
 
-  /* BASIC / SCIENTIFIC CALCULATOR */
+  /* CALCULATOR */
   const exprEl = $('calc-expression');
   const resEl = $('calc-result');
+  const calcGrid = $('calc-grid');
   let expression = '';
 
-  function updateDisplay() {
-    exprEl.textContent = expression;
-  }
+  function updateExpr(){exprEl.textContent = expression;}
 
-  function safeEvaluate(exp) {
-    try {
+  function safeEval(exp){
+    try{
       exp = exp.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,Math.PI);
       if(/[^0-9+\-*/(). %eEpiPI]/.test(exp.replace(/sin|cos|tan|sqrt|ln|log|pow/gi,''))) return "Err";
-      exp = exp.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
+      exp = exp.replace(/(\d+(\.\d+)?)%/g,'($1/100)');
       const M = Math;
-      const fn = new Function('Math','sin','cos','tan','sqrt','ln','log','pow','pi',
-        'return (' + exp + ');');
-      const val = fn(M, M.sin, M.cos, M.tan, M.sqrt, x=>Math.log(x), x=>Math.log(x)/Math.LN10, Math.pow, Math.PI);
-      if (typeof val === 'number' && isFinite(val)) {
-        return Math.round(val * 1e10) / 1e10;
-      }
+      const fn = new Function('Math','sin','cos','tan','sqrt','ln','log','pow','pi','return ('+exp+');');
+      const val = fn(M,M.sin,M.cos,M.tan,M.sqrt,x=>Math.log(x),x=>Math.log(x)/Math.LN10,Math.pow,Math.PI);
+      if(typeof val === 'number' && isFinite(val)) return Math.round(val*1e10)/1e10;
       return "Err";
-    } catch (e) {
-      return "Err";
-    }
+    }catch(e){return "Err";}
   }
 
-  const calcGrid = $('calc-grid');
-  function buildBasicButtons() {
-    const labels = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
-    calcGrid.innerHTML = '';
-    labels.forEach(lbl => {
-      const btn = document.createElement('button');
-      btn.className = 'btn';
-      btn.textContent = lbl;
-      btn.addEventListener('click', () => {
-        const map = { '÷':'/', '×':'*', '−':'-' };
+  function buildButtons(){
+    const labels=['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
+    calcGrid.innerHTML='';
+    labels.forEach(lbl=>{
+      const btn=document.createElement('button');
+      btn.className='btn';
+      btn.textContent=lbl;
+      btn.addEventListener('click',()=>{
+        const map={ '÷':'/','×':'*','−':'-' };
         expression += map[lbl] || lbl;
-        updateDisplay();
+        updateExpr();
       });
       calcGrid.appendChild(btn);
     });
   }
-  buildBasicButtons();
+  buildButtons();
 
-  $('calc-equals').addEventListener('click', () => {
-    const res = safeEvaluate(expression || '0');
-    resEl.textContent = res;
+  $('calc-equals').addEventListener('click',()=>{
+    const out = safeEval(expression || '0');
+    resEl.textContent = out;
   });
-  $('calc-clear').addEventListener('click', () => {
-    expression = '';
-    updateDisplay();
-    resEl.textContent = '0';
+  $('calc-clear').addEventListener('click',()=>{
+    expression='';updateExpr();resEl.textContent='0';
   });
-  $('calc-back').addEventListener('click', () => {
-    expression = expression.slice(0,-1);
-    updateDisplay();
+  $('calc-back').addEventListener('click',()=>{
+    expression=expression.slice(0,-1);updateExpr();
   });
-  $('calc-copy').addEventListener('click', () => {
-    navigator.clipboard.writeText(resEl.textContent || '');
-    alert('Result copied!');
+  $('calc-copy').addEventListener('click',()=>{
+    navigator.clipboard.writeText(resEl.textContent||'');alert('Result copied');
   });
 
-  document.addEventListener('keydown', e => {
-    if (/[\d+\-*/().%]/.test(e.key)) {
-      expression += e.key;
-      updateDisplay();
-    } else if (e.key === 'Enter') {
-      $('calc-equals').click();
-    } else if (e.key === 'Backspace') {
-      $('calc-back').click();
-    } else if (e.key === 'Escape') {
-      $('calc-clear').click();
-    }
+  document.addEventListener('keydown',e=>{
+    if(/[\d+\-*/().%]/.test(e.key)){expression+=e.key;updateExpr();}
+    else if(e.key==='Enter'){ $('calc-equals').click(); }
+    else if(e.key==='Backspace'){ $('calc-back').click(); }
+    else if(e.key==='Escape'){ $('calc-clear').click(); }
   });
 
-  // scientific toggle
-  $('sc-toggle').addEventListener('change', e => {
-    $('sci-keys').style.display = e.target.checked ? 'flex' : 'none';
+  /* SCI SWITCH */
+  const sciSwitch = $('sc-switch');
+  sciSwitch.addEventListener('click',()=>{
+    const on = sciSwitch.classList.toggle('on');
+    sciSwitch.setAttribute('aria-pressed',on?'true':'false');
+    $('sci-keys').style.display = on ? 'flex' : 'none';
   });
-  document.querySelectorAll('#sci-keys .btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const fn = btn.dataset.fn;
-      if (fn === 'pi') expression += 'π';
-      else if (fn === 'pow') expression += '**';
-      else if (fn === 'sqrt') expression += 'sqrt(';
-      else expression += fn + '(';
-      updateDisplay();
+  document.querySelectorAll('#sci-keys .btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const fn=btn.dataset.fn;
+      if(fn==='pi') expression+='π';
+      else if(fn==='pow') expression+='**';
+      else if(fn==='sqrt') expression+='sqrt(';
+      else expression+=fn+'(';
+      updateExpr();
     });
   });
 
-  /* AGE CALCULATOR */
-  $('age-btn').addEventListener('click', () => {
-    const dobVal = $('dob-input').value;
-    const res = $('age-result');
-    const err = $('age-error');
-    res.textContent = '';
-    err.textContent = '';
-    if (!dobVal) {
-      err.textContent = 'Please select your date of birth.';
-      return;
-    }
-    const dob = new Date(dobVal + 'T00:00:00');
-    const today = new Date();
-    if (dob > today) {
-      err.textContent = 'Birth date is in the future.';
-      return;
-    }
-    let y = today.getFullYear() - dob.getFullYear();
-    let m = today.getMonth() - dob.getMonth();
-    let d = today.getDate() - dob.getDate();
-    if (d < 0) {
-      const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-      d += prevMonth.getDate();
-      m--;
-    }
-    if (m < 0) {
-      m += 12;
-      y--;
-    }
-    res.textContent = `You are ${y} years, ${m} months and ${d} days old.`;
+  /* AGE */
+  $('age-btn').addEventListener('click',()=>{
+    const dobVal=$('dob-input').value;
+    const res=$('age-result'),err=$('age-error');
+    res.textContent='';err.textContent='';
+    if(!dobVal){err.textContent='Please select your date of birth.';return;}
+    const dob=new Date(dobVal+'T00:00:00'), today=new Date();
+    if(dob>today){err.textContent='Birth date is in the future.';return;}
+    let y=today.getFullYear()-dob.getFullYear();
+    let m=today.getMonth()-dob.getMonth();
+    let d=today.getDate()-dob.getDate();
+    if(d<0){const pm=new Date(today.getFullYear(),today.getMonth(),0);d+=pm.getDate();m--;}
+    if(m<0){m+=12;y--;}
+    res.textContent=`You are ${y} years, ${m} months and ${d} days old.`;
   });
 
-  /* CURRENCY CONVERTER (Frankfurter) */
-  $('cur-swap').addEventListener('click', () => {
-    const f = $('cur-from'); const t = $('cur-to');
-    const tmp = f.value; f.value = t.value; t.value = tmp;
+  /* CURRENCY */
+  $('cur-swap').addEventListener('click',()=>{
+    const f=$('cur-from'),t=$('cur-to'); const tmp=f.value;f.value=t.value;t.value=tmp;
+  });
+  $('cur-btn').addEventListener('click',async()=>{
+    const amt=parseFloat($('cur-amt').value)||1;
+    const from=$('cur-from').value,to=$('cur-to').value;
+    const res=$('cur-res'),meta=$('cur-meta');
+    res.textContent='Loading...';meta.textContent='';
+    if(from===to){res.textContent=`${amt} ${from} = ${amt} ${to}`;return;}
+    try{
+      const url=`https://api.frankfurter.app/latest?amount=${amt}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+      const r=await fetch(url);const j=await r.json();
+      const val=j.rates && j.rates[to];
+      res.textContent=`${amt} ${from} = ${val.toFixed(4)} ${to}`;
+      meta.textContent=`Base: ${j.base} · Date: ${j.date}`;
+    }catch(e){res.textContent='Could not fetch rates.';}
   });
 
-  $('cur-btn').addEventListener('click', async () => {
-    const amt = parseFloat($('cur-amt').value) || 1;
-    const from = $('cur-from').value;
-    const to = $('cur-to').value;
-    const res = $('cur-res');
-    const meta = $('cur-meta');
-    res.textContent = 'Loading...';
-    meta.textContent = '';
-    if (from === to) {
-      res.textContent = `${amt} ${from} = ${amt} ${to}`;
-      return;
-    }
-    try {
-      const url = `https://api.frankfurter.app/latest?amount=${amt}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
-      const r = await fetch(url);
-      const j = await r.json();
-      const val = j.rates && j.rates[to];
-      res.textContent = `${amt} ${from} = ${val.toFixed(4)} ${to}`;
-      meta.textContent = `Base: ${j.base} · Date: ${j.date}`;
-    } catch (e) {
-      res.textContent = 'Could not fetch rates.';
-    }
-  });
-
-  /* QR GENERATOR */
-  $('qr-btn').addEventListener('click', () => {
-    const txt = encodeURIComponent($('qr-text').value || '');
-    const url = `https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${txt}`;
-    $('qr-link').href = url;
-    $('qr-link').textContent = 'Open QR';
+  /* QR – fix to api.qrserver.com */
+  $('qr-btn').addEventListener('click',()=>{
+    const txt=encodeURIComponent($('qr-text').value||'');
+    const url=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${txt}`;
+    $('qr-link').href=url;
+    $('qr-link').textContent='Open QR';
   });
 
   /* TAB PANELS */
-  document.querySelectorAll('.chip-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const panelId = btn.dataset.panel;
-      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.chip-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const id=btn.dataset.panel;
+      document.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      $(panelId).classList.add('active');
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      $(id).classList.add('active');
     });
   });
 
   /* EMI */
-  $('emi-calc').addEventListener('click', () => {
-    const P = parseFloat($('emi-principal').value) || 0;
-    const r = (parseFloat($('emi-rate').value) || 0)/100/12;
-    const n = (parseFloat($('emi-years').value) || 0)*12;
-    const out = $('emi-result');
-    if (!P || !n) { out.textContent = 'Enter principal and tenure'; return; }
-    const emi = (P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    if (!isFinite(emi)) { out.textContent = 'Check inputs'; return; }
-    const total = emi*n, interest = total-P;
-    out.textContent = `EMI: ${emi.toFixed(2)} · Total: ${total.toFixed(2)} · Interest: ${interest.toFixed(2)}`;
+  $('emi-calc').addEventListener('click',()=>{
+    const P=parseFloat($('emi-principal').value)||0;
+    const r=(parseFloat($('emi-rate').value)||0)/100/12;
+    const n=(parseFloat($('emi-years').value)||0)*12;
+    const out=$('emi-result');
+    if(!P||!n){out.textContent='Enter principal and tenure.';return;}
+    const emi=(P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+    if(!isFinite(emi)){out.textContent='Check inputs.';return;}
+    const total=emi*n,interest=total-P;
+    out.textContent=`EMI: ${emi.toFixed(2)} · Total: ${total.toFixed(2)} · Interest: ${interest.toFixed(2)}`;
   });
-  $('emi-reset').addEventListener('click', () => {
-    $('emi-principal').value=''; $('emi-rate').value=''; $('emi-years').value=''; $('emi-result').textContent='';
+  $('emi-reset').addEventListener('click',()=>{
+    $('emi-principal').value='';$('emi-rate').value='';$('emi-years').value='';$('emi-result').textContent='';
   });
 
   /* PERCENTAGE */
-  $('pct-calc').addEventListener('click', () => {
-    const amt = parseFloat($('pct-amount').value)||0;
-    const p = parseFloat($('pct-percent').value)||0;
-    const change = amt*p/100;
-    const after = amt - change;
-    $('pct-result').textContent = `${p}% of ${amt} = ${change.toFixed(2)} · After discount: ${after.toFixed(2)}`;
+  $('pct-calc').addEventListener('click',()=>{
+    const amt=parseFloat($('pct-amount').value)||0;
+    const p=parseFloat($('pct-percent').value)||0;
+    const change=amt*p/100,after=amt-change;
+    $('pct-result').textContent=`${p}% of ${amt} = ${change.toFixed(2)} · After discount: ${after.toFixed(2)}`;
   });
 
-  /* LENGTH / WEIGHT / TEMP / UNIT / DATA */
-  function toMeters(v,u){
-    if(u==='m') return v;
-    if(u==='cm') return v/100;
-    if(u==='ft') return v*0.3048;
-    if(u==='in') return v*0.0254;
-    return NaN;
-  }
-  function fromMeters(m,u){
-    if(u==='m') return m;
-    if(u==='cm') return m*100;
-    if(u==='ft') return m/0.3048;
-    if(u==='in') return m/0.0254;
-    return NaN;
-  }
-  $('len-btn').addEventListener('click', () => {
-    const v = parseFloat($('len-val').value);
-    if (isNaN(v)) { $('len-res').textContent='Enter value'; return; }
-    const f = $('len-from').value, t = $('len-to').value;
-    const m = toMeters(v,f);
-    const out = fromMeters(m,t);
-    $('len-res').textContent = `${v} ${f} = ${out.toFixed(4)} ${t}`;
+  /* CONVERTERS */
+  function toMeters(v,u){ if(u==='m')return v; if(u==='cm')return v/100; if(u==='ft')return v*0.3048; if(u==='in')return v*0.0254; return NaN;}
+  function fromMeters(m,u){ if(u==='m')return m; if(u==='cm')return m*100; if(u==='ft')return m/0.3048; if(u==='in')return m/0.0254; return NaN;}
+  $('len-btn').addEventListener('click',()=>{
+    const v=parseFloat($('len-val').value); if(isNaN(v)){ $('len-res').textContent='Enter value';return;}
+    const f=$('len-from').value,t=$('len-to').value;
+    const out=fromMeters(toMeters(v,f),t);
+    $('len-res').textContent=`${v} ${f} = ${out.toFixed(4)} ${t}`;
   });
-
-  $('wt-btn').addEventListener('click', () => {
-    const v=parseFloat($('wt-val').value);
-    if(isNaN(v)){ $('wt-res').textContent='Enter value'; return;}
-    const f=$('wt-from').value, t=$('wt-to').value;
+  $('wt-btn').addEventListener('click',()=>{
+    const v=parseFloat($('wt-val').value); if(isNaN(v)){ $('wt-res').textContent='Enter value';return;}
+    const f=$('wt-from').value,t=$('wt-to').value;
     let out=v;
     if(f==='kg'&&t==='lb') out=v*2.2046226218;
     else if(f==='lb'&&t==='kg') out=v/2.2046226218;
-    $('wt-res').textContent = `${v} ${f} = ${out.toFixed(4)} ${t}`;
+    $('wt-res').textContent=`${v} ${f} = ${out.toFixed(4)} ${t}`;
   });
-
-  $('tmp-btn').addEventListener('click', () => {
-    const v=parseFloat($('tmp-val').value);
-    if(isNaN(v)){ $('tmp-res').textContent='Enter value'; return;}
-    const f=$('tmp-from').value, t=$('tmp-to').value;
-    let out=v;
+  $('tmp-btn').addEventListener('click',()=>{
+    const v=parseFloat($('tmp-val').value); if(isNaN(v)){ $('tmp-res').textContent='Enter value';return;}
+    const f=$('tmp-from').value,t=$('tmp-to').value; let out=v;
     if(f==='C'&&t==='F') out=v*9/5+32;
     else if(f==='F'&&t==='C') out=(v-32)*5/9;
-    $('tmp-res').textContent = `${v}°${f} = ${out.toFixed(2)}°${t}`;
+    $('tmp-res').textContent=`${v}°${f} = ${out.toFixed(2)}°${t}`;
   });
 
-  const unitsMap = {
-    speed: { list:['km/h','mph'], convert:(v,f,t)=> f===t? v : (f==='km/h'? v*0.621371 : v/0.621371)},
-    area:  { list:['m²','ft²'], convert:(v,f,t)=> f===t? v : (f==='m²'? v*10.7639 : v/10.7639)},
-    volume:{ list:['L','gal'], convert:(v,f,t)=> f===t? v : (f==='L'? v*0.264172 : v/0.264172)}
+  const units={
+    speed:{list:['km/h','mph'],convert:(v,f,t)=>f===t?v:(f==='km/h'?v*0.621371:v/0.621371)},
+    area:{list:['m²','ft²'],convert:(v,f,t)=>f===t?v:(f==='m²'?v*10.7639:v/10.7639)},
+    volume:{list:['L','gal'],convert:(v,f,t)=>f===t?v:(f==='L'?v*0.264172:v/0.264172)}
   };
-  function rebuildU() {
-    const t = $('u-type').value;
-    const from = $('u-from'), to = $('u-to');
-    from.innerHTML=''; to.innerHTML='';
-    unitsMap[t].list.forEach(u=>{
-      const o1=document.createElement('option'); o1.value=u; o1.textContent=u; from.appendChild(o1);
-      const o2=document.createElement('option'); o2.value=u; o2.textContent=u; to.appendChild(o2);
+  function rebuildUnits(){
+    const t=$('u-type').value,from=$('u-from'),to=$('u-to');
+    from.innerHTML='';to.innerHTML='';
+    units[t].list.forEach(u=>{
+      const o1=document.createElement('option');o1.value=u;o1.textContent=u;from.appendChild(o1);
+      const o2=document.createElement('option');o2.value=u;o2.textContent=u;to.appendChild(o2);
     });
   }
-  $('u-type').addEventListener('change', rebuildU);
-  rebuildU();
-  $('u-btn').addEventListener('click', () => {
-    const v=parseFloat($('u-val').value);
-    if(isNaN(v)){ $('u-res').textContent='Enter value'; return; }
-    const t=$('u-type').value, f=$('u-from').value, to=$('u-to').value;
-    const out = unitsMap[t].convert(v,f,to);
-    $('u-res').textContent = `${v} ${f} = ${out.toFixed(4)} ${to}`;
+  $('u-type').addEventListener('change',rebuildUnits);
+  rebuildUnits();
+  $('u-btn').addEventListener('click',()=>{
+    const v=parseFloat($('u-val').value); if(isNaN(v)){ $('u-res').textContent='Enter value';return;}
+    const t=$('u-type').value,f=$('u-from').value,to=$('u-to').value;
+    const out=units[t].convert(v,f,to);
+    $('u-res').textContent=`${v} ${f} = ${out.toFixed(4)} ${to}`;
   });
 
-  $('d-btn').addEventListener('click', () => {
+  $('d-btn').addEventListener('click',()=>{
     const v=parseFloat($('dval').value)||0;
-    const from=$('dunit').value, to=$('dunit-to').value;
+    const from=$('dunit').value,to=$('dunit-to').value;
     const baseMB = from==='KB'? v/1024 : from==='MB'? v : v*1024;
     const out = to==='KB'? baseMB*1024 : to==='MB'? baseMB : baseMB/1024;
-    $('d-res').textContent = `${v} ${from} = ${out.toFixed(4)} ${to}`;
+    $('d-res').textContent=`${v} ${from} = ${out.toFixed(4)} ${to}`;
   });
 
-  /* BMI / BODY FAT / IBW */
-  $('bmi-btn').addEventListener('click', () => {
-    const w=parseFloat($('bmi-w').value), h=parseFloat($('bmi-h').value);
-    if(!w||!h){ $('bmi-res').textContent='Enter weight & height'; return;}
-    const bmi = w/Math.pow(h/100,2);
-    let cat='';
-    if(bmi<18.5) cat='Underweight';
-    else if(bmi<25) cat='Normal';
-    else if(bmi<30) cat='Overweight';
-    else cat='Obese';
-    $('bmi-res').textContent = `BMI: ${bmi.toFixed(1)} · ${cat}`;
+  /* HEALTH */
+  $('bmi-btn').addEventListener('click',()=>{
+    const w=parseFloat($('bmi-w').value),h=parseFloat($('bmi-h').value);
+    if(!w||!h){ $('bmi-res').textContent='Enter weight & height';return;}
+    const bmi=w/Math.pow(h/100,2);
+    let cat=bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
+    $('bmi-res').textContent=`BMI: ${bmi.toFixed(1)} · ${cat}`;
   });
-
-  $('bf-btn').addEventListener('click', () => {
-    const w=parseFloat($('bmi-w').value), h=parseFloat($('bmi-h').value);
-    if(!w||!h){ $('bmi-res').textContent='Enter weight & height'; return;}
-    const bmi = w/Math.pow(h/100,2);
-    const bf = 1.20*bmi + 0.23*30 - 16.2; // simple illustrative formula
-    $('bmi-res').textContent += ` · Est. body fat: ${bf.toFixed(1)}% (approx)`;
+  $('bf-btn').addEventListener('click',()=>{
+    const w=parseFloat($('bmi-w').value),h=parseFloat($('bmi-h').value);
+    if(!w||!h){ $('bmi-res').textContent='Enter weight & height';return;}
+    const bmi=w/Math.pow(h/100,2);
+    const bf=1.20*bmi+0.23*30-16.2;
+    $('bmi-res').textContent+=` · Est. body fat: ${bf.toFixed(1)}% (approx)`;
   });
-
-  $('ibw-btn').addEventListener('click', () => {
-    const g=$('ibw-g').value, h=parseFloat($('ibw-h').value);
-    if(!h){ $('ibw-res').textContent='Enter height'; return;}
-    const inches = h/2.54;
-    let ibw = g==='male' ? 50 + 2.3*(inches-60) : 45.5 + 2.3*(inches-60);
-    $('ibw-res').textContent = `Ideal weight (Devine): ${ibw.toFixed(1)} kg`;
+  $('ibw-btn').addEventListener('click',()=>{
+    const g=$('ibw-g').value,h=parseFloat($('ibw-h').value);
+    if(!h){ $('ibw-res').textContent='Enter height';return;}
+    const inches=h/2.54;
+    const ibw=g==='male'?50+2.3*(inches-60):45.5+2.3*(inches-60);
+    $('ibw-res').textContent=`Ideal weight (Devine): ${ibw.toFixed(1)} kg`;
   });
 
   /* TIME & DATE */
-  $('time-diff').addEventListener('click', () => {
-    const s = new Date($('time-start').value);
-    const e = new Date($('time-end').value);
-    if(isNaN(s)||isNaN(e)){ $('time-result').textContent='Pick both datetimes'; return;}
-    let diff = Math.abs(e-s);
-    const days = Math.floor(diff/(1000*60*60*24));
-    diff -= days*1000*60*60*24;
-    const hours = Math.floor(diff/(1000*60*60));
-    diff -= hours*1000*60*60;
-    const mins = Math.floor(diff/(1000*60));
-    $('time-result').textContent = `${days} days, ${hours} hours, ${mins} minutes`;
+  $('time-diff').addEventListener('click',()=>{
+    const s=new Date($('time-start').value),e=new Date($('time-end').value);
+    if(isNaN(s)||isNaN(e)){ $('time-result').textContent='Pick both datetimes';return;}
+    let diff=Math.abs(e-s);
+    const d=Math.floor(diff/(1000*60*60*24)); diff-=d*1000*60*60*24;
+    const h=Math.floor(diff/(1000*60*60)); diff-=h*1000*60*60;
+    const m=Math.floor(diff/(1000*60));
+    $('time-result').textContent=`${d} days, ${h} hours, ${m} minutes`;
   });
-  $('date-add').addEventListener('click', () => {
-    const days = parseInt($('date-add-days').value)||0;
-    const d = new Date();
-    d.setDate(d.getDate()+days);
-    $('time-result').textContent = `Date after ${days} days: ${d.toISOString().slice(0,10)}`;
+  $('date-add').addEventListener('click',()=>{
+    const days=parseInt($('date-add-days').value)||0;
+    const d=new Date(); d.setDate(d.getDate()+days);
+    $('time-result').textContent=`Date after ${days} days: ${d.toISOString().slice(0,10)}`;
   });
 
   /* INVESTMENTS */
-  $('ci-btn').addEventListener('click', () => {
+  $('ci-btn').addEventListener('click',()=>{
     const P=parseFloat($('ci-pr').value)||0;
     const r=parseFloat($('ci-rate').value)||0;
     const t=parseFloat($('ci-years').value)||0;
-    const A = P*Math.pow(1+r/100,t);
-    $('ci-res').textContent = `Future value: ${A.toFixed(2)} · Interest: ${(A-P).toFixed(2)}`;
+    const A=P*Math.pow(1+r/100,t);
+    $('ci-res').textContent=`Future value: ${A.toFixed(2)} · Interest: ${(A-P).toFixed(2)}`;
   });
-
-  $('sip-btn').addEventListener('click', () => {
+  $('sip-btn').addEventListener('click',()=>{
     const m=parseFloat($('sip-amt').value)||0;
     const r=parseFloat($('sip-rate').value)||0;
     const years=parseFloat($('sip-years').value)||0;
     const n=years*12;
     const i=r/100/12;
-    const fv = m * ((Math.pow(1+i,n)-1)/i)*(1+i);
-    $('sip-res').textContent = `SIP value after ${years} years: ${fv.toFixed(2)}`;
+    const fv=m*((Math.pow(1+i,n)-1)/i)*(1+i);
+    $('sip-res').textContent=`SIP value after ${years} years: ${fv.toFixed(2)}`;
   });
 
-  /* PASSWORD / RANDOM / TEXT / COLOR */
-  $('pw-btn').addEventListener('click', () => {
+  /* TEXT & RANDOM */
+  $('pw-btn').addEventListener('click',()=>{
     const len=parseInt($('pw-len').value)||12;
     const mode=$('pw-chars').value;
-    const lower='abcdefghijklmnopqrstuvwxyz';
-    const upper=lower.toUpperCase();
-    const digits='0123456789';
-    const sym='!@#$%^&*()-_=+[]{};:,.<>/?';
-    let chars=lower+upper+digits;
-    if(mode==='alnumsym') chars+=sym;
-    let out='';
-    for(let i=0;i<len;i++) out+=chars.charAt(Math.floor(Math.random()*chars.length));
-    $('pw-res').textContent = out;
+    const lower='abcdefghijklmnopqrstuvwxyz', upper=lower.toUpperCase();
+    const digits='0123456789', sym='!@#$%^&*()-_=+[]{};:,.<>/?';
+    let chars=lower+upper+digits; if(mode==='alnumsym') chars+=sym;
+    let out=''; for(let i=0;i<len;i++) out+=chars.charAt(Math.floor(Math.random()*chars.length));
+    $('pw-res').textContent=out;
   });
-
-  $('pick-btn').addEventListener('click', () => {
+  $('pick-btn').addEventListener('click',()=>{
     const list=($('pick-list').value||'').split(',').map(s=>s.trim()).filter(Boolean);
-    if(!list.length){ $('pick-res').textContent='Enter some items'; return;}
+    if(!list.length){ $('pick-res').textContent='Enter some items';return;}
     const pick=list[Math.floor(Math.random()*list.length)];
-    $('pick-res').textContent = `Picked: ${pick}`;
+    $('pick-res').textContent=`Picked: ${pick}`;
   });
-  $('shuffle-btn').addEventListener('click', () => {
+  $('shuffle-btn').addEventListener('click',()=>{
     const list=($('pick-list').value||'').split(',').map(s=>s.trim()).filter(Boolean);
-    for(let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
-    $('pick-res').textContent = `Shuffled: ${list.join(', ')}`;
+    for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[list[i],list[j]]=[list[j],list[i]];}
+    $('pick-res').textContent=`Shuffled: ${list.join(', ')}`;
   });
-
-  $('count-btn').addEventListener('click', () => {
+  $('count-btn').addEventListener('click',()=>{
     const txt=$('t-in').value||'';
-    const words = txt.trim()? txt.trim().split(/\s+/).length : 0;
-    $('t-res').textContent = `Words: ${words} · Characters: ${txt.length}`;
+    const words=txt.trim()?txt.trim().split(/\s+/).length:0;
+    $('t-res').textContent=`Words: ${words} · Characters: ${txt.length}`;
   });
-  $('case-btn').addEventListener('click', () => {
+  $('case-btn').addEventListener('click',()=>{
     const txt=$('t-in').value||'';
-    $('t-res').textContent = txt.replace(/\w\S*/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());
+    $('t-res').textContent=txt.replace(/\w\S*/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());
   });
-
   function hexToRgb(hex){
-    hex=hex.replace('#','');
-    if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
-    const num=parseInt(hex,16);
-    return {r:(num>>16)&255,g:(num>>8)&255,b:num&255};
+    hex=hex.replace('#',''); if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');
+    const num=parseInt(hex,16); return{r:(num>>16)&255,g:(num>>8)&255,b:num&255};
   }
-  $('hex-btn').addEventListener('click', () => {
-    try{
-      const rgb=hexToRgb($('hex-in').value.trim());
-      $('hex-res').textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-    }catch(e){ $('hex-res').textContent='Invalid hex'; }
+  $('hex-btn').addEventListener('click',()=>{
+    try{const rgb=hexToRgb($('hex-in').value.trim());$('hex-res').textContent=`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;}
+    catch(e){$('hex-res').textContent='Invalid hex';}
   });
 
   /* GPA */
-  $('gpa-btn').addEventListener('click', () => {
-    const list=($('gpa-in').value||'').split(',').map(x=>parseFloat(x)).filter(x=>!isNaN(x));
-    if(!list.length){ $('gpa-res').textContent='Enter some grades'; return;}
-    const avg=list.reduce((a,b)=>a+b,0)/list.length;
-    $('gpa-res').textContent = `Average GPA: ${avg.toFixed(2)}`;
+  $('gpa-btn').addEventListener('click',()=>{
+    const nums=($('gpa-in').value||'').split(',').map(x=>parseFloat(x)).filter(x=>!isNaN(x));
+    if(!nums.length){$('gpa-res').textContent='Enter some grades';return;}
+    const avg=nums.reduce((a,b)=>a+b,0)/nums.length;
+    $('gpa-res').textContent=`Average GPA: ${avg.toFixed(2)}`;
   });
 </script>
 </body>
