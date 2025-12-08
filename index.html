@@ -24,7 +24,6 @@
     --border: #333333;
     --shadow: 0 4px 12px rgba(0,0,0,0.5);
     
-    /* Dropdown specific */
     --dd-bg: #1c1c1c;
     --dd-hover: #333333;
   }
@@ -75,6 +74,7 @@
     flex-direction: column;
     gap: 20px;
     position: relative;
+    padding-bottom: 40px;
   }
 
   /* HEADER */
@@ -163,7 +163,6 @@
   }
 
   /* --- CUSTOM DROPDOWN STYLES --- */
-  /* Hide native select */
   select { display: none; } 
 
   .custom-dropdown {
@@ -177,26 +176,32 @@
     color: var(--text);
     border: 1px solid var(--border);
     padding: 10px 12px;
+    padding-right: 35px; /* Space for arrow */
     border-radius: 14px;
     cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: 0.2s;
     min-width: 90px;
+    position: relative;
   }
-  /* Arrow Icon */
+  /* Fixed Arrow Position */
   .dropdown-trigger::after {
     content: '';
-    width: 10px;
-    height: 10px;
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
     border-right: 2px solid var(--muted);
     border-bottom: 2px solid var(--muted);
-    transform: rotate(45deg) translate(-2px, -2px);
+    transform: translateY(-70%) rotate(45deg);
     transition: 0.2s;
   }
   .custom-dropdown.active .dropdown-trigger::after {
-    transform: rotate(-135deg) translate(-2px, -2px);
+    transform: translateY(-30%) rotate(-135deg);
     border-color: var(--accent);
   }
   
@@ -206,7 +211,7 @@
     left: 0;
     width: 100%;
     min-width: 120px;
-    background: var(--card-bg); /* Match card bg or specific dropdown bg */
+    background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 14px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
@@ -218,7 +223,6 @@
     padding: 6px;
     animation: fadeIn 0.15s ease-out;
   }
-  /* Right align for the theme dropdown */
   .theme-block .dropdown-menu {
     left: auto;
     right: 0;
@@ -247,7 +251,7 @@
     background: rgba(128,128,128,0.1);
   }
   
-  /* --- CALCULATOR SPECIFIC --- */
+  /* --- CALCULATOR --- */
   .sc-switch{
     position: relative;
     width: 60px;
@@ -320,11 +324,10 @@
   }
   .btn:active{ transform: scale(0.96); }
   
-  /* Accent Buttons - Slimmer Height */
   .btn-accent{
     background: var(--accent);
     color: var(--accent-text);
-    padding: 8px 0; /* Slimmer */
+    padding: 8px 0; 
     font-size: 1rem; 
   }
   
@@ -375,25 +378,26 @@
 
   .divider{ height: 1px; background: var(--border); margin: 16px 0; }
 
-  /* QR Result Area */
+  /* QR Result Area - Compact by default */
   .qr-container {
-    margin-top: 15px;
-    display: flex;
+    margin-top: 0;
+    display: none; /* Hidden by default to save space */
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 20px;
+    padding-top: 15px;
+  }
+  .qr-container.show {
+    display: flex;
   }
   .qr-img {
     border-radius: 8px;
     border: 4px solid #fff;
     max-width: 180px;
-    display: none;
   }
   .loading-txt {
     font-size: 0.8rem;
     color: var(--accent);
-    display: none;
     margin-bottom: 10px;
   }
 
@@ -405,7 +409,7 @@
     cursor: pointer;
   }
 
-  /* Footer & Heartbeat */
+  /* Footer */
   footer{
     text-align: center;
     padding: 20px 0;
@@ -553,9 +557,9 @@
       </div>
       <button id="qr-btn" class="btn btn-accent" style="width:100%">Generate</button>
       
-      <div class="qr-container">
+      <div id="qr-container" class="qr-container">
         <div id="qr-loading" class="loading-txt">Generating QR Code...</div>
-        <img id="qr-image" class="qr-img" alt="QR Code" />
+        <img id="qr-image" class="qr-img" alt="QR Code" style="display:none;" />
         <a id="qr-download" class="link-btn" style="display:none; margin-top:10px;">Download Image</a>
       </div>
     </section>
@@ -683,48 +687,42 @@
   const $ = id => document.getElementById(id);
 
   /* --- INITIALIZE CUSTOM DROPDOWNS --- */
-  function initCustomDropdowns() {
-    const selects = document.querySelectorAll('select');
+  function initCustomDropdowns(scope = document) {
+    const selects = scope.querySelectorAll('select:not([data-customized])');
     
     selects.forEach(select => {
-      // Create Custom UI
+      select.setAttribute('data-customized', 'true'); // Prevent double init
+      
       const wrapper = document.createElement('div');
       wrapper.className = 'custom-dropdown';
       
       const trigger = document.createElement('div');
       trigger.className = 'dropdown-trigger';
-      trigger.textContent = select.options[select.selectedIndex].text;
+      trigger.textContent = select.options[select.selectedIndex]?.text || '';
       
       const menu = document.createElement('div');
       menu.className = 'dropdown-menu';
       
-      // Populate Options
+      // Populate
       Array.from(select.options).forEach(opt => {
         const item = document.createElement('div');
         item.className = 'dropdown-item';
         if(opt.selected) item.classList.add('selected');
         item.textContent = opt.text;
-        item.dataset.value = opt.value;
-        
         item.onclick = (e) => {
           e.stopPropagation();
-          // Update visual
           trigger.textContent = opt.text;
           wrapper.classList.remove('active');
           menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
           item.classList.add('selected');
-          
-          // Update Native Select
           select.value = opt.value;
-          select.dispatchEvent(new Event('change')); // Trigger logic
+          select.dispatchEvent(new Event('change'));
         };
         menu.appendChild(item);
       });
       
-      // Toggle Logic
       trigger.onclick = (e) => {
         e.stopPropagation();
-        // Close others
         document.querySelectorAll('.custom-dropdown').forEach(d => {
           if(d !== wrapper) d.classList.remove('active');
         });
@@ -736,31 +734,27 @@
       select.parentNode.insertBefore(wrapper, select.nextSibling);
     });
     
-    // Close when clicking outside
     document.addEventListener('click', () => {
       document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active'));
     });
   }
 
-  /* --- THEME LOGIC --- */
+  /* --- THEME LOGIC (Fixed for Light Mode) --- */
   function updateThemeColors(themeName) {
     const root = document.documentElement;
     const isLight = document.body.dataset.theme === 'light';
     let accent, accentText;
 
-    // Force color even in light mode
-    if (themeName === 'orange') {
-      accent = '#f97316'; accentText = '#000000';
-    } else if (themeName === 'blue') {
-      accent = '#3b82f6'; accentText = '#ffffff';
-    } else if (themeName === 'green') {
-      accent = '#22c55e'; accentText = '#000000';
-    } else if (themeName === 'purple') {
-      accent = '#a855f7'; accentText = '#ffffff';
+    if (themeName !== 'mono') {
+        // If color selected, FORCE it even in light mode
+        if(themeName === 'orange') { accent = '#f97316'; accentText = '#000000'; }
+        else if(themeName === 'blue') { accent = '#3b82f6'; accentText = '#ffffff'; }
+        else if(themeName === 'green') { accent = '#22c55e'; accentText = '#000000'; }
+        else if(themeName === 'purple') { accent = '#a855f7'; accentText = '#ffffff'; }
     } else {
-      // Mono / Default
-      accent = isLight ? '#000000' : '#ffffff';
-      accentText = isLight ? '#ffffff' : '#000000';
+        // Mono follows mode
+        accent = isLight ? '#000000' : '#ffffff';
+        accentText = isLight ? '#ffffff' : '#000000';
     }
 
     root.style.setProperty('--accent', accent);
@@ -769,9 +763,7 @@
 
   $('toggle-theme').addEventListener('click', () => {
     const body = document.body;
-    const current = body.dataset.theme;
-    const next = current === 'light' ? 'dark' : 'light';
-    body.dataset.theme = next;
+    body.dataset.theme = body.dataset.theme === 'light' ? 'dark' : 'light';
     updateThemeColors($('theme-color').value);
   });
 
@@ -779,195 +771,7 @@
     updateThemeColors(e.target.value);
   });
 
-  /* --- UNIT CONVERTER HELPER (Re-renders dropdowns dynamically) --- */
-  // We need to re-initialize custom dropdowns when "Type" changes
-  function refreshUnitDropdowns() {
-    // Remove old custom wrappers for From/To
-    const oldWrappers = $('u-from').parentNode.querySelectorAll('.custom-dropdown');
-    oldWrappers.forEach(w => w.remove());
-    const oldWrappersTo = $('u-to').parentNode.querySelectorAll('.custom-dropdown');
-    oldWrappersTo.forEach(w => w.remove());
-    
-    // Create new ones manually for just these two
-    initCustomDropdownFor($('u-from'));
-    initCustomDropdownFor($('u-to'));
-  }
-  
-  function initCustomDropdownFor(select) {
-     const wrapper = document.createElement('div');
-      wrapper.className = 'custom-dropdown';
-      const trigger = document.createElement('div');
-      trigger.className = 'dropdown-trigger';
-      trigger.textContent = select.options[select.selectedIndex]?.text || '';
-      const menu = document.createElement('div');
-      menu.className = 'dropdown-menu';
-      Array.from(select.options).forEach(opt => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item';
-        if(opt.selected) item.classList.add('selected');
-        item.textContent = opt.text;
-        item.onclick = (e) => {
-          e.stopPropagation();
-          trigger.textContent = opt.text;
-          wrapper.classList.remove('active');
-          select.value = opt.value;
-          select.dispatchEvent(new Event('change'));
-        };
-        menu.appendChild(item);
-      });
-      trigger.onclick = (e) => {
-        e.stopPropagation();
-        document.querySelectorAll('.custom-dropdown').forEach(d => {
-            if(d !== wrapper) d.classList.remove('active');
-        });
-        wrapper.classList.toggle('active');
-      };
-      wrapper.appendChild(trigger);
-      wrapper.appendChild(menu);
-      select.parentNode.insertBefore(wrapper, select.nextSibling);
-  }
-
-
-  /* --- CALCULATOR LOGIC --- */
-  let expression = '';
-  const resEl = $('calc-result');
-  const exprEl = $('calc-expression');
-  
-  function updateDisplay(){ exprEl.textContent = expression; }
-  
-  function calculate() {
-    try {
-      let safe = expression.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,Math.PI);
-      if(/[^0-9+\-*/(). %eE]/.test(safe.replace(/sin|cos|tan|sqrt|ln|log|pow/g,''))) throw "Inv";
-      const val = new Function('Math', 'return ' + safe)(Math);
-      if(!isFinite(val) || isNaN(val)) throw "Err";
-      resEl.textContent = Number(val.toFixed(8));
-    } catch(e) { resEl.textContent = "Error"; }
-  }
-
-  const keys = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
-  const grid = $('calc-grid');
-  keys.forEach(k => {
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.textContent = k;
-    btn.onclick = () => {
-      const map = {'÷':'/','×':'*','−':'-'};
-      expression += map[k] || k;
-      updateDisplay();
-    };
-    grid.appendChild(btn);
-  });
-
-  $('calc-equals').onclick = calculate;
-  $('calc-clear').onclick = () => { expression=''; updateDisplay(); resEl.textContent='0'; };
-  $('calc-back').onclick = () => { expression=expression.slice(0,-1); updateDisplay(); };
-  $('calc-copy').onclick = () => { navigator.clipboard.writeText(resEl.textContent); };
-
-  const sciToggle = $('sc-switch');
-  sciToggle.onclick = () => {
-    sciToggle.classList.toggle('on');
-    const isOn = sciToggle.classList.contains('on');
-    $('sci-keys').style.display = isOn ? 'grid' : 'none';
-  };
-
-  document.querySelectorAll('#sci-keys .btn').forEach(b => {
-    b.onclick = () => {
-      let fn = b.dataset.fn;
-      if(fn === 'pow') expression += '**';
-      else if(fn === 'pi') expression += Math.PI;
-      else expression += `Math.${fn}(`;
-      updateDisplay();
-    }
-  });
-
-  /* --- TAB LOGIC --- */
-  document.querySelectorAll('.chip-btn').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-      btn.classList.add('active');
-      $(btn.dataset.panel).classList.add('active');
-    };
-  });
-
-  /* --- AGE CALCULATOR --- */
-  $('age-btn').onclick = () => {
-    const dobInput = $('dob-input').value;
-    if(!dobInput) return;
-    const dob = new Date(dobInput);
-    const today = new Date();
-    
-    let y = today.getFullYear() - dob.getFullYear();
-    let m = today.getMonth() - dob.getMonth();
-    let d = today.getDate() - dob.getDate();
-
-    if (d < 0) {
-      m--;
-      const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-      d += prevMonth.getDate();
-    }
-    if (m < 0) {
-      y--;
-      m += 12;
-    }
-
-    $('age-result').textContent = `${y} Years, ${m} Months, ${d} Days`;
-  }
-
-  /* --- CURRENCY CONVERTER --- */
-  $('cur-btn').onclick = async () => {
-    const amt = $('cur-amt').value || 1;
-    const f = $('cur-from').value, t = $('cur-to').value;
-    $('cur-res').textContent = "Fetching...";
-    $('cur-info').textContent = "";
-    $('cur-source').style.display = "none";
-    
-    try {
-      const req = await fetch(`https://api.frankfurter.app/latest?amount=${amt}&from=${f}&to=${t}`);
-      const data = await req.json();
-      $('cur-res').textContent = `${amt} ${f} = ${data.rates[t]} ${t}`;
-      
-      const date = new Date(data.date).toLocaleDateString();
-      $('cur-info').textContent = `Last market update: ${date}`;
-      $('cur-source').style.display = "block";
-    } catch(e){ $('cur-res').textContent = "Error fetching rates"; }
-  }
-
-  /* --- QR GENERATOR --- */
-  $('qr-btn').onclick = () => {
-    const txt = $('qr-text').value;
-    if(!txt) return;
-    
-    const loading = $('qr-loading');
-    const img = $('qr-image');
-    const dlLink = $('qr-download');
-    
-    // UI Reset
-    img.style.display = 'none';
-    dlLink.style.display = 'none';
-    loading.style.display = 'block';
-
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    
-    img.onload = () => {
-      loading.style.display = 'none';
-      img.style.display = 'block';
-      
-      // Setup Download Link
-      fetch(url)
-        .then(res => res.blob())
-        .then(blob => {
-          const blobUrl = URL.createObjectURL(blob);
-          dlLink.href = blobUrl;
-          dlLink.download = "qrcode.png";
-          dlLink.style.display = "inline-block";
-        });
-    };
-    img.src = url;
-  }
-
-  /* --- UNIT CONVERTER --- */
+  /* --- CONVERTER LOGIC (Refined) --- */
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
       let m = v;
@@ -979,16 +783,30 @@
     speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
   };
 
+  // Re-build dropdowns when Type changes
   function renderUnits(){
     const type = $('u-type').value;
     const data = uData[type];
-    $('u-from').innerHTML = ''; $('u-to').innerHTML = '';
+    const fromSel = $('u-from');
+    const toSel = $('u-to');
+    
+    fromSel.innerHTML = ''; 
+    toSel.innerHTML = '';
+    
     data.opts.forEach(o => {
-      $('u-from').add(new Option(o,o));
-      $('u-to').add(new Option(o,o));
+      fromSel.add(new Option(o,o));
+      toSel.add(new Option(o,o));
     });
-    // Triggers custom dropdown rebuild
-    refreshUnitDropdowns();
+
+    // Smart Default: Set To = 2nd item so it's not same as From
+    if(toSel.options.length > 1) toSel.selectedIndex = 1;
+
+    // Refresh Custom UI
+    const parent = fromSel.closest('.row');
+    parent.querySelectorAll('.custom-dropdown').forEach(e => e.remove());
+    fromSel.removeAttribute('data-customized');
+    toSel.removeAttribute('data-customized');
+    initCustomDropdowns(parent);
   }
   
   $('u-type').addEventListener('change', renderUnits);
@@ -997,55 +815,182 @@
     const v = parseFloat($('u-val').value);
     if(isNaN(v)) return;
     const type = $('u-type').value;
-    const res = uData[type].fn(v, $('u-from').value, $('u-to').value);
-    $('u-res').textContent = res.toFixed(4);
+    const f = $('u-from').value;
+    const t = $('u-to').value;
+    const res = uData[type].fn(v, f, t);
+    $('u-res').textContent = `${res.toFixed(4)} ${t}`; // Show unit
+  }
+
+  /* --- EMI (Monthly/Yearly) --- */
+  $('emi-calc').onclick = () => {
+    const p = parseFloat($('emi-principal').value);
+    const r = parseFloat($('emi-rate').value)/1200;
+    const years = parseFloat($('emi-years').value);
+    const n = years*12;
+    
+    if(!p || !years) return;
+
+    const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+    
+    let res = `Monthly EMI: ${emi.toFixed(2)}`;
+    if(years > 1) {
+       res += `\nYearly Payment: ${(emi*12).toFixed(2)}`;
+    }
+    
+    // Using pre-wrap for new line
+    $('emi-result').style.whiteSpace = 'pre-wrap';
+    $('emi-result').textContent = res;
+  }
+  
+  /* --- PERCENTAGE (Fixed) --- */
+  $('pct-calc').onclick = () => {
+    const amt = parseFloat($('pct-amount').value);
+    const pct = parseFloat($('pct-percent').value);
+    if(isNaN(amt) || isNaN(pct)) return;
+    const val = (amt * pct) / 100;
+    const final = amt - val;
+    $('pct-result').textContent = `${pct}% of ${amt} = ${val.toFixed(2)} | Off: ${final.toFixed(2)}`;
+  }
+
+  /* --- QR GENERATOR (No space bug) --- */
+  $('qr-btn').onclick = () => {
+    const txt = $('qr-text').value;
+    if(!txt) return;
+    
+    const container = $('qr-container');
+    const loading = $('qr-loading');
+    const img = $('qr-image');
+    const dlLink = $('qr-download');
+    
+    container.classList.add('show');
+    img.style.display = 'none';
+    dlLink.style.display = 'none';
+    loading.style.display = 'block';
+
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
+    
+    img.onload = () => {
+      loading.style.display = 'none';
+      img.style.display = 'block';
+      
+      fetch(url).then(res => res.blob()).then(blob => {
+          const blobUrl = URL.createObjectURL(blob);
+          dlLink.href = blobUrl;
+          dlLink.download = "qrcode.png";
+          dlLink.style.display = "inline-block";
+      });
+    };
+    img.src = url;
   }
 
   /* --- OTHER UTILS --- */
-  $('emi-calc').onclick = () => {
-    const p = $('emi-principal').value, r = $('emi-rate').value/1200, n = $('emi-years').value*12;
-    const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    $('emi-result').textContent = "EMI: " + (emi?emi.toFixed(2):0);
+  // Calculator
+  let expression = '';
+  const resEl = $('calc-result');
+  const exprEl = $('calc-expression');
+  function updateDisplay(){ exprEl.textContent = expression; }
+  function calculate() {
+    try {
+      let safe = expression.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,Math.PI);
+      if(/[^0-9+\-*/(). %eE]/.test(safe.replace(/sin|cos|tan|sqrt|ln|log|pow/g,''))) throw "Inv";
+      const val = new Function('Math', 'return ' + safe)(Math);
+      if(!isFinite(val) || isNaN(val)) throw "Err";
+      resEl.textContent = Number(val.toFixed(8));
+    } catch(e) { resEl.textContent = "Error"; }
   }
+  const keys = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
+  keys.forEach(k => {
+    const btn = document.createElement('button');
+    btn.className = 'btn'; btn.textContent = k;
+    btn.onclick = () => { expression += {'÷':'/','×':'*','−':'-'}[k] || k; updateDisplay(); };
+    $('calc-grid').appendChild(btn);
+  });
+  $('calc-equals').onclick = calculate;
+  $('calc-clear').onclick = () => { expression=''; updateDisplay(); resEl.textContent='0'; };
+  $('calc-back').onclick = () => { expression=expression.slice(0,-1); updateDisplay(); };
+  $('calc-copy').onclick = () => { navigator.clipboard.writeText(resEl.textContent); };
   
+  $('sc-switch').onclick = function(){ this.classList.toggle('on'); $('sci-keys').style.display = this.classList.contains('on') ? 'grid' : 'none'; };
+  document.querySelectorAll('#sci-keys .btn').forEach(b => {
+    b.onclick = () => { expression += (b.dataset.fn==='pow'?'**': b.dataset.fn==='pi'?Math.PI : `Math.${b.dataset.fn}(`); updateDisplay(); }
+  });
+
+  // Tabs
+  document.querySelectorAll('.chip-btn').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      $(btn.dataset.panel).classList.add('active');
+    };
+  });
+
+  // Age
+  $('age-btn').onclick = () => {
+    const dVal = $('dob-input').value;
+    if(!dVal) return;
+    const dob = new Date(dVal); const today = new Date();
+    let y = today.getFullYear() - dob.getFullYear();
+    let m = today.getMonth() - dob.getMonth();
+    let d = today.getDate() - dob.getDate();
+    if (d < 0) { m--; d += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); }
+    if (m < 0) { y--; m += 12; }
+    $('age-result').textContent = `${y} Years, ${m} Months, ${d} Days`;
+  }
+
+  // Currency
+  $('cur-btn').onclick = async () => {
+    const amt = $('cur-amt').value || 1;
+    const f = $('cur-from').value; const t = $('cur-to').value;
+    $('cur-res').textContent = "Fetching...";
+    $('cur-info').textContent = ""; $('cur-source').style.display = "none";
+    try {
+      const r = await fetch(`https://api.frankfurter.app/latest?amount=${amt}&from=${f}&to=${t}`);
+      const d = await r.json();
+      $('cur-res').textContent = `${amt} ${f} = ${d.rates[t]} ${t}`;
+      $('cur-info').textContent = `Last market update: ${new Date(d.date).toLocaleDateString()}`;
+      $('cur-source').style.display = "block";
+    } catch(e){ $('cur-res').textContent = "Error"; }
+  }
+
+  // SIP
   $('sip-btn').onclick = () => {
      const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
      const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
      $('sip-res').textContent = "Value: " + (val?val.toFixed(2):0);
   }
 
+  // Pass Gen
   $('pw-btn').onclick = () => {
-    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
-    let len = $('pw-len').value, out = "";
-    for(let i=0;i<len;i++) out += chars.charAt(Math.floor(Math.random()*chars.length));
-    $('pw-res').textContent = out;
+    const c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
+    let l = $('pw-len').value, o = "";
+    for(let i=0;i<l;i++) o += c.charAt(Math.floor(Math.random()*c.length));
+    $('pw-res').textContent = o;
   }
   
+  // GPA
   $('gpa-btn').onclick = () => {
-    const nums = $('gpa-in').value.split(',').map(Number).filter(n => !isNaN(n));
-    if(!nums.length) return;
-    const avg = nums.reduce((a,b)=>a+b,0) / nums.length;
-    $('gpa-res').textContent = "Average: " + avg.toFixed(2);
+    const n = $('gpa-in').value.split(',').map(Number).filter(x => !isNaN(x));
+    $('gpa-res').textContent = "Average: " + (n.length ? (n.reduce((a,b)=>a+b,0)/n.length).toFixed(2) : 0);
   }
   
+  // Date
   $('time-diff').onclick = () => {
-      const d1 = new Date($('time-start').value);
-      const d2 = new Date($('time-end').value);
-      const diff = Math.abs(d2-d1);
-      const days = Math.ceil(diff / (1000 * 60 * 60 * 24)); 
-      $('time-result').textContent = isNaN(days) ? "Select dates" : days + " days";
+      const d1 = new Date($('time-start').value); const d2 = new Date($('time-end').value);
+      const diff = Math.ceil(Math.abs(d2-d1)/(1000*60*60*24));
+      $('time-result').textContent = isNaN(diff) ? "Select dates" : diff + " days";
   }
   
+  // BMI
   $('bmi-btn').onclick = () => {
-      const w = parseFloat($('bmi-w').value);
-      const h = parseFloat($('bmi-h').value)/100;
+      const w = parseFloat($('bmi-w').value); const h = parseFloat($('bmi-h').value)/100;
       if(w && h) $('bmi-res').textContent = "BMI: " + (w/(h*h)).toFixed(2);
   }
 
-  // START
+  // INIT
   updateThemeColors('mono');
   initCustomDropdowns();
-  renderUnits(); // Init Unit dropdowns
+  renderUnits(); // Triggers initCustomDropdowns for converters
 
 </script>
 </body>
