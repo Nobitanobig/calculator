@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Smart AI Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -12,7 +12,7 @@
     --text: #ffffff;
     --muted: #a1a1aa;
     
-    /* Default Accent (Will be updated by JS) */
+    /* Dynamic Accent Variables */
     --accent: #ffffff; 
     --accent-text: #000000;
     
@@ -23,6 +23,10 @@
     
     --border: #333333;
     --shadow: 0 4px 12px rgba(0,0,0,0.5);
+    
+    /* Dropdown specific */
+    --dd-bg: #1c1c1c;
+    --dd-hover: #333333;
   }
 
   body[data-theme="light"]{
@@ -31,7 +35,7 @@
     --text: #000000;
     --muted: #666666;
     
-    /* Default Accent for Light Mode */
+    /* Default Accent for Light Mode (Mono) */
     --accent: #000000;
     --accent-text: #ffffff;
 
@@ -42,9 +46,12 @@
     
     --border: #d1d1d6;
     --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    
+    --dd-bg: #ffffff;
+    --dd-hover: #f2f2f7;
   }
 
-  *{box-sizing:border-box;margin:0;padding:0}
+  *{box-sizing:border-box;margin:0;padding:0; -webkit-tap-highlight-color: transparent;}
   
   html,body{
     min-height:100%;
@@ -61,12 +68,13 @@
 
   .app{
     width: 100%;
-    max-width: 800px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px 16px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    position: relative;
   }
 
   /* HEADER */
@@ -99,6 +107,8 @@
     align-items: flex-end;
     gap: 8px;
   }
+  
+  /* THEME TOGGLE */
   .pill{
     background: var(--btn-bg);
     color: var(--btn-text);
@@ -109,17 +119,6 @@
     cursor: pointer;
     font-weight: 500;
     transition: 0.2s;
-  }
-  .theme-select{
-    background: var(--btn-bg);
-    color: var(--btn-text);
-    border: 1px solid var(--border);
-    padding: 4px 8px;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    outline: none;
-    text-align: right;
-    cursor: pointer;
   }
 
   /* CARDS */
@@ -146,33 +145,109 @@
     color: var(--muted);
   }
 
-  /* INPUTS & SELECTS */
-  input, select, textarea {
+  /* INPUTS */
+  input, textarea {
     width: 100%;
     background: var(--input-bg);
     color: var(--text);
     border: 1px solid var(--border);
-    padding: 10px 12px;
-    border-radius: 14px; /* More rounded/modern */
-    font-size: 0.9rem;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 0.95rem;
     outline: none;
     appearance: none; 
     transition: border 0.2s;
   }
-  /* Modern styling for Dropdowns */
-  select {
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-    padding-right: 36px;
-    cursor: pointer;
-  }
-  input:focus, select:focus, textarea:focus {
+  input:focus, textarea:focus {
     border-color: var(--accent);
   }
 
-  /* CALCULATOR SPECIFIC */
+  /* --- CUSTOM DROPDOWN STYLES --- */
+  /* Hide native select */
+  select { display: none; } 
+
+  .custom-dropdown {
+    position: relative;
+    width: 100%;
+    font-size: 0.9rem;
+    user-select: none;
+  }
+  .dropdown-trigger {
+    background: var(--input-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+    min-width: 90px;
+  }
+  /* Arrow Icon */
+  .dropdown-trigger::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg) translate(-2px, -2px);
+    transition: 0.2s;
+  }
+  .custom-dropdown.active .dropdown-trigger::after {
+    transform: rotate(-135deg) translate(-2px, -2px);
+    border-color: var(--accent);
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    min-width: 120px;
+    background: var(--card-bg); /* Match card bg or specific dropdown bg */
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 100;
+    display: none;
+    max-height: 250px;
+    overflow-y: auto;
+    flex-direction: column;
+    padding: 6px;
+    animation: fadeIn 0.15s ease-out;
+  }
+  /* Right align for the theme dropdown */
+  .theme-block .dropdown-menu {
+    left: auto;
+    right: 0;
+  }
+  
+  .custom-dropdown.active .dropdown-menu {
+    display: flex;
+  }
+  
+  .dropdown-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    color: var(--text);
+    transition: background 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dropdown-item:hover {
+    background: var(--btn-bg);
+  }
+  .dropdown-item.selected {
+    color: var(--accent);
+    font-weight: 600;
+    background: rgba(128,128,128,0.1);
+  }
+  
+  /* --- CALCULATOR SPECIFIC --- */
   .sc-switch{
     position: relative;
     width: 60px;
@@ -245,12 +320,12 @@
   }
   .btn:active{ transform: scale(0.96); }
   
-  /* Accent Buttons - Reduced Height as requested */
+  /* Accent Buttons - Slimmer Height */
   .btn-accent{
     background: var(--accent);
     color: var(--accent-text);
-    padding: 10px 0; /* Reduced padding */
-    font-size: 1rem; /* Slightly smaller font */
+    padding: 8px 0; /* Slimmer */
+    font-size: 1rem; 
   }
   
   .small{
@@ -313,7 +388,7 @@
     border-radius: 8px;
     border: 4px solid #fff;
     max-width: 180px;
-    display: none; /* Hidden initially */
+    display: none;
   }
   .loading-txt {
     font-size: 0.8rem;
@@ -322,7 +397,6 @@
     margin-bottom: 10px;
   }
 
-  /* Link styling */
   .link-btn {
     text-decoration: none;
     font-size: 0.75rem;
@@ -368,8 +442,9 @@
     
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
-      <select id="theme-color" class="theme-select">
-        <option value="mono">Default</option>
+      
+      <select id="theme-color">
+        <option value="mono" selected>Default</option>
         <option value="orange">Orange</option>
         <option value="blue">Blue</option>
         <option value="green">Green</option>
@@ -439,13 +514,21 @@
         <div class="field flex-1">
           <label class="mini">From</label>
           <select id="cur-from">
-            <option>USD</option><option>EUR</option><option>INR</option><option>GBP</option><option>JPY</option>
+            <option value="USD" selected>USD</option>
+            <option value="EUR">EUR</option>
+            <option value="INR">INR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
           </select>
         </div>
         <div class="field flex-1">
           <label class="mini">To</label>
           <select id="cur-to">
-            <option>INR</option><option>USD</option><option>EUR</option><option>GBP</option><option>JPY</option>
+            <option value="INR" selected>INR</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
           </select>
         </div>
       </div>
@@ -521,8 +604,10 @@
         <div class="card-title" style="margin-bottom:10px">Unit Converter</div>
         <div class="field"><label class="mini">Type</label>
           <select id="u-type">
-            <option value="length">Length</option><option value="weight">Weight</option>
-            <option value="temp">Temperature</option><option value="speed">Speed</option>
+            <option value="length">Length</option>
+            <option value="weight">Weight</option>
+            <option value="temp">Temperature</option>
+            <option value="speed">Speed</option>
           </select>
         </div>
         <div class="row">
@@ -597,50 +682,151 @@
 <script>
   const $ = id => document.getElementById(id);
 
+  /* --- INITIALIZE CUSTOM DROPDOWNS --- */
+  function initCustomDropdowns() {
+    const selects = document.querySelectorAll('select');
+    
+    selects.forEach(select => {
+      // Create Custom UI
+      const wrapper = document.createElement('div');
+      wrapper.className = 'custom-dropdown';
+      
+      const trigger = document.createElement('div');
+      trigger.className = 'dropdown-trigger';
+      trigger.textContent = select.options[select.selectedIndex].text;
+      
+      const menu = document.createElement('div');
+      menu.className = 'dropdown-menu';
+      
+      // Populate Options
+      Array.from(select.options).forEach(opt => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        if(opt.selected) item.classList.add('selected');
+        item.textContent = opt.text;
+        item.dataset.value = opt.value;
+        
+        item.onclick = (e) => {
+          e.stopPropagation();
+          // Update visual
+          trigger.textContent = opt.text;
+          wrapper.classList.remove('active');
+          menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+          
+          // Update Native Select
+          select.value = opt.value;
+          select.dispatchEvent(new Event('change')); // Trigger logic
+        };
+        menu.appendChild(item);
+      });
+      
+      // Toggle Logic
+      trigger.onclick = (e) => {
+        e.stopPropagation();
+        // Close others
+        document.querySelectorAll('.custom-dropdown').forEach(d => {
+          if(d !== wrapper) d.classList.remove('active');
+        });
+        wrapper.classList.toggle('active');
+      };
+      
+      wrapper.appendChild(trigger);
+      wrapper.appendChild(menu);
+      select.parentNode.insertBefore(wrapper, select.nextSibling);
+    });
+    
+    // Close when clicking outside
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active'));
+    });
+  }
+
   /* --- THEME LOGIC --- */
   function updateThemeColors(themeName) {
     const root = document.documentElement;
     const isLight = document.body.dataset.theme === 'light';
     let accent, accentText;
 
-    // Logic: In Light Mode, colors (Blue, Orange) should still look like colors.
-    // In "Default/Mono" mode, it switches based on theme.
-
-    if (themeName === 'mono') {
-      accent = isLight ? '#000000' : '#ffffff';
-      accentText = isLight ? '#ffffff' : '#000000';
-    } else if (themeName === 'orange') {
+    // Force color even in light mode
+    if (themeName === 'orange') {
       accent = '#f97316'; accentText = '#000000';
     } else if (themeName === 'blue') {
-      accent = '#0ea5e9'; accentText = '#ffffff';
+      accent = '#3b82f6'; accentText = '#ffffff';
     } else if (themeName === 'green') {
       accent = '#22c55e'; accentText = '#000000';
     } else if (themeName === 'purple') {
       accent = '#a855f7'; accentText = '#ffffff';
+    } else {
+      // Mono / Default
+      accent = isLight ? '#000000' : '#ffffff';
+      accentText = isLight ? '#ffffff' : '#000000';
     }
 
     root.style.setProperty('--accent', accent);
     root.style.setProperty('--accent-text', accentText);
   }
 
-  // Toggle Dark/Light
   $('toggle-theme').addEventListener('click', () => {
     const body = document.body;
     const current = body.dataset.theme;
     const next = current === 'light' ? 'dark' : 'light';
     body.dataset.theme = next;
-    
-    // Refresh accent to handle Mono switch or Color persistence
     updateThemeColors($('theme-color').value);
   });
 
-  // Change Accent Color
   $('theme-color').addEventListener('change', (e) => {
     updateThemeColors(e.target.value);
   });
 
-  // Initialize
-  updateThemeColors('mono');
+  /* --- UNIT CONVERTER HELPER (Re-renders dropdowns dynamically) --- */
+  // We need to re-initialize custom dropdowns when "Type" changes
+  function refreshUnitDropdowns() {
+    // Remove old custom wrappers for From/To
+    const oldWrappers = $('u-from').parentNode.querySelectorAll('.custom-dropdown');
+    oldWrappers.forEach(w => w.remove());
+    const oldWrappersTo = $('u-to').parentNode.querySelectorAll('.custom-dropdown');
+    oldWrappersTo.forEach(w => w.remove());
+    
+    // Create new ones manually for just these two
+    initCustomDropdownFor($('u-from'));
+    initCustomDropdownFor($('u-to'));
+  }
+  
+  function initCustomDropdownFor(select) {
+     const wrapper = document.createElement('div');
+      wrapper.className = 'custom-dropdown';
+      const trigger = document.createElement('div');
+      trigger.className = 'dropdown-trigger';
+      trigger.textContent = select.options[select.selectedIndex]?.text || '';
+      const menu = document.createElement('div');
+      menu.className = 'dropdown-menu';
+      Array.from(select.options).forEach(opt => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        if(opt.selected) item.classList.add('selected');
+        item.textContent = opt.text;
+        item.onclick = (e) => {
+          e.stopPropagation();
+          trigger.textContent = opt.text;
+          wrapper.classList.remove('active');
+          select.value = opt.value;
+          select.dispatchEvent(new Event('change'));
+        };
+        menu.appendChild(item);
+      });
+      trigger.onclick = (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.custom-dropdown').forEach(d => {
+            if(d !== wrapper) d.classList.remove('active');
+        });
+        wrapper.classList.toggle('active');
+      };
+      wrapper.appendChild(trigger);
+      wrapper.appendChild(menu);
+      select.parentNode.insertBefore(wrapper, select.nextSibling);
+  }
+
 
   /* --- CALCULATOR LOGIC --- */
   let expression = '';
@@ -705,7 +891,7 @@
     };
   });
 
-  /* --- AGE CALCULATOR (Precise) --- */
+  /* --- AGE CALCULATOR --- */
   $('age-btn').onclick = () => {
     const dobInput = $('dob-input').value;
     if(!dobInput) return;
@@ -729,7 +915,7 @@
     $('age-result').textContent = `${y} Years, ${m} Months, ${d} Days`;
   }
 
-  /* --- CURRENCY CONVERTER (With Source & Time) --- */
+  /* --- CURRENCY CONVERTER --- */
   $('cur-btn').onclick = async () => {
     const amt = $('cur-amt').value || 1;
     const f = $('cur-from').value, t = $('cur-to').value;
@@ -743,13 +929,12 @@
       $('cur-res').textContent = `${amt} ${f} = ${data.rates[t]} ${t}`;
       
       const date = new Date(data.date).toLocaleDateString();
-      const now = new Date().toLocaleTimeString();
-      $('cur-info').textContent = `Live rates as per ${date} (updated daily)`;
+      $('cur-info').textContent = `Last market update: ${date}`;
       $('cur-source').style.display = "block";
     } catch(e){ $('cur-res').textContent = "Error fetching rates"; }
   }
 
-  /* --- QR GENERATOR (Inline) --- */
+  /* --- QR GENERATOR --- */
   $('qr-btn').onclick = () => {
     const txt = $('qr-text').value;
     if(!txt) return;
@@ -782,7 +967,7 @@
     img.src = url;
   }
 
-  /* --- UNIT CONVERTER SETUP --- */
+  /* --- UNIT CONVERTER --- */
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
       let m = v;
@@ -802,9 +987,11 @@
       $('u-from').add(new Option(o,o));
       $('u-to').add(new Option(o,o));
     });
+    // Triggers custom dropdown rebuild
+    refreshUnitDropdowns();
   }
-  $('u-type').onchange = renderUnits;
-  renderUnits(); 
+  
+  $('u-type').addEventListener('change', renderUnits);
 
   $('u-btn').onclick = () => {
     const v = parseFloat($('u-val').value);
@@ -854,6 +1041,11 @@
       const h = parseFloat($('bmi-h').value)/100;
       if(w && h) $('bmi-res').textContent = "BMI: " + (w/(h*h)).toFixed(2);
   }
+
+  // START
+  updateThemeColors('mono');
+  initCustomDropdowns();
+  renderUnits(); // Init Unit dropdowns
 
 </script>
 </body>
