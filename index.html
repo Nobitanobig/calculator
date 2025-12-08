@@ -12,7 +12,7 @@
     --text: #ffffff;
     --muted: #a1a1aa;
     
-    /* Default Accent (Mono Default) */
+    /* Default Accent (Mono Default) - Overridden by JS */
     --accent: #ffffff; 
     --accent-text: #000000;
     --accent-bg: #ffffff;
@@ -33,9 +33,10 @@
     --text: #000000;
     --muted: #666666;
     
-    --accent: #000000;
-    --accent-text: #ffffff;
-    --accent-bg: #000000;
+    /* FIXED: Removed accent overrides here. Light mode now respects JS colors. */
+    /* --accent: #000000; */
+    /* --accent-text: #ffffff; */
+    /* --accent-bg: #000000; */
 
     --card-bg: #ffffff;
     --input-bg: #f2f2f7;
@@ -287,15 +288,11 @@
   .chip-btn.active{ background: var(--accent-bg); color: var(--accent-text); border-color: transparent; font-weight: 600; }
   .chip-btn.hidden { display: none; }
 
-  .panel{ display: none; animation: fadeIn 0.3s ease; }
-  .panel.active{ display: block; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
-  
-  /* FIXED ALIGNMENT DIVIDER (Thinner) */
+  /* FIXED: Increased spacing for divider */
   .divider{ 
-    height: 0.5px; /* Thinner line as requested */
+    height: 0.5px;
     background: var(--border); 
-    margin: 16px 0; /* Reverted margins */
+    margin: 12px 0 16px 0; /* Increased top margin */
     width: 100%;
   }
 
@@ -367,8 +364,7 @@
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
       <select id="theme-color">
-        <option value="mono" selected>Default (Mono)</option>
-        <option value="blue">Blue</option>
+        <option value="mono" selected>Default</option> <option value="blue">Blue</option>
         <option value="red">Red</option>
         <option value="green">Green</option>
         <option value="orange">Orange</option>
@@ -559,8 +555,9 @@
       <div id="tab-tools" class="tab-content">
         <div class="chips">
           <button class="chip-btn" data-panel="unit-panel">Converters</button>
-          <button class="chip-btn" data-panel="password-panel">Password</button> <button class="chip-btn" data-panel="text-panel">Text Tools</button>
           <button class="chip-btn" data-panel="time-panel">Day Counter</button>
+          <button class="chip-btn" data-panel="text-panel">Text Tools</button>
+          <button class="chip-btn" data-panel="password-panel">Password</button>
           <button class="chip-btn" data-panel="base-panel">Base Converter</button>
           <button class="chip-btn" data-panel="gpa-panel">GPA</button>
         </div>
@@ -596,19 +593,6 @@
         <div id="goal-res" class="result-text"></div>
       </div>
 
-      <div id="password-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Password Generator</div>
-           <div class="card-sub">Create strong, secure passwords.</div>
-        </div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
-           <button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button>
-        </div>
-        <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
-      </div>
-
       <div id="text-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px">
@@ -627,6 +611,19 @@
            <button id="txt-lower" class="btn small flex-1" style="font-size:0.8rem;">lower</button>
            <button id="txt-clear" class="btn small flex-1" style="font-size:0.8rem;">Clear</button>
         </div>
+      </div>
+
+      <div id="password-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Password Generator</div>
+           <div class="card-sub">Create strong, secure passwords.</div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
+           <button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button>
+        </div>
+        <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
       </div>
 
       <div id="base-panel" class="panel">
@@ -652,7 +649,7 @@
       <div id="health-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Health Station (BMI, BMR)</div>
+           <div class="card-title">Health Station</div>
            <div class="card-sub">BMI, BMR, Water & Protein Analysis.</div>
         </div>
         <div class="row">
@@ -786,10 +783,7 @@
 
       <div id="gpa-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">GPA / Average</div>
-           <div class="card-sub">Calculate the average of a list of numbers.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Calculate the average of a list of numbers.</div></div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
         <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
         <div id="gpa-res" class="result-text"></div>
