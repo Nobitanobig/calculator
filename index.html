@@ -1,1 +1,1167 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Minimal Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Optional: Google Font for a clean look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-soft: #0f172a;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --card-border: rgba(148, 163, 184, 0.35);
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --accent-2: #a855f7;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+      --radius-xl: 22px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.6);
+      --transition-fast: 0.16s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.15), transparent 60%),
+        var(--bg);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.92));
+      border-radius: 28px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: var(--shadow-soft);
+      padding: 18px 18px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      backdrop-filter: blur(18px);
+    }
+
+    header {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 6px 6px 2px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 20% 20%, #38bdf8, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 18px;
+      color: #0b1120;
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .tagline {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), transparent);
+      color: #e0f2fe;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 2px 4px 6px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 960px) {
+      .card-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      body {
+        padding: 12px;
+      }
+      .app {
+        border-radius: 20px;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--card-border);
+      padding: 14px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%);
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      pointer-events: none;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-pill {
+      font-size: 0.64rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #e0f2fe;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    .card-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    /* BASIC CALCULATOR STYLES */
+    .calc-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .calc-display {
+      background: radial-gradient(circle at top right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+      border-radius: 18px;
+      padding: 10px 12px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-height: 64px;
+    }
+
+    .calc-expression {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: right;
+      word-wrap: break-word;
+      min-height: 18px;
+    }
+
+    .calc-result {
+      font-size: 1.3rem;
+      font-weight: 500;
+      text-align: right;
+      word-wrap: break-word;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.85);
+      padding: 8px 0;
+      font-size: 0.86rem;
+      color: var(--text-main);
+      cursor: pointer;
+      outline: none;
+      transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(14px);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(56, 189, 248, 0.6);
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.9);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.95));
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 5px 14px rgba(15, 23, 42, 0.9);
+    }
+
+    .btn-accent {
+      background: linear-gradient(135deg, #38bdf8, #a855f7);
+      color: #0b1120;
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    .btn-accent:hover {
+      background: linear-gradient(135deg, #0ea5e9, #c084fc);
+      color: #020617;
+    }
+
+    .btn-soft {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .btn-span-2 {
+      grid-column: span 2;
+    }
+
+    .btn-danger {
+      color: #fecaca;
+      border-color: rgba(248, 113, 113, 0.6);
+      background: rgba(127, 29, 29, 0.5);
+    }
+
+    .btn-danger:hover {
+      background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.35), rgba(15, 23, 42, 0.95));
+    }
+
+    /* INPUTS / FORMS */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.76rem;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    label {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+    }
+
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    select:focus {
+      border-color: rgba(56, 189, 248, 0.9);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.95));
+      transform: translateY(-0.5px);
+    }
+
+    input::placeholder {
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    .mini-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .result-text {
+      font-size: 0.8rem;
+      margin-top: 2px;
+      color: #e0f2fe;
+    }
+
+    .result-muted {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .pill-result {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 0.72rem;
+      margin-top: 2px;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .text-danger {
+      color: #fecaca;
+      font-size: 0.74rem;
+    }
+
+    .stack-sm {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stack-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .flex-1 {
+      flex: 1 1 0;
+    }
+
+    .badge-outline {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      padding: 3px 8px;
+      color: var(--text-muted);
+    }
+
+    /* BMI category colors */
+    .bmi-tag {
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .bmi-under {
+      background: rgba(56, 189, 248, 0.18);
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      color: #e0f2fe;
+    }
+    .bmi-normal {
+      background: rgba(34, 197, 94, 0.18);
+      border: 1px solid rgba(34, 197, 94, 0.7);
+      color: #bbf7d0;
+    }
+    .bmi-over {
+      background: rgba(250, 204, 21, 0.18);
+      border: 1px solid rgba(250, 204, 21, 0.7);
+      color: #fef9c3;
+    }
+    .bmi-obese {
+      background: rgba(248, 113, 113, 0.18);
+      border: 1px solid rgba(248, 113, 113, 0.7);
+      color: #fee2e2;
+    }
+
+    /* FOOTER */
+    footer {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(148, 163, 184, 0.25);
+      padding-top: 8px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .heart {
+      display: inline-block;
+      margin: 0 2px;
+      animation: heartbeat 1.3s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      15% { transform: scale(1.25); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.25); }
+      60% { transform: scale(1); }
+      100% { transform: scale(1); }
+    }
+
+    /* Sub-grid for converters */
+    .subgrid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .subgrid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo">Σ</div>
+        <div class="title-wrap">
+          <h1>Smart Minimal Calculator</h1>
+          <p class="subtitle">Multi-purpose tools in one clean screen.</p>
+        </div>
+      </div>
+      <div class="tagline">
+        <span class="tag-dot"></span>
+        Always up-to-date currency · Everyday utilities
+      </div>
+    </header>
+
+    <main>
+      <div class="card-grid">
+        <!-- LEFT COLUMN: MAIN CALCULATOR + AGE -->
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                Basic Calculator
+                <span class="card-pill">Math · Quick ops</span>
+              </div>
+              <p class="card-desc">Handles daily calculations with a minimal, keyboard-friendly layout.</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="calc-wrapper">
+              <div class="calc-display">
+                <div id="calc-expression" class="calc-expression"></div>
+                <div id="calc-result" class="calc-result">0</div>
+              </div>
+              <div class="calc-grid" aria-label="Calculator keypad">
+                <button class="btn btn-soft" data-calc="clear">AC</button>
+                <button class="btn btn-soft" data-calc="back">⌫</button>
+                <button class="btn btn-soft" data-input="%">%</button>
+                <button class="btn btn-soft" data-input="/">÷</button>
+
+                <button class="btn" data-input="7">7</button>
+                <button class="btn" data-input="8">8</button>
+                <button class="btn" data-input="9">9</button>
+                <button class="btn btn-soft" data-input="*">×</button>
+
+                <button class="btn" data-input="4">4</button>
+                <button class="btn" data-input="5">5</button>
+                <button class="btn" data-input="6">6</button>
+                <button class="btn btn-soft" data-input="-">−</button>
+
+                <button class="btn" data-input="1">1</button>
+                <button class="btn" data-input="2">2</button>
+                <button class="btn" data-input="3">3</button>
+                <button class="btn btn-soft" data-input="+">+</button>
+
+                <button class="btn btn-span-2" data-input="0">0</button>
+                <button class="btn" data-input=".">.</button>
+                <button class="btn btn-accent" data-calc="equals">=</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-header" style="margin-top: 10px;">
+            <div>
+              <div class="card-title">
+                Age Calculator
+                <span class="card-pill">DOB → Years</span>
+              </div>
+              <p class="card-desc">Find your exact age in years, months, and days.</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="stack-sm">
+              <div class="field-group">
+                <label for="dob-input">Date of birth</label>
+                <input type="date" id="dob-input" />
+              </div>
+              <div class="field-row">
+                <button id="age-btn" class="btn btn-accent flex-1">Calculate Age</button>
+                <span class="badge-outline">Uses your device date</span>
+              </div>
+              <div id="age-result" class="result-text"></div>
+              <div id="age-error" class="text-danger"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT COLUMN: CONVERTERS + BMI + CURRENCY -->
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                Everyday Converters
+                <span class="card-pill">Height · Weight · Temp</span>
+              </div>
+              <p class="card-desc">Quickly convert units you actually need daily.</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="subgrid">
+              <!-- HEIGHT / LENGTH -->
+              <div>
+                <h3 class="mini-label">Height / Length</h3>
+                <p class="card-desc" style="margin-bottom: 4px;">Supports m ↔ cm, cm ↔ ft / in, and more.</p>
+                <div class="stack-sm">
+                  <div class="field-group">
+                    <label for="length-value">Value</label>
+                    <input type="number" step="any" id="length-value" placeholder="e.g. 1.75" />
+                  </div>
+                  <div class="stack-row">
+                    <div class="field-group flex-1">
+                      <label for="length-from">From</label>
+                      <select id="length-from">
+                        <option value="m">Meters (m)</option>
+                        <option value="cm">Centimeters (cm)</option>
+                        <option value="ft">Feet (ft)</option>
+                        <option value="in">Inches (in)</option>
+                      </select>
+                    </div>
+                    <div class="field-group flex-1">
+                      <label for="length-to">To</label>
+                      <select id="length-to">
+                        <option value="cm">Centimeters (cm)</option>
+                        <option value="m">Meters (m)</option>
+                        <option value="ft">Feet (ft)</option>
+                        <option value="in">Inches (in)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button id="length-btn" class="btn btn-soft">Convert Height</button>
+                  <div id="length-result" class="result-text"></div>
+                </div>
+              </div>
+
+              <!-- WEIGHT -->
+              <div>
+                <h3 class="mini-label">Weight</h3>
+                <p class="card-desc" style="margin-bottom: 4px;">Convert kg ↔ pounds quickly.</p>
+                <div class="stack-sm">
+                  <div class="field-group">
+                    <label for="weight-value">Value</label>
+                    <input type="number" step="any" id="weight-value" placeholder="e.g. 70" />
+                  </div>
+                  <div class="stack-row">
+                    <div class="field-group flex-1">
+                      <label for="weight-from">From</label>
+                      <select id="weight-from">
+                        <option value="kg">Kilograms (kg)</option>
+                        <option value="lb">Pounds (lb)</option>
+                      </select>
+                    </div>
+                    <div class="field-group flex-1">
+                      <label for="weight-to">To</label>
+                      <select id="weight-to">
+                        <option value="lb">Pounds (lb)</option>
+                        <option value="kg">Kilograms (kg)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button id="weight-btn" class="btn btn-soft">Convert Weight</button>
+                  <div id="weight-result" class="result-text"></div>
+                </div>
+              </div>
+
+              <!-- TEMPERATURE -->
+              <div>
+                <h3 class="mini-label">Temperature</h3>
+                <p class="card-desc" style="margin-bottom: 4px;">Switch between Celsius and Fahrenheit.</p>
+                <div class="stack-sm">
+                  <div class="field-group">
+                    <label for="temp-value">Value</label>
+                    <input type="number" step="any" id="temp-value" placeholder="e.g. 37" />
+                  </div>
+                  <div class="stack-row">
+                    <div class="field-group flex-1">
+                      <label for="temp-from">From</label>
+                      <select id="temp-from">
+                        <option value="C">°C</option>
+                        <option value="F">°F</option>
+                      </select>
+                    </div>
+                    <div class="field-group flex-1">
+                      <label for="temp-to">To</label>
+                      <select id="temp-to">
+                        <option value="F">°F</option>
+                        <option value="C">°C</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button id="temp-btn" class="btn btn-soft">Convert Temperature</button>
+                  <div id="temp-result" class="result-text"></div>
+                </div>
+              </div>
+
+              <!-- BMI -->
+              <div>
+                <h3 class="mini-label">BMI Calculator</h3>
+                <p class="card-desc" style="margin-bottom: 4px;">Estimate your Body Mass Index.</p>
+                <div class="stack-sm">
+                  <div class="stack-row">
+                    <div class="field-group flex-1">
+                      <label for="bmi-weight">Weight (kg)</label>
+                      <input type="number" step="any" id="bmi-weight" placeholder="e.g. 70" />
+                    </div>
+                    <div class="field-group flex-1">
+                      <label for="bmi-height">Height (cm)</label>
+                      <input type="number" step="any" id="bmi-height" placeholder="e.g. 175" />
+                    </div>
+                  </div>
+                  <button id="bmi-btn" class="btn btn-soft">Calculate BMI</button>
+                  <div id="bmi-result" class="result-text"></div>
+                  <div class="result-muted">
+                    <span class="mini-label">Guide:</span>
+                    <span>Underweight &lt; 18.5 · Normal 18.5–24.9 · Overweight 25–29.9 · Obese ≥ 30</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CURRENCY CARD -->
+          <div class="card-header" style="margin-top: 10px;">
+            <div>
+              <div class="card-title">
+                Currency Converter
+                <span class="card-pill">Live rates (ECB)</span>
+              </div>
+              <p class="card-desc">
+                Converts using the latest daily exchange rates from
+                <span style="color:#bae6fd;">Frankfurter API</span>.
+              </p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="stack-sm">
+              <div class="stack-row">
+                <div class="field-group flex-1">
+                  <label for="currency-amount">Amount</label>
+                  <input type="number" step="any" id="currency-amount" placeholder="e.g. 1" />
+                </div>
+                <div class="field-group flex-1">
+                  <label for="currency-from">From</label>
+                  <select id="currency-from">
+                    <option value="USD">USD – US Dollar</option>
+                    <option value="EUR">EUR – Euro</option>
+                    <option value="INR">INR – Indian Rupee</option>
+                    <option value="GBP">GBP – British Pound</option>
+                    <option value="JPY">JPY – Japanese Yen</option>
+                  </select>
+                </div>
+                <div class="field-group flex-1">
+                  <label for="currency-to">To</label>
+                  <select id="currency-to">
+                    <option value="INR">INR – Indian Rupee</option>
+                    <option value="USD">USD – US Dollar</option>
+                    <option value="EUR">EUR – Euro</option>
+                    <option value="GBP">GBP – British Pound</option>
+                    <option value="JPY">JPY – Japanese Yen</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row">
+                <button id="currency-btn" class="btn btn-accent flex-1">Convert Currency</button>
+                <button id="currency-swap" class="btn btn-soft" title="Swap currencies">⇄</button>
+              </div>
+              <div id="currency-result" class="result-text"></div>
+              <div id="currency-meta" class="result-muted"></div>
+              <div id="currency-error" class="text-danger"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <span>Made With</span>
+      <span class="heart">❤️</span>
+      <span>By Avinash Gupta!</span>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      /* BASIC CALCULATOR LOGIC */
+      const exprEl = document.getElementById("calc-expression");
+      const resultEl = document.getElementById("calc-result");
+      let calcExpression = "";
+
+      function updateDisplay() {
+        exprEl.textContent = calcExpression || "";
+      }
+
+      function safeEvaluate(expression) {
+        // Allow only digits, operators, parentheses, decimal, space, %.
+        if (!/^[0-9+\-*/.%()\s]+$/.test(expression)) {
+          return "Err";
+        }
+        try {
+          const fn = new Function('"use strict"; return (' + expression + ");");
+          const value = fn();
+          if (typeof value === "number" && isFinite(value)) {
+            const rounded = Math.round(value * 1e10) / 1e10;
+            return rounded;
+          }
+          return "Err";
+        } catch (e) {
+          return "Err";
+        }
+      }
+
+      document.querySelectorAll("[data-input]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const char = btn.getAttribute("data-input");
+          calcExpression += char;
+          updateDisplay();
+        });
+      });
+
+      document.querySelectorAll("[data-calc]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const action = btn.getAttribute("data-calc");
+          if (action === "clear") {
+            calcExpression = "";
+            resultEl.textContent = "0";
+            updateDisplay();
+          } else if (action === "back") {
+            calcExpression = calcExpression.slice(0, -1);
+            updateDisplay();
+          } else if (action === "equals") {
+            if (!calcExpression.trim()) {
+              resultEl.textContent = "0";
+              return;
+            }
+            const res = safeEvaluate(calcExpression);
+            resultEl.textContent = res;
+          }
+        });
+      });
+
+      // Allow Enter key to trigger equals, Esc to clear
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const equalsBtn = document.querySelector('[data-calc="equals"]');
+          if (equalsBtn) equalsBtn.click();
+        } else if (e.key === "Escape") {
+          const clearBtn = document.querySelector('[data-calc="clear"]');
+          if (clearBtn) clearBtn.click();
+        }
+      });
+
+      /* AGE CALCULATOR */
+      const dobInput = document.getElementById("dob-input");
+      const ageBtn = document.getElementById("age-btn");
+      const ageResult = document.getElementById("age-result");
+      const ageError = document.getElementById("age-error");
+
+      ageBtn.addEventListener("click", () => {
+        ageError.textContent = "";
+        ageResult.textContent = "";
+
+        const dobValue = dobInput.value;
+        if (!dobValue) {
+          ageError.textContent = "Please select your date of birth.";
+          return;
+        }
+
+        const dob = new Date(dobValue + "T00:00:00");
+        const today = new Date();
+
+        if (dob > today) {
+          ageError.textContent = "Your birth date is in the future. Please check again.";
+          return;
+        }
+
+        let years = today.getFullYear() - dob.getFullYear();
+        let months = today.getMonth() - dob.getMonth();
+        let days = today.getDate() - dob.getDate();
+
+        if (days < 0) {
+          const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+          days += prevMonth.getDate();
+          months--;
+        }
+        if (months < 0) {
+          months += 12;
+          years--;
+        }
+
+        ageResult.textContent = `You are ${years} years, ${months} months, and ${days} days old.`;
+      });
+
+      /* LENGTH / HEIGHT CONVERTER */
+      const lengthValue = document.getElementById("length-value");
+      const lengthFrom = document.getElementById("length-from");
+      const lengthTo = document.getElementById("length-to");
+      const lengthBtn = document.getElementById("length-btn");
+      const lengthResult = document.getElementById("length-result");
+
+      function toMeters(value, unit) {
+        switch (unit) {
+          case "m": return value;
+          case "cm": return value / 100;
+          case "ft": return value * 0.3048;
+          case "in": return value * 0.0254;
+          default: return NaN;
+        }
+      }
+
+      function fromMeters(m, unit) {
+        switch (unit) {
+          case "m": return m;
+          case "cm": return m * 100;
+          case "ft": return m / 0.3048;
+          case "in": return m / 0.0254;
+          default: return NaN;
+        }
+      }
+
+      lengthBtn.addEventListener("click", () => {
+        const val = parseFloat(lengthValue.value);
+        lengthResult.textContent = "";
+        if (isNaN(val)) {
+          lengthResult.textContent = "Please enter a valid number.";
+          return;
+        }
+        const from = lengthFrom.value;
+        const to = lengthTo.value;
+        if (from === to) {
+          lengthResult.innerHTML = `<span class="pill-result"><span class="pill-dot"></span><span>${val.toFixed(4)} ${to}</span></span>`;
+          return;
+        }
+
+        const meters = toMeters(val, from);
+        if (!isFinite(meters)) {
+          lengthResult.textContent = "Unsupported unit.";
+          return;
+        }
+        const converted = fromMeters(meters, to);
+        const rounded = Math.round(converted * 1e4) / 1e4;
+
+        let extra = "";
+        if ((from === "m" && to === "cm") || (from === "cm" && to === "m")) {
+          extra = "Perfect for height conversions.";
+        }
+        if ((from === "cm" && to === "ft") || (from === "m" && to === "ft")) {
+          const feet = Math.floor(converted);
+          const inches = (converted - feet) * 12;
+          const inchesRounded = Math.round(inches * 10) / 10;
+          extra = `${feet} ft ${inchesRounded} in`;
+        }
+
+        lengthResult.innerHTML = `
+          <div class="pill-result">
+            <span class="pill-dot"></span>
+            <span>${val} ${from} = <strong>${rounded} ${to}</strong></span>
+          </div>
+          ${extra ? `<div class="result-muted" style="margin-top:4px;">${extra}</div>` : ""}
+        `;
+      });
+
+      /* WEIGHT CONVERTER */
+      const weightValue = document.getElementById("weight-value");
+      const weightFrom = document.getElementById("weight-from");
+      const weightTo = document.getElementById("weight-to");
+      const weightBtn = document.getElementById("weight-btn");
+      const weightResult = document.getElementById("weight-result");
+
+      weightBtn.addEventListener("click", () => {
+        const val = parseFloat(weightValue.value);
+        weightResult.textContent = "";
+        if (isNaN(val)) {
+          weightResult.textContent = "Please enter a valid number.";
+          return;
+        }
+        const from = weightFrom.value;
+        const to = weightTo.value;
+
+        if (from === to) {
+          weightResult.innerHTML = `<span class="pill-result"><span class="pill-dot"></span><span>${val.toFixed(2)} ${to}</span></span>`;
+          return;
+        }
+
+        let converted;
+        if (from === "kg" && to === "lb") {
+          converted = val * 2.2046226218;
+        } else if (from === "lb" && to === "kg") {
+          converted = val / 2.2046226218;
+        } else {
+          weightResult.textContent = "Unsupported conversion.";
+          return;
+        }
+
+        const rounded = Math.round(converted * 1e4) / 1e4;
+        weightResult.innerHTML = `
+          <div class="pill-result">
+            <span class="pill-dot"></span>
+            <span>${val} ${from} = <strong>${rounded} ${to}</strong></span>
+          </div>
+        `;
+      });
+
+      /* TEMPERATURE CONVERTER */
+      const tempValue = document.getElementById("temp-value");
+      const tempFrom = document.getElementById("temp-from");
+      const tempTo = document.getElementById("temp-to");
+      const tempBtn = document.getElementById("temp-btn");
+      const tempResult = document.getElementById("temp-result");
+
+      tempBtn.addEventListener("click", () => {
+        const val = parseFloat(tempValue.value);
+        tempResult.textContent = "";
+        if (isNaN(val)) {
+          tempResult.textContent = "Please enter a valid temperature.";
+          return;
+        }
+        const from = tempFrom.value;
+        const to = tempTo.value;
+
+        if (from === to) {
+          tempResult.innerHTML = `<span class="pill-result"><span class="pill-dot"></span><span>${val.toFixed(2)} °${to}</span></span>`;
+          return;
+        }
+
+        let converted;
+        if (from === "C" && to === "F") {
+          converted = val * 9 / 5 + 32;
+        } else if (from === "F" && to === "C") {
+          converted = (val - 32) * 5 / 9;
+        } else {
+          tempResult.textContent = "Unsupported conversion.";
+          return;
+        }
+
+        const rounded = Math.round(converted * 1e2) / 1e2;
+        tempResult.innerHTML = `
+          <div class="pill-result">
+            <span class="pill-dot"></span>
+            <span>${val} °${from} = <strong>${rounded} °${to}</strong></span>
+          </div>
+        `;
+      });
+
+      /* BMI CALCULATOR */
+      const bmiWeight = document.getElementById("bmi-weight");
+      const bmiHeight = document.getElementById("bmi-height");
+      const bmiBtn = document.getElementById("bmi-btn");
+      const bmiResult = document.getElementById("bmi-result");
+
+      bmiBtn.addEventListener("click", () => {
+        const weight = parseFloat(bmiWeight.value);
+        const heightCm = parseFloat(bmiHeight.value);
+        bmiResult.textContent = "";
+
+        if (isNaN(weight) || isNaN(heightCm) || weight <= 0 || heightCm <= 0) {
+          bmiResult.textContent = "Please enter valid weight and height.";
+          return;
+        }
+
+        const heightM = heightCm / 100;
+        const bmi = weight / (heightM * heightM);
+        const rounded = Math.round(bmi * 10) / 10;
+
+        let category = "";
+        let cls = "";
+        if (bmi < 18.5) {
+          category = "Underweight";
+          cls = "bmi-under";
+        } else if (bmi < 25) {
+          category = "Normal";
+          cls = "bmi-normal";
+        } else if (bmi < 30) {
+          category = "Overweight";
+          cls = "bmi-over";
+        } else {
+          category = "Obese";
+          cls = "bmi-obese";
+        }
+
+        bmiResult.innerHTML = `
+          <div class="bmi-tag ${cls}">
+            <span>${rounded}</span>
+            <span>· ${category}</span>
+          </div>
+        `;
+      });
+
+      /* CURRENCY CONVERTER (Frankfurter API) */
+      const currencyAmount = document.getElementById("currency-amount");
+      const currencyFrom = document.getElementById("currency-from");
+      const currencyTo = document.getElementById("currency-to");
+      const currencyBtn = document.getElementById("currency-btn");
+      const currencySwap = document.getElementById("currency-swap");
+      const currencyResult = document.getElementById("currency-result");
+      const currencyMeta = document.getElementById("currency-meta");
+      const currencyError = document.getElementById("currency-error");
+
+      currencySwap.addEventListener("click", () => {
+        const tmp = currencyFrom.value;
+        currencyFrom.value = currencyTo.value;
+        currencyTo.value = tmp;
+      });
+
+      async function convertCurrency() {
+        currencyError.textContent = "";
+        currencyResult.textContent = "";
+        currencyMeta.textContent = "";
+
+        const amount = parseFloat(currencyAmount.value);
+        if (isNaN(amount)) {
+          currencyError.textContent = "Please enter a valid amount.";
+          return;
+        }
+
+        const from = currencyFrom.value;
+        const to = currencyTo.value;
+
+        if (from === to) {
+          const rounded = Math.round(amount * 1e4) / 1e4;
+          currencyResult.innerHTML = `
+            <div class="pill-result">
+              <span class="pill-dot"></span>
+              <span>${amount} ${from} = <strong>${rounded} ${to}</strong></span>
+            </div>
+          `;
+          currencyMeta.textContent = "Same currency selected.";
+          return;
+        }
+
+        try {
+          const url = `https://api.frankfurter.dev/v1/latest?base=${encodeURIComponent(from)}&symbols=${encodeURIComponent(to)}`;
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const data = await response.json();
+          const rate = data.rates && data.rates[to];
+
+          if (!rate) {
+            throw new Error("No rate found for this pair.");
+          }
+
+          const converted = amount * rate;
+          const rounded = Math.round(converted * 1e4) / 1e4;
+          const roundedRate = Math.round(rate * 1e6) / 1e6;
+
+          currencyResult.innerHTML = `
+            <div class="pill-result">
+              <span class="pill-dot"></span>
+              <span>${amount} ${from} = <strong>${rounded} ${to}</strong></span>
+            </div>
+          `;
+          currencyMeta.textContent = `1 ${from} ≈ ${roundedRate} ${to} · Date: ${data.date}`;
+        } catch (err) {
+          console.error(err);
+          currencyError.textContent = "Could not fetch live rates. Please check your internet connection.";
+        }
+      }
+
+      currencyBtn.addEventListener("click", convertCurrency);
+    });
+  </script>
+</body>
+</html>
