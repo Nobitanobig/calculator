@@ -23,6 +23,8 @@
     
     --border: #333333;
     --shadow: 0 4px 12px rgba(0,0,0,0.5);
+    
+    --modal-bg: rgba(0,0,0,0.8);
   }
 
   body[data-theme="light"]{
@@ -40,6 +42,8 @@
     
     --border: #d1d1d6;
     --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    
+    --modal-bg: rgba(255,255,255,0.8);
   }
 
   *{box-sizing:border-box;margin:0;padding:0; -webkit-tap-highlight-color: transparent;}
@@ -152,8 +156,9 @@
   }
   input:focus, textarea:focus { border-color: var(--accent); }
 
-  /* DROPDOWNS */
-  select { display: none; } 
+  /* DROPDOWNS - GHOST FIX APPLIED HERE */
+  select { display: none !important; } /* Force native select hidden */
+  
   .custom-dropdown { position: relative; width: 100%; font-size: 0.9rem; user-select: none; }
   .dropdown-trigger {
     justify-content: space-between; width: 100%; padding-right: 30px;
@@ -182,6 +187,20 @@
   .dropdown-item:hover { background: var(--btn-bg); }
   .dropdown-item.selected { color: var(--accent); font-weight: 600; background: rgba(128,128,128,0.1); }
   
+  /* CURRENCY MODAL */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 999;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(5px);
+  }
+  .modal-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+  .modal-card {
+    background: var(--card-bg); width: 90%; max-width: 320px;
+    padding: 24px; border-radius: 24px; border: 1px solid var(--border);
+    text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  
   /* CALCULATOR UI */
   .sc-switch{
     position: relative; width: 60px; height: 28px; background: var(--input-bg);
@@ -201,7 +220,6 @@
     min-height: 120px; display: flex; flex-direction: column; justify-content: flex-end;
   }
   
-  /* HISTORY */
   .history-label {
     position: absolute; top: 12px; left: 16px;
     font-size: 0.65rem; font-weight: 700; color: var(--accent); 
@@ -259,7 +277,6 @@
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
   .divider{ height: 1px; background: var(--border); margin: 16px 0; }
 
-  /* HEALTH & TEXT STATS GRID */
   .health-stats, .text-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
   .stat-box { 
     background: var(--input-bg); border-radius: 12px; padding: 12px; 
@@ -293,6 +310,26 @@
 </head>
 <body data-theme="dark">
 
+<div id="currency-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="card-title" style="margin-bottom:10px; font-size:1.2rem;">Select Currency</div>
+    <div style="margin-bottom:20px; color:var(--muted); font-size:0.9rem;">Choose your preferred currency for all tools.</div>
+    <select id="modal-currency-select" style="margin-bottom:20px; display:block !important; width:100%; padding:10px; border-radius:10px;">
+      <option value="₹">₹ INR</option>
+      <option value="$">$ USD</option>
+      <option value="€">€ EUR</option>
+      <option value="£">£ GBP</option>
+      <option value="¥">¥ JPY</option>
+      <option value="A$">A$ AUD</option>
+      <option value="C$">C$ CAD</option>
+      <option value="¥">¥ CNY</option>
+      <option value="₣">₣ CHF</option>
+      <option value="NZ$">NZ$ NZD</option>
+    </select>
+    <button id="modal-save-btn" class="btn btn-accent" style="width:100%">Get Started</button>
+  </div>
+</div>
+
 <div class="app">
   
   <header>
@@ -302,7 +339,18 @@
     </div>
     
     <div class="theme-block">
-      <button id="toggle-theme" class="pill">Dark / Light</button>
+      <select id="global-currency" class="pill" style="width:70px;">
+        <option value="₹">₹</option>
+        <option value="$">$</option>
+        <option value="€">€</option>
+        <option value="£">£</option>
+        <option value="¥">¥</option>
+        <option value="A$">A$</option>
+        <option value="C$">C$</option>
+        <option value="₣">₣</option>
+      </select>
+      
+      <button id="toggle-theme" class="pill">Dark/Light</button>
       <select id="theme-color">
         <option value="mono" selected>Default</option>
         <option value="orange">Orange</option>
@@ -379,16 +427,30 @@
         <div class="field flex-1"><label class="mini">Amount</label><input id="cur-amt" type="number" placeholder="1"></div>
         <div class="field flex-1"><label class="mini">From</label>
           <select id="cur-from">
-            <option value="USD" selected>USD</option><option value="EUR">EUR</option><option value="INR">INR</option>
-            <option value="GBP">GBP</option><option value="JPY">JPY</option><option value="AUD">AUD</option>
-            <option value="CAD">CAD</option><option value="CNY">CNY</option><option value="CHF">CHF</option><option value="NZD">NZD</option>
+            <option value="USD" selected>USD</option>
+            <option value="EUR">EUR</option>
+            <option value="INR">INR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+            <option value="AUD">AUD</option>
+            <option value="CAD">CAD</option>
+            <option value="CNY">CNY</option>
+            <option value="CHF">CHF</option>
+            <option value="NZD">NZD</option>
           </select>
         </div>
         <div class="field flex-1"><label class="mini">To</label>
           <select id="cur-to">
-            <option value="INR" selected>INR</option><option value="USD">USD</option><option value="EUR">EUR</option>
-            <option value="GBP">GBP</option><option value="JPY">JPY</option><option value="AUD">AUD</option>
-            <option value="CAD">CAD</option><option value="CNY">CNY</option><option value="CHF">CHF</option><option value="NZD">NZD</option>
+            <option value="INR" selected>INR</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+            <option value="AUD">AUD</option>
+            <option value="CAD">CAD</option>
+            <option value="CNY">CNY</option>
+            <option value="CHF">CHF</option>
+            <option value="NZD">NZD</option>
           </select>
         </div>
       </div>
@@ -431,7 +493,7 @@
 
       <div class="search-box">
         <div class="search-icon"></div>
-        <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, Fuel, Base)...">
+        <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, Fuel, BMI)...">
       </div>
 
       <div class="category-label">Finance</div>
@@ -611,10 +673,7 @@
       <div id="loan-panel" class="panel active">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">Monthly payments.</div></div>
-        <div class="row">
-           <div class="field" style="width:80px"><label class="mini">Currency</label><select id="emi-currency"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option></select></div>
-           <div class="field flex-1"><label class="mini">Loan Amount</label><input id="emi-principal" type="number" placeholder="100000"></div>
-        </div>
+        <div class="field"><label class="mini">Loan Amount</label><input id="emi-principal" type="number" placeholder="100000"></div>
         <div class="row">
           <div class="field flex-1"><label class="mini">Rate %</label><input id="emi-rate" type="number" step="0.1" placeholder="7.5"></div>
           <div class="field" style="width:80px"><label class="mini">Tenure</label><input id="emi-time" type="number" placeholder="5"></div>
@@ -655,10 +714,7 @@
       <div id="invest-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">SIP Calculator</div><div class="card-sub">Estimate returns.</div></div>
-        <div class="row">
-           <div class="field" style="width:80px"><label class="mini">Currency</label><select id="sip-currency"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option></select></div>
-          <div class="field flex-1"><label class="mini">Monthly</label><input id="sip-amt" type="number" placeholder="5000"></div>
-        </div>
+        <div class="field"><label class="mini">Monthly Amount</label><input id="sip-amt" type="number" placeholder="5000"></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
            <div class="field flex-1"><label class="mini">Years</label><input id="sip-years" type="number" placeholder="10"></div>
@@ -697,7 +753,49 @@
   const $ = id => document.getElementById(id);
   const formatNum = (num) => parseFloat(num.toFixed(4));
   
-  /* --- 1. SEARCH BAR LOGIC --- */
+  // --- GLOBAL VARIABLES ---
+  let expr = ''; 
+  let useDeg = true; 
+  let history = []; 
+  let globalSym = '₹'; // Default
+
+  /* --- 1. GLOBAL CURRENCY SYSTEM --- */
+  
+  // Check Local Storage on Load
+  const savedCurr = localStorage.getItem('calc_currency');
+  if (savedCurr) {
+      globalSym = savedCurr;
+      $('global-currency').value = savedCurr;
+  } else {
+      // Show Modal if no currency saved
+      setTimeout(() => $('currency-modal').classList.add('show'), 500);
+  }
+
+  // Modal Save Button
+  $('modal-save-btn').onclick = () => {
+      const selected = $('modal-currency-select').value;
+      setGlobalCurrency(selected);
+      $('currency-modal').classList.remove('show');
+  };
+
+  // Header Dropdown Change
+  $('global-currency').onchange = (e) => {
+      setGlobalCurrency(e.target.value);
+  };
+
+  function setGlobalCurrency(sym) {
+      globalSym = sym;
+      localStorage.setItem('calc_currency', sym);
+      $('global-currency').value = sym;
+      
+      // Update UI results immediately if they exist
+      if($('emi-result').textContent) $('emi-calc').click();
+      if($('sip-res').textContent) $('sip-btn').click();
+      if($('fuel-res').textContent) $('fuel-btn').click();
+      if($('goal-res').textContent) $('goal-btn').click();
+  }
+
+  /* --- 2. SEARCH BAR LOGIC --- */
   $('tool-search').addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
     const chips = document.querySelectorAll('.chip-btn');
@@ -718,11 +816,7 @@
     });
   });
 
-  /* --- 2. CALCULATOR LOGIC & SMART HISTORY --- */
-  let expr = ''; 
-  let useDeg = true; 
-  let history = []; 
-
+  /* --- 3. CALCULATOR LOGIC & SMART HISTORY --- */
   const updateHistory = (expression, result) => {
     history.push(`${expression} = ${result}`);
     if(history.length > 3) history.shift(); 
@@ -807,7 +901,7 @@
   };
   degBtn.classList.add('active-mode');
 
-  /* --- 3. HEALTH STATION --- */
+  /* --- 4. HEALTH STATION --- */
   $('h-btn').onclick = () => {
     const age = parseFloat($('h-age').value);
     const gender = $('h-gender').value;
@@ -817,15 +911,10 @@
     
     if(!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
     
-    // BMI
     const bmi = (w / ((h/100)*(h/100))).toFixed(1);
-    
-    // BMR
     let bmr = (10 * w) + (6.25 * h) - (5 * age);
     bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
     const tdee = Math.round(bmr * act);
-    
-    // Water & Protein
     const water = (w / 30).toFixed(1);
     const pFactor = 0.8 + (act - 1.2); 
     const protein = Math.round(w * pFactor);
@@ -845,7 +934,7 @@
       alert("BMI Categories (WHO):\n\n• Below 18.5: Underweight\n• 18.5 - 24.9: Normal\n• 25.0 - 29.9: Overweight\n• 30.0+: Obese");
   };
 
-  /* --- 4. NEW TOOLS (v1.6) --- */
+  /* --- 5. FINANCE TOOLS (USING GLOBAL CURRENCY) --- */
   
   // Fuel Cost
   $('fuel-btn').onclick = () => {
@@ -855,39 +944,88 @@
     if(!d || !m || !p) return;
     const fuelNeeded = d / m;
     const cost = fuelNeeded * p;
-    $('fuel-res').innerHTML = `Fuel Needed: ${formatNum(fuelNeeded)} L<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Total Cost: ₹${Math.round(cost)}</span>`;
+    $('fuel-res').innerHTML = `Fuel Needed: ${formatNum(fuelNeeded)} L<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Total Cost: ${globalSym}${Math.round(cost)}</span>`;
   };
 
-  // Goal Planner (Reverse SIP)
+  // Goal Planner
   $('goal-btn').onclick = () => {
     const target = parseFloat($('goal-target').value);
-    const t = parseFloat($('goal-time').value); // Years
-    const r = parseFloat($('goal-rate').value); // Yearly %
-    
+    const t = parseFloat($('goal-time').value); 
+    const r = parseFloat($('goal-rate').value); 
     if(!target || !t || !r) return;
-    
-    const i = r / 1200; // Monthly Rate
-    const n = t * 12;   // Months
-    
-    // SIP Formula: FV = P * [ (1+i)^n - 1 ] / i * (1+i)
-    // Reverse: P = FV / ( [ (1+i)^n - 1 ] / i * (1+i) )
-    
+    const i = r / 1200; 
+    const n = t * 12;   
     const factor = ( (Math.pow(1+i, n) - 1) / i ) * (1+i);
     const monthly = target / factor;
-    
-    $('goal-res').innerHTML = `To reach goal in ${t} years:<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Invest ₹${Math.round(monthly)} / month</span>`;
+    $('goal-res').innerHTML = `To reach goal in ${t} years:<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Invest ${globalSym}${Math.round(monthly)} / month</span>`;
   };
 
+  // Bill Splitter
+  $('bill-btn').onclick = () => {
+    const amt = parseFloat($('bill-amt').value);
+    const tip = parseFloat($('bill-tip').value) || 0;
+    const ppl = parseFloat($('bill-ppl').value) || 1;
+    if(!amt) return;
+    const totalTip = (amt * tip) / 100;
+    const total = amt + totalTip;
+    const perPerson = total / ppl;
+    $('bill-res').innerHTML = `Tip: ${formatNum(totalTip)} | Total: ${formatNum(total)}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${globalSym}${formatNum(perPerson)}</span>`;
+  };
+
+  // Compound Interest
+  $('ci-btn').onclick = () => {
+    const p = parseFloat($('ci-p').value);
+    const r = parseFloat($('ci-r').value)/100;
+    const t = parseFloat($('ci-t').value);
+    const n = parseFloat($('ci-n').value);
+    if(!p || !r || !t) return;
+    const amount = p * Math.pow((1 + r/n), (n*t));
+    const interest = amount - p;
+    $('ci-res').innerHTML = `Invested: ${Math.round(p)} | Interest: <span style="color:#22c55e">+${Math.round(interest)}</span><br><span style="font-size:1.1rem; font-weight:600">Total: ${globalSym}${Math.round(amount)}</span>`;
+  };
+
+  // EMI
+  $('emi-calc').onclick = () => {
+    const p = parseFloat($('emi-principal').value);
+    const r = parseFloat($('emi-rate').value)/1200;
+    const timeVal = parseFloat($('emi-time').value);
+    const timeUnit = $('emi-unit').value;
+    if(!p || !timeVal) return;
+    const n = timeUnit === 'years' ? timeVal * 12 : timeVal;
+    const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+    const totalPay = emi * n;
+    $('emi-result').textContent = `EMI: ${globalSym}${Math.round(emi)}\nInterest: ${globalSym}${Math.round(totalPay-p)}\nTotal: ${globalSym}${Math.round(totalPay)}`;
+    $('emi-result').style.whiteSpace = 'pre-wrap';
+  };
+  
+  // SIP
+  $('sip-btn').onclick = () => {
+     const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
+     const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
+     $('sip-res').textContent = `Total Value: ${globalSym}${Math.round(val)}`;
+  }
+
+  // GST
+  const calcGST = (mode) => {
+    const amt = parseFloat($('gst-amt').value); const rate = parseFloat($('gst-rate').value);
+    if(isNaN(amt)||isNaN(rate)) return;
+    let net, gst, total;
+    if(mode==='add'){ gst=(amt*rate)/100; total=amt+gst; net=amt; }
+    else{ net=(amt*100)/(100+rate); gst=amt-net; total=amt; }
+    $('gst-res').innerHTML=`Net: ${formatNum(net)} | GST: ${formatNum(gst)} | <b style="color:var(--accent)">Total: ${globalSym}${formatNum(total)}</b>`;
+  };
+  $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
+
+  /* --- 6. OTHER TOOLS --- */
+  
   // Text Tools
   const updateTextStats = () => {
     const txt = $('txt-in').value;
     $('txt-chars').textContent = txt.length;
-    // Split by whitespace and filter empty strings
     const words = txt.trim().split(/\s+/).filter(w => w.length > 0).length;
     $('txt-words').textContent = words;
   };
   $('txt-in').addEventListener('input', updateTextStats);
-  
   $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); updateTextStats(); };
   $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); updateTextStats(); };
   $('txt-clear').onclick = () => { $('txt-in').value = ''; updateTextStats(); };
@@ -897,27 +1035,18 @@
     const num = $('base-num').value;
     const from = parseInt($('base-from').value);
     if(!num) return;
-    
     try {
       const dec = parseInt(num, from);
       if(isNaN(dec)) throw new Error();
-      
-      const bin = dec.toString(2);
-      const oct = dec.toString(8); // Optional
-      const hex = dec.toString(16).toUpperCase();
-      const decVal = dec.toString(10);
-      
       $('base-res').innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>DEC:</span> <b>${decVal}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>BIN:</span> <b>${bin}</b></div>
-        <div style="display:flex; justify-content:space-between;"><span>HEX:</span> <b>${hex}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>DEC:</span> <b>${dec.toString(10)}</b></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>BIN:</span> <b>${dec.toString(2)}</b></div>
+        <div style="display:flex; justify-content:space-between;"><span>HEX:</span> <b>${dec.toString(16).toUpperCase()}</b></div>
       `;
-    } catch {
-      $('base-res').textContent = "Invalid Number for Base";
-    }
+    } catch { $('base-res').textContent = "Invalid Number"; }
   };
 
-  /* --- 5. TOP & EXISTING TOOLS --- */
+  /* --- 7. TOP & EXISTING TOOLS --- */
   $('age-btn').onclick = () => {
     const dVal=$('dob-input').value; if(!dVal)return;
     const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
@@ -949,7 +1078,11 @@
     $('qr-image').src = url;
   }
 
-  // Converters (Ghost Dropdown Fix)
+  $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
+  $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
+  $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
+
+  // Converters (NUCLEAR FIX)
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
       let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
@@ -966,18 +1099,18 @@
     
     fS.innerHTML = ''; tS.innerHTML = '';
     
-    [fS, tS].forEach(el => {
-        el.removeAttribute('data-customized');
-        el.style.display = 'block'; 
-        if(el.nextElementSibling && el.nextElementSibling.classList.contains('custom-dropdown')) {
-            el.nextElementSibling.remove();
-        }
-    });
+    // NUCLEAR REMOVAL of old custom dropdowns
+    const panel = $('unit-panel');
+    panel.querySelectorAll('.custom-dropdown').forEach(d => d.remove());
+    
+    // Reset attributes
+    panel.querySelectorAll('select').forEach(s => s.removeAttribute('data-customized'));
 
     data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
     if(tS.options.length > 1) tS.selectedIndex = 1;
 
-    initCustomDropdowns($('unit-panel'));
+    // Fresh Init
+    initCustomDropdowns(panel);
   }
   $('u-type').onchange = renderUnits;
   
@@ -991,63 +1124,6 @@
      f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
      if($('u-val').value) $('u-btn').click();
   }
-
-  $('bill-btn').onclick = () => {
-    const amt = parseFloat($('bill-amt').value);
-    const tip = parseFloat($('bill-tip').value) || 0;
-    const ppl = parseFloat($('bill-ppl').value) || 1;
-    if(!amt) return;
-    const totalTip = (amt * tip) / 100;
-    const total = amt + totalTip;
-    const perPerson = total / ppl;
-    $('bill-res').innerHTML = `Tip: ${formatNum(totalTip)} | Total: ${formatNum(total)}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${formatNum(perPerson)}</span>`;
-  };
-
-  $('ci-btn').onclick = () => {
-    const p = parseFloat($('ci-p').value);
-    const r = parseFloat($('ci-r').value)/100;
-    const t = parseFloat($('ci-t').value);
-    const n = parseFloat($('ci-n').value);
-    if(!p || !r || !t) return;
-    const amount = p * Math.pow((1 + r/n), (n*t));
-    const interest = amount - p;
-    $('ci-res').innerHTML = `Invested: ${Math.round(p)} | Interest: <span style="color:#22c55e">+${Math.round(interest)}</span><br><span style="font-size:1.1rem; font-weight:600">Total: ${Math.round(amount)}</span>`;
-  };
-
-  $('emi-calc').onclick = () => {
-    const cur = $('emi-currency').value;
-    const p = parseFloat($('emi-principal').value);
-    const r = parseFloat($('emi-rate').value)/1200;
-    const timeVal = parseFloat($('emi-time').value);
-    const timeUnit = $('emi-unit').value;
-    if(!p || !timeVal) return;
-    const n = timeUnit === 'years' ? timeVal * 12 : timeVal;
-    const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    const totalPay = emi * n;
-    $('emi-result').textContent = `EMI: ${cur}${Math.round(emi)}\nInterest: ${cur}${Math.round(totalPay-p)}\nTotal: ${cur}${Math.round(totalPay)}`;
-    $('emi-result').style.whiteSpace = 'pre-wrap';
-  };
-  
-  const calcGST = (mode) => {
-    const amt = parseFloat($('gst-amt').value); const rate = parseFloat($('gst-rate').value);
-    if(isNaN(amt)||isNaN(rate)) return;
-    let net, gst, total;
-    if(mode==='add'){ gst=(amt*rate)/100; total=amt+gst; net=amt; }
-    else{ net=(amt*100)/(100+rate); gst=amt-net; total=amt; }
-    $('gst-res').innerHTML=`Net: ${formatNum(net)} | GST: ${formatNum(gst)} | <b style="color:var(--accent)">Total: ${formatNum(total)}</b>`;
-  };
-  $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
-
-  $('sip-btn').onclick = () => {
-     const cur = $('sip-currency').value;
-     const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
-     const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
-     $('sip-res').textContent = `Total Value: ${cur}${Math.round(val)}`;
-  }
-
-  $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
-  $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
-  $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
 
   /* --- SYSTEM FUNCTIONS --- */
   function initCustomDropdowns(scope = document) {
