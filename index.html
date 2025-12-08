@@ -23,6 +23,8 @@
     
     --border: #333333;
     --shadow: 0 4px 12px rgba(0,0,0,0.5);
+    
+    --modal-bg: rgba(0,0,0,0.8);
   }
 
   body[data-theme="light"]{
@@ -40,6 +42,8 @@
     
     --border: #d1d1d6;
     --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    
+    --modal-bg: rgba(255,255,255,0.8);
   }
 
   *{box-sizing:border-box;margin:0;padding:0; -webkit-tap-highlight-color: transparent;}
@@ -153,14 +157,13 @@
   input:focus, textarea:focus { border-color: var(--accent); }
 
   /* DROPDOWNS */
-  select { display: none; } /* Standard hiding */
+  select { display: none !important; } 
   
   .custom-dropdown { position: relative; width: 100%; font-size: 0.9rem; user-select: none; }
   .dropdown-trigger {
     justify-content: space-between; width: 100%; padding-right: 30px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 60px;
   }
-  /* Specific styling for the Currency Selector in More Tools */
   .card-header .custom-dropdown { width: auto; min-width: 90px; }
   
   .dropdown-trigger::after {
@@ -176,7 +179,7 @@
     max-height: 250px; overflow-y: auto; flex-direction: column; padding: 6px;
     animation: fadeIn 0.15s ease-out;
   }
-  .card-header .dropdown-menu { left: auto; right: 0; } /* Align right for header dropdowns */
+  .card-header .dropdown-menu { left: auto; right: 0; }
   .custom-dropdown.active .dropdown-menu { display: flex; }
   .dropdown-item {
     padding: 10px 12px; cursor: pointer; border-radius: 8px; color: var(--text);
@@ -200,6 +203,22 @@
   }
   .modal-card .custom-dropdown { margin-bottom: 20px; text-align: left; }
   
+  /* NEW TABS LAYOUT (Version 1.9) */
+  .tab-bar {
+    display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; 
+    padding-bottom: 4px; border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    background: transparent; color: var(--muted); border: none;
+    padding: 8px 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    border-radius: 8px; transition: 0.2s; white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text); background: var(--input-bg); }
+  .tab-btn.active { color: var(--accent-text); background: var(--accent); }
+  
+  .tab-content { display: none; animation: fadeIn 0.2s ease; }
+  .tab-content.active { display: block; }
+
   /* CALCULATOR UI */
   .sc-switch{
     position: relative; width: 60px; height: 28px; background: var(--input-bg);
@@ -258,11 +277,6 @@
   .result-text{ margin-top: 8px; font-size: 0.95rem; font-weight: 500; line-height: 1.5; }
   .muted-text { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
   
-  /* CHIPS & CATEGORIES */
-  .category-label {
-    font-size: 0.75rem; font-weight: 600; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 10px 4px;
-  }
   .chips{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 5px; }
   .chip-btn{
     background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--border);
@@ -502,33 +516,42 @@
         <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, Fuel, BMI)...">
       </div>
 
-      <div class="category-label">Finance</div>
-      <div class="chips">
-        <button class="chip-btn active" data-panel="loan-panel">Loan / EMI</button>
-        <button class="chip-btn" data-panel="gst-panel">GST / VAT</button>
-        <button class="chip-btn" data-panel="invest-panel">SIP / Invest</button>
-        <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
-        <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
-        <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="tab-finance">Finance</button>
+        <button class="tab-btn" data-tab="tab-health">Health</button>
+        <button class="tab-btn" data-tab="tab-travel">Travel</button>
+        <button class="tab-btn" data-tab="tab-tools">Tools</button>
       </div>
 
-      <div class="category-label">Health</div>
-      <div class="chips">
-        <button class="chip-btn" data-panel="health-panel">Health Station (BMI/BMR)</button>
-      </div>
-      
-      <div class="category-label">Travel</div>
-      <div class="chips">
-        <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
+      <div id="tab-finance" class="tab-content active">
+        <div class="chips">
+          <button class="chip-btn active" data-panel="loan-panel">Loan</button>
+          <button class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> <button class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button> <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
+          <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
+          <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
+        </div>
       </div>
 
-      <div class="category-label">Other Tools</div>
-      <div class="chips">
-        <button class="chip-btn" data-panel="unit-panel">Converters</button>
-        <button class="chip-btn" data-panel="time-panel">Day Counter</button>
-        <button class="chip-btn" data-panel="text-panel">Text Tools</button>
-        <button class="chip-btn" data-panel="base-panel">Base Converter</button>
-        <button class="chip-btn" data-panel="gpa-panel">GPA</button>
+      <div id="tab-health" class="tab-content">
+        <div class="chips">
+          <button class="chip-btn" data-panel="health-panel">Health Station</button>
+        </div>
+      </div>
+
+      <div id="tab-travel" class="tab-content">
+        <div class="chips">
+          <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
+        </div>
+      </div>
+
+      <div id="tab-tools" class="tab-content">
+        <div class="chips">
+          <button class="chip-btn" data-panel="unit-panel">Converters</button>
+          <button class="chip-btn" data-panel="time-panel">Day Counter</button>
+          <button class="chip-btn" data-panel="text-panel">Text Tools</button>
+          <button class="chip-btn" data-panel="base-panel">Base Converter</button>
+          <button class="chip-btn" data-panel="gpa-panel">GPA</button>
+        </div>
       </div>
 
       <div id="fuel-panel" class="panel">
@@ -691,14 +714,17 @@
 
       <div id="gst-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GST / VAT</div><div class="card-sub">Add or Remove Tax.</div></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title" id="gst-title">GST / VAT</div>
+           <div class="card-sub">Add or Remove Tax.</div>
+        </div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Amount</label><input id="gst-amt" type="number" placeholder="1000"></div>
            <div class="field flex-1"><label class="mini">Tax Rate %</label><input id="gst-rate" type="number" placeholder="18"></div>
         </div>
         <div class="row" style="margin-top:15px; gap:10px;">
-          <button id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add GST (+)</button>
-          <button id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove GST (-)</button>
+          <button id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add Tax (+)</button>
+          <button id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove Tax (-)</button>
         </div>
         <div id="gst-res" class="result-text"></div>
       </div>
@@ -719,7 +745,10 @@
 
       <div id="invest-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">SIP Calculator</div><div class="card-sub">Estimate returns.</div></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title" id="sip-title">SIP Calculator</div>
+           <div class="card-sub">Estimate returns.</div>
+        </div>
         <div class="field"><label class="mini">Monthly Amount</label><input id="sip-amt" type="number" placeholder="5000"></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
@@ -763,17 +792,15 @@
   let expr = ''; 
   let useDeg = true; 
   let history = []; 
-  let globalSym = '₹'; // Default fallback
+  let globalSym = '₹'; 
 
-  /* --- 1. GLOBAL CURRENCY SYSTEM --- */
+  /* --- 1. GLOBAL CURRENCY SYSTEM & DYNAMIC RENAMING --- */
   
   // Check Local Storage on Load
   const savedCurr = localStorage.getItem('calc_currency');
   if (savedCurr) {
-      globalSym = savedCurr;
-      $('global-currency').value = savedCurr; // Sync header dropdown
+      setGlobalCurrency(savedCurr);
   } else {
-      // Show Modal if no currency saved (First Visit)
       setTimeout(() => $('currency-modal').classList.add('show'), 500);
   }
 
@@ -784,7 +811,7 @@
       $('currency-modal').classList.remove('show');
   };
 
-  // More Tools Dropdown Change
+  // Header Dropdown Change
   $('global-currency').onchange = (e) => {
       setGlobalCurrency(e.target.value);
   };
@@ -792,40 +819,97 @@
   function setGlobalCurrency(sym) {
       globalSym = sym;
       localStorage.setItem('calc_currency', sym);
-      $('global-currency').value = sym;
       
-      // Update UI results immediately if they exist (Live Refresh)
+      // Sync selectors
+      $('global-currency').value = sym;
+      $('modal-currency-select').value = sym;
+      
+      // --- DYNAMIC NAMING LOGIC (Smart Tax/Invest) ---
+      const taxBtn = $('btn-tax');
+      const invBtn = $('btn-invest');
+      const gstTitle = $('gst-title');
+      const sipTitle = $('sip-title');
+
+      // 1. Tax Logic (GST vs VAT vs Tax)
+      if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) {
+          taxBtn.textContent = "GST";
+          gstTitle.textContent = "GST Calculator";
+      } else if (['€', '£'].includes(sym)) {
+          taxBtn.textContent = "VAT";
+          gstTitle.textContent = "VAT Calculator";
+      } else {
+          taxBtn.textContent = "Tax";
+          gstTitle.textContent = "Tax Calculator";
+      }
+
+      // 2. Invest Logic (SIP vs Invest)
+      if (sym === '₹') {
+          invBtn.textContent = "SIP";
+          sipTitle.textContent = "SIP Calculator";
+      } else {
+          invBtn.textContent = "Invest";
+          sipTitle.textContent = "Investment Calc";
+      }
+      
+      // Update Results if they exist
       if($('emi-result').textContent) $('emi-calc').click();
       if($('sip-res').textContent) $('sip-btn').click();
       if($('fuel-res').textContent) $('fuel-btn').click();
       if($('goal-res').textContent) $('goal-btn').click();
       if($('bill-res').textContent) $('bill-btn').click();
       if($('ci-res').textContent) $('ci-btn').click();
-      if($('gst-res').textContent) { /* Re-trigger last GST action if possible, or just wait */ }
+      if($('gst-res').textContent) $('gst-add').click(); // Refresh Tax calc
   }
 
-  /* --- 2. SEARCH BAR LOGIC --- */
+  /* --- 2. TABS & SEARCH LOGIC --- */
+  
+  // Tab Switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.onclick = () => {
+      // Remove active class from all
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      // Activate clicked
+      btn.classList.add('active');
+      $(btn.dataset.tab).classList.add('active');
+    };
+  });
+
+  // Smart Search (Searches across ALL tabs)
   $('tool-search').addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
     const chips = document.querySelectorAll('.chip-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const tabBar = document.querySelector('.tab-bar');
     
-    chips.forEach(chip => {
-      const label = chip.textContent.toLowerCase();
-      if(label.includes(term) || chip.dataset.panel.includes(term)) {
-        chip.classList.remove('hidden');
-      } else {
-        chip.classList.add('hidden');
-      }
-    });
-    
-    document.querySelectorAll('.category-label').forEach(lbl => {
-      const nextChips = lbl.nextElementSibling;
-      const visible = nextChips.querySelectorAll('.chip-btn:not(.hidden)').length > 0;
-      lbl.style.display = visible ? 'block' : 'none';
-    });
+    if (term.length > 0) {
+      // Search Mode: Show all contents, hide tab bar
+      tabContents.forEach(c => c.style.display = 'block');
+      tabBar.style.display = 'none';
+      
+      chips.forEach(chip => {
+        const label = chip.textContent.toLowerCase();
+        if(label.includes(term) || chip.dataset.panel.includes(term)) {
+          chip.classList.remove('hidden');
+        } else {
+          chip.classList.add('hidden');
+        }
+      });
+    } else {
+      // Normal Mode: Revert to tabs
+      tabContents.forEach(c => c.style.display = ''); // Clear inline style
+      tabBar.style.display = 'flex';
+      chips.forEach(c => c.classList.remove('hidden'));
+      
+      // Restore active tab
+      const activeTabId = document.querySelector('.tab-btn.active').dataset.tab;
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      $(activeTabId).classList.add('active');
+    }
   });
 
-  /* --- 3. CALCULATOR LOGIC & SMART HISTORY --- */
+  /* --- 3. CALCULATOR LOGIC --- */
   const updateHistory = (expression, result) => {
     history.push(`${expression} = ${result}`);
     if(history.length > 3) history.shift(); 
@@ -882,7 +966,6 @@
   };
 
   $('calc-back').onclick = () => { expr=expr.slice(0,-1); upd(); };
-  
   $('calc-copy').onclick = () => {
     const res = $('calc-result').textContent;
     navigator.clipboard.writeText(res).then(() => {
@@ -943,9 +1026,7 @@
       alert("BMI Categories (WHO):\n\n• Below 18.5: Underweight\n• 18.5 - 24.9: Normal\n• 25.0 - 29.9: Overweight\n• 30.0+: Obese");
   };
 
-  /* --- 5. FINANCE TOOLS (USING GLOBAL SYMBOL) --- */
-  
-  // Fuel Cost
+  /* --- 5. FINANCE & TOOLS --- */
   $('fuel-btn').onclick = () => {
     const d = parseFloat($('fuel-dist').value);
     const m = parseFloat($('fuel-mil').value);
@@ -956,20 +1037,17 @@
     $('fuel-res').innerHTML = `Fuel Needed: ${formatNum(fuelNeeded)} L<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Total Cost: ${globalSym}${Math.round(cost)}</span>`;
   };
 
-  // Goal Planner
   $('goal-btn').onclick = () => {
     const target = parseFloat($('goal-target').value);
     const t = parseFloat($('goal-time').value); 
     const r = parseFloat($('goal-rate').value); 
     if(!target || !t || !r) return;
-    const i = r / 1200; 
-    const n = t * 12;   
+    const i = r / 1200; const n = t * 12;   
     const factor = ( (Math.pow(1+i, n) - 1) / i ) * (1+i);
     const monthly = target / factor;
     $('goal-res').innerHTML = `To reach goal in ${t} years:<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Invest ${globalSym}${Math.round(monthly)} / month</span>`;
   };
 
-  // Bill Splitter
   $('bill-btn').onclick = () => {
     const amt = parseFloat($('bill-amt').value);
     const tip = parseFloat($('bill-tip').value) || 0;
@@ -981,7 +1059,6 @@
     $('bill-res').innerHTML = `Tip: ${formatNum(totalTip)} | Total: ${formatNum(total)}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${globalSym}${formatNum(perPerson)}</span>`;
   };
 
-  // Compound Interest
   $('ci-btn').onclick = () => {
     const p = parseFloat($('ci-p').value);
     const r = parseFloat($('ci-r').value)/100;
@@ -993,7 +1070,6 @@
     $('ci-res').innerHTML = `Invested: ${Math.round(p)} | Interest: <span style="color:#22c55e">+${Math.round(interest)}</span><br><span style="font-size:1.1rem; font-weight:600">Total: ${globalSym}${Math.round(amount)}</span>`;
   };
 
-  // EMI (Now uses Global Sym)
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value);
     const r = parseFloat($('emi-rate').value)/1200;
@@ -1007,26 +1083,22 @@
     $('emi-result').style.whiteSpace = 'pre-wrap';
   };
   
-  // SIP (Now uses Global Sym)
   $('sip-btn').onclick = () => {
      const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
      const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
      $('sip-res').textContent = `Total Value: ${globalSym}${Math.round(val)}`;
   }
 
-  // GST (Now uses Global Sym)
   const calcGST = (mode) => {
     const amt = parseFloat($('gst-amt').value); const rate = parseFloat($('gst-rate').value);
     if(isNaN(amt)||isNaN(rate)) return;
     let net, gst, total;
     if(mode==='add'){ gst=(amt*rate)/100; total=amt+gst; net=amt; }
     else{ net=(amt*100)/(100+rate); gst=amt-net; total=amt; }
-    $('gst-res').innerHTML=`Net: ${formatNum(net)} | GST: ${formatNum(gst)} | <b style="color:var(--accent)">Total: ${globalSym}${formatNum(total)}</b>`;
+    $('gst-res').innerHTML=`Net: ${formatNum(net)} | Tax: ${formatNum(gst)} | <b style="color:var(--accent)">Total: ${globalSym}${formatNum(total)}</b>`;
   };
   $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
 
-  /* --- 6. OTHER TOOLS --- */
-  
   // Text Tools
   const updateTextStats = () => {
     const txt = $('txt-in').value;
@@ -1055,7 +1127,7 @@
     } catch { $('base-res').textContent = "Invalid Number"; }
   };
 
-  /* --- 7. TOP & EXISTING TOOLS --- */
+  /* --- 6. TOP TOOLS & SYSTEM --- */
   $('age-btn').onclick = () => {
     const dVal=$('dob-input').value; if(!dVal)return;
     const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
@@ -1091,7 +1163,7 @@
   $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
   $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
 
-  // Converters (NUCLEAR FIX RE-APPLIED)
+  // Converters
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
       let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
@@ -1105,10 +1177,8 @@
   function renderUnits(){
     const type = $('u-type').value; const data = uData[type];
     const fS = $('u-from'); const tS = $('u-to');
-    
     fS.innerHTML = ''; tS.innerHTML = '';
     
-    // NUCLEAR REMOVAL
     const panel = $('unit-panel');
     panel.querySelectorAll('.custom-dropdown').forEach(d => d.remove());
     panel.querySelectorAll('select').forEach(s => s.removeAttribute('data-customized'));
@@ -1131,7 +1201,7 @@
      if($('u-val').value) $('u-btn').click();
   }
 
-  /* --- SYSTEM FUNCTIONS --- */
+  // System
   function initCustomDropdowns(scope = document) {
     scope.querySelectorAll('select:not([data-customized])').forEach(select => {
       select.setAttribute('data-customized', 'true');
@@ -1182,7 +1252,12 @@
   
   document.querySelectorAll('.chip-btn').forEach(b => b.onclick = () => {
      document.querySelectorAll('.chip-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); $(b.dataset.panel).classList.add('active');
+     // Logic for Tabbed Panels: Show the panel, hide others in the same tab
+     const panel = $(b.dataset.panel);
+     const parentTab = panel.parentElement; // .tab-content (Wait, no, panel is direct child of main)
+     // Correction: Panels are all siblings. We need to hide all panels, then show this one.
+     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+     panel.classList.add('active');
   });
 
   // Init
