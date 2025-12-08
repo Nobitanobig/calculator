@@ -7,16 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* DARK THEME DEFAULT */
+    /* DARK THEME VARIABLES */
     --bg: #000000;
     --text: #ffffff;
     --muted: #a1a1aa;
     
-    /* Default Accent (Monochrome/White for Dark Mode) */
+    /* Default Accent (Will be updated by JS) */
     --accent: #ffffff; 
     --accent-text: #000000;
     
-    /* Component Backgrounds */
     --card-bg: #121212;
     --input-bg: #1c1c1c;
     --btn-bg: #262626;
@@ -27,15 +26,15 @@
   }
 
   body[data-theme="light"]{
+    /* LIGHT THEME VARIABLES */
     --bg: #f2f2f7;
     --text: #000000;
     --muted: #666666;
     
-    /* Light Mode Accents */
+    /* Default Accent for Light Mode */
     --accent: #000000;
     --accent-text: #ffffff;
 
-    /* Component Backgrounds */
     --card-bg: #ffffff;
     --input-bg: #f2f2f7;
     --btn-bg: #e5e5ea;
@@ -58,12 +57,11 @@
     display: flex;
     justify-content: center;
     transition: background-color 0.3s ease, color 0.3s ease;
-    padding: 0; /* Removed body padding to lose 'boxed' feel */
   }
 
   .app{
     width: 100%;
-    max-width: 800px; /* Limits width on desktop but feels native on mobile */
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px 16px;
     display: flex;
@@ -95,7 +93,6 @@
     margin-top: 2px;
   }
   
-  /* THEME CONTROLS (Right Side) */
   .theme-block{
     display: flex;
     flex-direction: column;
@@ -156,19 +153,20 @@
     color: var(--text);
     border: 1px solid var(--border);
     padding: 10px 12px;
-    border-radius: 12px;
+    border-radius: 14px; /* More rounded/modern */
     font-size: 0.9rem;
     outline: none;
-    appearance: none; /* Fixes default ugly dropdowns */
+    appearance: none; 
     transition: border 0.2s;
   }
-  /* Custom arrow for selects to ensure visibility */
+  /* Modern styling for Dropdowns */
   select {
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 10px center;
+    background-position: right 12px center;
     background-size: 16px;
-    padding-right: 30px; 
+    padding-right: 36px;
+    cursor: pointer;
   }
   input:focus, select:focus, textarea:focus {
     border-color: var(--accent);
@@ -190,14 +188,14 @@
   .sc-knob{
     width: 22px;
     height: 22px;
-    background: var(--text); /* Monochrome knob */
+    background: var(--text);
     border-radius: 50%;
     transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
   .sc-switch.on .sc-knob{
     transform: translateX(30px);
-    background: var(--accent); /* Only color when active */
+    background: var(--accent);
   }
   .sc-label{
     position: absolute;
@@ -209,7 +207,7 @@
   }
 
   .calc-display{
-    background: var(--input-bg); /* Matches input style */
+    background: var(--input-bg);
     border-radius: 16px;
     padding: 16px;
     margin-bottom: 16px;
@@ -225,7 +223,6 @@
     font-weight: 500;
     color: var(--text);
   }
-
   .calc-grid{
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -236,7 +233,7 @@
     background: var(--btn-bg);
     color: var(--btn-text);
     border: none;
-    border-radius: 50px; /* Round pill shape */
+    border-radius: 50px;
     padding: 12px 0;
     font-size: 1.1rem;
     font-weight: 500;
@@ -248,10 +245,12 @@
   }
   .btn:active{ transform: scale(0.96); }
   
-  /* Accent Buttons (Calculate, Equal, etc.) */
+  /* Accent Buttons - Reduced Height as requested */
   .btn-accent{
     background: var(--accent);
     color: var(--accent-text);
+    padding: 10px 0; /* Reduced padding */
+    font-size: 1rem; /* Slightly smaller font */
   }
   
   .small{
@@ -269,13 +268,14 @@
   .field{ display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
   .mini{ font-size: 0.75rem; color: var(--muted); padding-left: 4px;}
   .result-text{ margin-top: 8px; font-size: 0.95rem; font-weight: 500; }
+  .muted-text { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
   
-  /* CHIPS (More Calculators) */
+  /* CHIPS */
   .chips{
     display: flex;
-    flex-wrap: wrap; /* Wrap to 2nd line */
+    flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 20px; /* Space between chips and opened box */
+    margin-bottom: 20px;
   }
   .chip-btn{
     background: var(--btn-bg);
@@ -300,6 +300,38 @@
 
   .divider{ height: 1px; background: var(--border); margin: 16px 0; }
 
+  /* QR Result Area */
+  .qr-container {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+  }
+  .qr-img {
+    border-radius: 8px;
+    border: 4px solid #fff;
+    max-width: 180px;
+    display: none; /* Hidden initially */
+  }
+  .loading-txt {
+    font-size: 0.8rem;
+    color: var(--accent);
+    display: none;
+    margin-bottom: 10px;
+  }
+
+  /* Link styling */
+  .link-btn {
+    text-decoration: none;
+    font-size: 0.75rem;
+    color: var(--muted);
+    border-bottom: 1px dotted var(--muted);
+    cursor: pointer;
+  }
+
+  /* Footer & Heartbeat */
   footer{
     text-align: center;
     padding: 20px 0;
@@ -308,6 +340,20 @@
     border-top: 1px solid var(--border);
     margin-top: 20px;
   }
+  .heart {
+    display: inline-block;
+    color: var(--accent);
+    animation: heartbeat 1.5s infinite;
+  }
+  @keyframes heartbeat {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.3); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.3); }
+    60% { transform: scale(1); }
+    100% { transform: scale(1); }
+  }
+
 </style>
 </head>
 <body data-theme="dark">
@@ -317,13 +363,13 @@
   <header>
     <div class="brand">
       <h1>Smart AI Calculator</h1>
-      <div class="subtitle">Minimal, fast & tuned for mobile.</div>
+      <div class="subtitle">Minimal, fast & versatile.</div>
     </div>
     
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
       <select id="theme-color" class="theme-select">
-        <option value="mono">B&W (Default)</option>
+        <option value="mono">Default</option>
         <option value="orange">Orange</option>
         <option value="blue">Blue</option>
         <option value="green">Green</option>
@@ -408,6 +454,10 @@
         <button id="cur-swap" class="btn small" style="width:50px">⇄</button>
       </div>
       <div id="cur-res" class="result-text"></div>
+      <div id="cur-info" class="muted-text"></div>
+      <div id="cur-source" class="muted-text" style="display:none;">
+        <a href="https://www.frankfurter.app" target="_blank" class="link-btn">Data Source: Frankfurter API</a>
+      </div>
     </section>
 
     <section class="card">
@@ -418,9 +468,12 @@
         <label class="mini">Text or URL</label>
         <input id="qr-text" type="text" placeholder="https://example.com">
       </div>
-      <div class="row">
-        <button id="qr-btn" class="btn btn-accent flex-1">Generate</button>
-        <a id="qr-link" class="btn small" href="#" target="_blank">Open</a>
+      <button id="qr-btn" class="btn btn-accent" style="width:100%">Generate</button>
+      
+      <div class="qr-container">
+        <div id="qr-loading" class="loading-txt">Generating QR Code...</div>
+        <img id="qr-image" class="qr-img" alt="QR Code" />
+        <a id="qr-download" class="link-btn" style="display:none; margin-top:10px;">Download Image</a>
       </div>
     </section>
 
@@ -537,7 +590,7 @@
   </main>
 
   <footer>
-    Made With <span style="color:var(--accent)">❤️</span> By Avinash Gupta!
+    Made With <span class="heart">❤️</span> By Avinash Gupta!
   </footer>
 </div>
 
@@ -547,13 +600,13 @@
   /* --- THEME LOGIC --- */
   function updateThemeColors(themeName) {
     const root = document.documentElement;
-    let accent, accentText;
-    
-    // Check if body is in light mode to adjust text colors
     const isLight = document.body.dataset.theme === 'light';
+    let accent, accentText;
+
+    // Logic: In Light Mode, colors (Blue, Orange) should still look like colors.
+    // In "Default/Mono" mode, it switches based on theme.
 
     if (themeName === 'mono') {
-      // Monochrome: Accent matches text color (high contrast)
       accent = isLight ? '#000000' : '#ffffff';
       accentText = isLight ? '#ffffff' : '#000000';
     } else if (themeName === 'orange') {
@@ -577,7 +630,7 @@
     const next = current === 'light' ? 'dark' : 'light';
     body.dataset.theme = next;
     
-    // Re-apply current selected color to adjust for light/dark mode if Mono is selected
+    // Refresh accent to handle Mono switch or Color persistence
     updateThemeColors($('theme-color').value);
   });
 
@@ -587,7 +640,7 @@
   });
 
   // Initialize
-  updateThemeColors('mono'); // Default B&W
+  updateThemeColors('mono');
 
   /* --- CALCULATOR LOGIC --- */
   let expression = '';
@@ -596,22 +649,16 @@
   
   function updateDisplay(){ exprEl.textContent = expression; }
   
-  // Safe Eval
   function calculate() {
     try {
       let safe = expression.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,Math.PI);
-      // Basic validation
       if(/[^0-9+\-*/(). %eE]/.test(safe.replace(/sin|cos|tan|sqrt|ln|log|pow/g,''))) throw "Inv";
-      
       const val = new Function('Math', 'return ' + safe)(Math);
       if(!isFinite(val) || isNaN(val)) throw "Err";
-      resEl.textContent = Number(val.toFixed(8)); // Clean decimal
-    } catch(e) {
-      resEl.textContent = "Error";
-    }
+      resEl.textContent = Number(val.toFixed(8));
+    } catch(e) { resEl.textContent = "Error"; }
   }
 
-  // Build Numpad
   const keys = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
   const grid = $('calc-grid');
   keys.forEach(k => {
@@ -631,7 +678,6 @@
   $('calc-back').onclick = () => { expression=expression.slice(0,-1); updateDisplay(); };
   $('calc-copy').onclick = () => { navigator.clipboard.writeText(resEl.textContent); };
 
-  // Sci Toggle
   const sciToggle = $('sc-switch');
   sciToggle.onclick = () => {
     sciToggle.classList.toggle('on');
@@ -639,7 +685,6 @@
     $('sci-keys').style.display = isOn ? 'grid' : 'none';
   };
 
-  // Sci Keys
   document.querySelectorAll('#sci-keys .btn').forEach(b => {
     b.onclick = () => {
       let fn = b.dataset.fn;
@@ -650,9 +695,7 @@
     }
   });
 
-  /* --- OTHER UTILS --- */
-  
-  // Tabs
+  /* --- TAB LOGIC --- */
   document.querySelectorAll('.chip-btn').forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active'));
@@ -662,10 +705,86 @@
     };
   });
 
-  // Simple Unit Logic
+  /* --- AGE CALCULATOR (Precise) --- */
+  $('age-btn').onclick = () => {
+    const dobInput = $('dob-input').value;
+    if(!dobInput) return;
+    const dob = new Date(dobInput);
+    const today = new Date();
+    
+    let y = today.getFullYear() - dob.getFullYear();
+    let m = today.getMonth() - dob.getMonth();
+    let d = today.getDate() - dob.getDate();
+
+    if (d < 0) {
+      m--;
+      const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+      d += prevMonth.getDate();
+    }
+    if (m < 0) {
+      y--;
+      m += 12;
+    }
+
+    $('age-result').textContent = `${y} Years, ${m} Months, ${d} Days`;
+  }
+
+  /* --- CURRENCY CONVERTER (With Source & Time) --- */
+  $('cur-btn').onclick = async () => {
+    const amt = $('cur-amt').value || 1;
+    const f = $('cur-from').value, t = $('cur-to').value;
+    $('cur-res').textContent = "Fetching...";
+    $('cur-info').textContent = "";
+    $('cur-source').style.display = "none";
+    
+    try {
+      const req = await fetch(`https://api.frankfurter.app/latest?amount=${amt}&from=${f}&to=${t}`);
+      const data = await req.json();
+      $('cur-res').textContent = `${amt} ${f} = ${data.rates[t]} ${t}`;
+      
+      const date = new Date(data.date).toLocaleDateString();
+      const now = new Date().toLocaleTimeString();
+      $('cur-info').textContent = `Live rates as per ${date} (updated daily)`;
+      $('cur-source').style.display = "block";
+    } catch(e){ $('cur-res').textContent = "Error fetching rates"; }
+  }
+
+  /* --- QR GENERATOR (Inline) --- */
+  $('qr-btn').onclick = () => {
+    const txt = $('qr-text').value;
+    if(!txt) return;
+    
+    const loading = $('qr-loading');
+    const img = $('qr-image');
+    const dlLink = $('qr-download');
+    
+    // UI Reset
+    img.style.display = 'none';
+    dlLink.style.display = 'none';
+    loading.style.display = 'block';
+
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
+    
+    img.onload = () => {
+      loading.style.display = 'none';
+      img.style.display = 'block';
+      
+      // Setup Download Link
+      fetch(url)
+        .then(res => res.blob())
+        .then(blob => {
+          const blobUrl = URL.createObjectURL(blob);
+          dlLink.href = blobUrl;
+          dlLink.download = "qrcode.png";
+          dlLink.style.display = "inline-block";
+        });
+    };
+    img.src = url;
+  }
+
+  /* --- UNIT CONVERTER SETUP --- */
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
-      // simplified: convert all to m, then to target
       let m = v;
       if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
       if(t==='m') return m; if(t==='cm') return m*100; if(t==='ft') return m*3.2808; if(t==='in') return m*39.37;
@@ -685,7 +804,7 @@
     });
   }
   $('u-type').onchange = renderUnits;
-  renderUnits(); // init
+  renderUnits(); 
 
   $('u-btn').onclick = () => {
     const v = parseFloat($('u-val').value);
@@ -695,46 +814,19 @@
     $('u-res').textContent = res.toFixed(4);
   }
 
-  // Basic Handlers for other tools
-  $('age-btn').onclick = () => {
-    const dob = new Date($('dob-input').value);
-    const diff = new Date() - dob;
-    const ageDate = new Date(diff); 
-    if(isNaN(diff)) return;
-    $('age-result').textContent = `Age: ${Math.abs(ageDate.getUTCFullYear() - 1970)} Years`;
-  }
-
-  $('cur-btn').onclick = async () => {
-    const amt = $('cur-amt').value || 1;
-    const f = $('cur-from').value, t = $('cur-to').value;
-    $('cur-res').textContent = "Fetching...";
-    try {
-      const req = await fetch(`https://api.frankfurter.app/latest?amount=${amt}&from=${f}&to=${t}`);
-      const data = await req.json();
-      $('cur-res').textContent = `${amt} ${f} = ${data.rates[t]} ${t}`;
-    } catch(e){ $('cur-res').textContent = "Error fetching rates"; }
-  }
-
-  $('qr-btn').onclick = () => {
-    const txt = $('qr-text').value || "https://google.com";
-    $('qr-link').href = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(txt)}`;
-  }
-
-  // EMI
+  /* --- OTHER UTILS --- */
   $('emi-calc').onclick = () => {
     const p = $('emi-principal').value, r = $('emi-rate').value/1200, n = $('emi-years').value*12;
     const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
     $('emi-result').textContent = "EMI: " + (emi?emi.toFixed(2):0);
   }
   
-  // SIP
   $('sip-btn').onclick = () => {
      const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
      const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
      $('sip-res').textContent = "Value: " + (val?val.toFixed(2):0);
   }
 
-  // Password
   $('pw-btn').onclick = () => {
     const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
     let len = $('pw-len').value, out = "";
@@ -742,7 +834,6 @@
     $('pw-res').textContent = out;
   }
   
-  // GPA
   $('gpa-btn').onclick = () => {
     const nums = $('gpa-in').value.split(',').map(Number).filter(n => !isNaN(n));
     if(!nums.length) return;
@@ -750,7 +841,6 @@
     $('gpa-res').textContent = "Average: " + avg.toFixed(2);
   }
   
-  // Time Diff
   $('time-diff').onclick = () => {
       const d1 = new Date($('time-start').value);
       const d2 = new Date($('time-end').value);
@@ -759,7 +849,6 @@
       $('time-result').textContent = isNaN(days) ? "Select dates" : days + " days";
   }
   
-  // BMI
   $('bmi-btn').onclick = () => {
       const w = parseFloat($('bmi-w').value);
       const h = parseFloat($('bmi-h').value)/100;
