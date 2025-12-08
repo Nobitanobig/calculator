@@ -1,1167 +1,916 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Smart Minimal Calculator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Optional: Google Font for a clean look -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #050816;
-      --bg-soft: #0f172a;
-      --card-bg: rgba(15, 23, 42, 0.85);
-      --card-border: rgba(148, 163, 184, 0.35);
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.12);
-      --accent-2: #a855f7;
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --danger: #f97373;
-      --radius-xl: 22px;
-      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.6);
-      --transition-fast: 0.16s ease-out;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      color: var(--text-main);
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.15), transparent 60%),
-        var(--bg);
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      padding: 18px;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 1200px;
-      margin: auto;
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.92));
-      border-radius: 28px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      box-shadow: var(--shadow-soft);
-      padding: 18px 18px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      backdrop-filter: blur(18px);
-    }
-
-    header {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      padding: 6px 6px 2px;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 16px;
-      background: radial-gradient(circle at 20% 20%, #38bdf8, #a855f7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 18px;
-      color: #0b1120;
-      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
-    }
-
-    .title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    h1 {
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
-    .subtitle {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    .tagline {
-      font-size: 0.75rem;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), transparent);
-      color: #e0f2fe;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .tag-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 2px 4px 6px;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      gap: 16px;
-    }
-
-    @media (max-width: 960px) {
-      .card-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      body {
-        padding: 12px;
-      }
-      .app {
-        border-radius: 20px;
-      }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--card-border);
-      padding: 14px 14px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.7);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%);
-      opacity: 0;
-      transition: opacity var(--transition-fast);
-      pointer-events: none;
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-title {
-      font-size: 0.98rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-pill {
-      font-size: 0.64rem;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: #e0f2fe;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-    }
-
-    .card-desc {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .card-body {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    /* BASIC CALCULATOR STYLES */
-    .calc-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .calc-display {
-      background: radial-gradient(circle at top right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
-      border-radius: 18px;
-      padding: 10px 12px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-height: 64px;
-    }
-
-    .calc-expression {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-align: right;
-      word-wrap: break-word;
-      min-height: 18px;
-    }
-
-    .calc-result {
-      font-size: 1.3rem;
-      font-weight: 500;
-      text-align: right;
-      word-wrap: break-word;
-    }
-
-    .calc-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      background: rgba(15, 23, 42, 0.85);
-      padding: 8px 0;
-      font-size: 0.86rem;
-      color: var(--text-main);
-      cursor: pointer;
-      outline: none;
-      transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(14px);
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      border-color: rgba(56, 189, 248, 0.6);
-      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.9);
-      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.95));
-    }
-
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 0 5px 14px rgba(15, 23, 42, 0.9);
-    }
-
-    .btn-accent {
-      background: linear-gradient(135deg, #38bdf8, #a855f7);
-      color: #0b1120;
-      border-color: transparent;
-      font-weight: 600;
-    }
-
-    .btn-accent:hover {
-      background: linear-gradient(135deg, #0ea5e9, #c084fc);
-      color: #020617;
-    }
-
-    .btn-soft {
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .btn-span-2 {
-      grid-column: span 2;
-    }
-
-    .btn-danger {
-      color: #fecaca;
-      border-color: rgba(248, 113, 113, 0.6);
-      background: rgba(127, 29, 29, 0.5);
-    }
-
-    .btn-danger:hover {
-      background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.35), rgba(15, 23, 42, 0.95));
-    }
-
-    /* INPUTS / FORMS */
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 0.76rem;
-    }
-
-    .field-row {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    label {
-      font-size: 0.76rem;
-      color: var(--text-muted);
-    }
-
-    input[type="number"],
-    input[type="date"],
-    select {
-      width: 100%;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 0.78rem;
-      outline: none;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
-    }
-
-    input[type="number"]:focus,
-    input[type="date"]:focus,
-    select:focus {
-      border-color: rgba(56, 189, 248, 0.9);
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8);
-      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.95));
-      transform: translateY(-0.5px);
-    }
-
-    input::placeholder {
-      color: rgba(148, 163, 184, 0.7);
-    }
-
-    .mini-label {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .result-text {
-      font-size: 0.8rem;
-      margin-top: 2px;
-      color: #e0f2fe;
-    }
-
-    .result-muted {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-    }
-
-    .pill-result {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      background: rgba(15, 23, 42, 0.9);
-      font-size: 0.72rem;
-      margin-top: 2px;
-    }
-
-    .pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    .text-danger {
-      color: #fecaca;
-      font-size: 0.74rem;
-    }
-
-    .stack-sm {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .stack-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .flex-1 {
-      flex: 1 1 0;
-    }
-
-    .badge-outline {
-      font-size: 0.7rem;
-      border-radius: 999px;
-      border: 1px dashed rgba(148, 163, 184, 0.6);
-      padding: 3px 8px;
-      color: var(--text-muted);
-    }
-
-    /* BMI category colors */
-    .bmi-tag {
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 0.7rem;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .bmi-under {
-      background: rgba(56, 189, 248, 0.18);
-      border: 1px solid rgba(56, 189, 248, 0.6);
-      color: #e0f2fe;
-    }
-    .bmi-normal {
-      background: rgba(34, 197, 94, 0.18);
-      border: 1px solid rgba(34, 197, 94, 0.7);
-      color: #bbf7d0;
-    }
-    .bmi-over {
-      background: rgba(250, 204, 21, 0.18);
-      border: 1px solid rgba(250, 204, 21, 0.7);
-      color: #fef9c3;
-    }
-    .bmi-obese {
-      background: rgba(248, 113, 113, 0.18);
-      border: 1px solid rgba(248, 113, 113, 0.7);
-      color: #fee2e2;
-    }
-
-    /* FOOTER */
-    footer {
-      font-size: 0.76rem;
-      color: var(--text-muted);
-      border-top: 1px solid rgba(148, 163, 184, 0.25);
-      padding-top: 8px;
-      margin-top: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .heart {
-      display: inline-block;
-      margin: 0 2px;
-      animation: heartbeat 1.3s ease-in-out infinite;
-      transform-origin: center;
-    }
-
-    @keyframes heartbeat {
-      0% { transform: scale(1); }
-      15% { transform: scale(1.25); }
-      30% { transform: scale(1); }
-      45% { transform: scale(1.25); }
-      60% { transform: scale(1); }
-      100% { transform: scale(1); }
-    }
-
-    /* Sub-grid for converters */
-    .subgrid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    @media (max-width: 720px) {
-      .subgrid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Smart Minimal Calculator — All Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000;
+    --card:#0b0b0b;
+    --muted:#9ca3af;
+    --text:#f8f8f8;
+    --accent:#ef4444; /* red default */
+    --accent-2:#7f1d1d;
+    --card-border:rgba(255,255,255,0.04);
+    --radius:18px;
+    --glass: rgba(255,255,255,0.02);
+  }
+  [data-theme="light"]{
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --text: #0b1220;
+    --accent: #ef4444;
+    --accent-2: #b91c1c;
+    --card-border: rgba(10,10,10,0.04);
+    --glass: rgba(0,0,0,0.03);
+  }
+  html,body{height:100%;margin:0;font-family:Poppins,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+  body{background:linear-gradient(180deg,#060606 0%, #0a0a0a 100%);background-color:var(--bg);color:var(--text);padding:18px;box-sizing:border-box;}
+  .wrap{max-width:1200px;margin:0 auto;background:linear-gradient(180deg,var(--card), rgba(0,0,0,0.6));border-radius:24px;padding:14px;border:1px solid var(--card-border);box-shadow:0 12px 50px rgba(0,0,0,0.6);}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-bottom:1px solid var(--card-border);gap:12px}
+  .brand{display:flex;gap:10px;align-items:center}
+  .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#0b0b0b}
+  h1{font-size:1.2rem;margin:0}
+  .subtitle{color:var(--muted);font-size:0.82rem}
+  main{display:grid;grid-template-columns:1.2fr .9fr;gap:14px;padding:12px}
+  @media(max-width:980px){main{grid-template-columns:1fr;}}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));border-radius:var(--radius);padding:12px;border:1px solid var(--card-border)}
+  .card h3{margin:0 0 6px 0}
+  .calc-display{background:var(--glass);padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .expr{color:var(--muted);font-size:0.9rem;min-height:18px;word-break:break-all}
+  .res{font-size:1.6rem;font-weight:600;text-align:right}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+  .btn{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);cursor:pointer;font-weight:600}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-accent{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#fff;border:none;box-shadow:0 6px 18px rgba(0,0,0,0.5)}
+  .small{font-size:0.85rem;padding:8px;border-radius:10px}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+  input[type=number],select,input[type=date],textarea,input[type=text]{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.05);background:transparent;color:var(--text);outline:none}
+  .row{display:flex;gap:8px;align-items:center}
+  .flex{flex:1}
+  footer{display:flex;align-items:center;justify-content:center;padding:10px;margin-top:10px;border-top:1px solid var(--card-border);gap:8px;color:var(--muted)}
+  .heart{display:inline-block;animation:beat 1.2s ease-in-out infinite}
+  @keyframes beat{0%{transform:scale(1)}25%{transform:scale(1.25)}50%{transform:scale(1)}75%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .tools{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:980px){.tools{grid-template-columns:1fr}}
+  .pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);display:inline-flex;gap:8px;align-items:center}
+  .muted{color:var(--muted);font-size:0.9rem}
+  .result{margin-top:6px;color:var(--text);font-weight:600}
+  /* theme selector */
+  .theme-row{display:flex;gap:8px;align-items:center}
+  .theme-swatch{width:34px;height:34px;border-radius:8px;border:2px solid rgba(255,255,255,0.06);cursor:pointer}
+  .theme-swatch[data-sel="1"]{box-shadow:0 6px 20px rgba(0,0,0,0.6);transform:scale(1.04)}
+  .mini{font-size:0.78rem;color:var(--muted)}
+  .tools-vertical{display:flex;flex-direction:column;gap:8px}
+  .big{font-size:1rem;padding:12px;border-radius:12px}
+  .code-note{font-size:0.78rem;color:var(--muted);margin-top:6px}
+  .right-col{display:flex;flex-direction:column;gap:12px}
+  .compact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .center{display:flex;align-items:center;justify-content:center}
+  .card-scroll{max-height:520px;overflow:auto;padding-right:6px}
+  .divider{height:1px;background:var(--card-border);margin:8px 0}
+</style>
 </head>
-<body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="logo">Σ</div>
-        <div class="title-wrap">
-          <h1>Smart Minimal Calculator</h1>
-          <p class="subtitle">Multi-purpose tools in one clean screen.</p>
+<body data-theme="dark">
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">Σ</div>
+      <div>
+        <h1>Smart Minimal Calculator</h1>
+        <div class="subtitle">All-in-one utilities — now with themes & AI</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:center">
+      <div style="display:flex;flex-direction:column;align-items:flex-end">
+        <label class="mini">Theme</label>
+        <div class="theme-row">
+          <button id="toggle-theme" class="pill small">Dark / Light</button>
+          <div title="Black + Red" class="theme-swatch" id="th-0" style="background:linear-gradient(180deg,#000,#2b0000)"></div>
+          <div title="Midnight Blue" class="theme-swatch" id="th-1" style="background:linear-gradient(180deg,#001527,#003a6b)"></div>
+          <div title="Emerald" class="theme-swatch" id="th-2" style="background:linear-gradient(180deg,#01220f,#0f5132)"></div>
+          <div title="Purple" class="theme-swatch" id="th-3" style="background:linear-gradient(180deg,#240046,#6a00f4)"></div>
         </div>
       </div>
-      <div class="tagline">
-        <span class="tag-dot"></span>
-        Always up-to-date currency · Everyday utilities
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT: Calculator + advanced tools -->
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="pill">Basic Calculator</div>
+          <div class="muted">Keyboard friendly — includes scientific mode</div>
+        </div>
+        <div>
+          <label class="mini">Scientific</label>
+          <input type="checkbox" id="sc-toggle" />
+        </div>
       </div>
-    </header>
 
-    <main>
-      <div class="card-grid">
-        <!-- LEFT COLUMN: MAIN CALCULATOR + AGE -->
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">
-                Basic Calculator
-                <span class="card-pill">Math · Quick ops</span>
-              </div>
-              <p class="card-desc">Handles daily calculations with a minimal, keyboard-friendly layout.</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="calc-wrapper">
-              <div class="calc-display">
-                <div id="calc-expression" class="calc-expression"></div>
-                <div id="calc-result" class="calc-result">0</div>
-              </div>
-              <div class="calc-grid" aria-label="Calculator keypad">
-                <button class="btn btn-soft" data-calc="clear">AC</button>
-                <button class="btn btn-soft" data-calc="back">⌫</button>
-                <button class="btn btn-soft" data-input="%">%</button>
-                <button class="btn btn-soft" data-input="/">÷</button>
-
-                <button class="btn" data-input="7">7</button>
-                <button class="btn" data-input="8">8</button>
-                <button class="btn" data-input="9">9</button>
-                <button class="btn btn-soft" data-input="*">×</button>
-
-                <button class="btn" data-input="4">4</button>
-                <button class="btn" data-input="5">5</button>
-                <button class="btn" data-input="6">6</button>
-                <button class="btn btn-soft" data-input="-">−</button>
-
-                <button class="btn" data-input="1">1</button>
-                <button class="btn" data-input="2">2</button>
-                <button class="btn" data-input="3">3</button>
-                <button class="btn btn-soft" data-input="+">+</button>
-
-                <button class="btn btn-span-2" data-input="0">0</button>
-                <button class="btn" data-input=".">.</button>
-                <button class="btn btn-accent" data-calc="equals">=</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card-header" style="margin-top: 10px;">
-            <div>
-              <div class="card-title">
-                Age Calculator
-                <span class="card-pill">DOB → Years</span>
-              </div>
-              <p class="card-desc">Find your exact age in years, months, and days.</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="stack-sm">
-              <div class="field-group">
-                <label for="dob-input">Date of birth</label>
-                <input type="date" id="dob-input" />
-              </div>
-              <div class="field-row">
-                <button id="age-btn" class="btn btn-accent flex-1">Calculate Age</button>
-                <span class="badge-outline">Uses your device date</span>
-              </div>
-              <div id="age-result" class="result-text"></div>
-              <div id="age-error" class="text-danger"></div>
-            </div>
-          </div>
-        </section>
-
-        <!-- RIGHT COLUMN: CONVERTERS + BMI + CURRENCY -->
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">
-                Everyday Converters
-                <span class="card-pill">Height · Weight · Temp</span>
-              </div>
-              <p class="card-desc">Quickly convert units you actually need daily.</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="subgrid">
-              <!-- HEIGHT / LENGTH -->
-              <div>
-                <h3 class="mini-label">Height / Length</h3>
-                <p class="card-desc" style="margin-bottom: 4px;">Supports m ↔ cm, cm ↔ ft / in, and more.</p>
-                <div class="stack-sm">
-                  <div class="field-group">
-                    <label for="length-value">Value</label>
-                    <input type="number" step="any" id="length-value" placeholder="e.g. 1.75" />
-                  </div>
-                  <div class="stack-row">
-                    <div class="field-group flex-1">
-                      <label for="length-from">From</label>
-                      <select id="length-from">
-                        <option value="m">Meters (m)</option>
-                        <option value="cm">Centimeters (cm)</option>
-                        <option value="ft">Feet (ft)</option>
-                        <option value="in">Inches (in)</option>
-                      </select>
-                    </div>
-                    <div class="field-group flex-1">
-                      <label for="length-to">To</label>
-                      <select id="length-to">
-                        <option value="cm">Centimeters (cm)</option>
-                        <option value="m">Meters (m)</option>
-                        <option value="ft">Feet (ft)</option>
-                        <option value="in">Inches (in)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <button id="length-btn" class="btn btn-soft">Convert Height</button>
-                  <div id="length-result" class="result-text"></div>
-                </div>
-              </div>
-
-              <!-- WEIGHT -->
-              <div>
-                <h3 class="mini-label">Weight</h3>
-                <p class="card-desc" style="margin-bottom: 4px;">Convert kg ↔ pounds quickly.</p>
-                <div class="stack-sm">
-                  <div class="field-group">
-                    <label for="weight-value">Value</label>
-                    <input type="number" step="any" id="weight-value" placeholder="e.g. 70" />
-                  </div>
-                  <div class="stack-row">
-                    <div class="field-group flex-1">
-                      <label for="weight-from">From</label>
-                      <select id="weight-from">
-                        <option value="kg">Kilograms (kg)</option>
-                        <option value="lb">Pounds (lb)</option>
-                      </select>
-                    </div>
-                    <div class="field-group flex-1">
-                      <label for="weight-to">To</label>
-                      <select id="weight-to">
-                        <option value="lb">Pounds (lb)</option>
-                        <option value="kg">Kilograms (kg)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <button id="weight-btn" class="btn btn-soft">Convert Weight</button>
-                  <div id="weight-result" class="result-text"></div>
-                </div>
-              </div>
-
-              <!-- TEMPERATURE -->
-              <div>
-                <h3 class="mini-label">Temperature</h3>
-                <p class="card-desc" style="margin-bottom: 4px;">Switch between Celsius and Fahrenheit.</p>
-                <div class="stack-sm">
-                  <div class="field-group">
-                    <label for="temp-value">Value</label>
-                    <input type="number" step="any" id="temp-value" placeholder="e.g. 37" />
-                  </div>
-                  <div class="stack-row">
-                    <div class="field-group flex-1">
-                      <label for="temp-from">From</label>
-                      <select id="temp-from">
-                        <option value="C">°C</option>
-                        <option value="F">°F</option>
-                      </select>
-                    </div>
-                    <div class="field-group flex-1">
-                      <label for="temp-to">To</label>
-                      <select id="temp-to">
-                        <option value="F">°F</option>
-                        <option value="C">°C</option>
-                      </select>
-                    </div>
-                  </div>
-                  <button id="temp-btn" class="btn btn-soft">Convert Temperature</button>
-                  <div id="temp-result" class="result-text"></div>
-                </div>
-              </div>
-
-              <!-- BMI -->
-              <div>
-                <h3 class="mini-label">BMI Calculator</h3>
-                <p class="card-desc" style="margin-bottom: 4px;">Estimate your Body Mass Index.</p>
-                <div class="stack-sm">
-                  <div class="stack-row">
-                    <div class="field-group flex-1">
-                      <label for="bmi-weight">Weight (kg)</label>
-                      <input type="number" step="any" id="bmi-weight" placeholder="e.g. 70" />
-                    </div>
-                    <div class="field-group flex-1">
-                      <label for="bmi-height">Height (cm)</label>
-                      <input type="number" step="any" id="bmi-height" placeholder="e.g. 175" />
-                    </div>
-                  </div>
-                  <button id="bmi-btn" class="btn btn-soft">Calculate BMI</button>
-                  <div id="bmi-result" class="result-text"></div>
-                  <div class="result-muted">
-                    <span class="mini-label">Guide:</span>
-                    <span>Underweight &lt; 18.5 · Normal 18.5–24.9 · Overweight 25–29.9 · Obese ≥ 30</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- CURRENCY CARD -->
-          <div class="card-header" style="margin-top: 10px;">
-            <div>
-              <div class="card-title">
-                Currency Converter
-                <span class="card-pill">Live rates (ECB)</span>
-              </div>
-              <p class="card-desc">
-                Converts using the latest daily exchange rates from
-                <span style="color:#bae6fd;">Frankfurter API</span>.
-              </p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="stack-sm">
-              <div class="stack-row">
-                <div class="field-group flex-1">
-                  <label for="currency-amount">Amount</label>
-                  <input type="number" step="any" id="currency-amount" placeholder="e.g. 1" />
-                </div>
-                <div class="field-group flex-1">
-                  <label for="currency-from">From</label>
-                  <select id="currency-from">
-                    <option value="USD">USD – US Dollar</option>
-                    <option value="EUR">EUR – Euro</option>
-                    <option value="INR">INR – Indian Rupee</option>
-                    <option value="GBP">GBP – British Pound</option>
-                    <option value="JPY">JPY – Japanese Yen</option>
-                  </select>
-                </div>
-                <div class="field-group flex-1">
-                  <label for="currency-to">To</label>
-                  <select id="currency-to">
-                    <option value="INR">INR – Indian Rupee</option>
-                    <option value="USD">USD – US Dollar</option>
-                    <option value="EUR">EUR – Euro</option>
-                    <option value="GBP">GBP – British Pound</option>
-                    <option value="JPY">JPY – Japanese Yen</option>
-                  </select>
-                </div>
-              </div>
-              <div class="field-row">
-                <button id="currency-btn" class="btn btn-accent flex-1">Convert Currency</button>
-                <button id="currency-swap" class="btn btn-soft" title="Swap currencies">⇄</button>
-              </div>
-              <div id="currency-result" class="result-text"></div>
-              <div id="currency-meta" class="result-muted"></div>
-              <div id="currency-error" class="text-danger"></div>
-            </div>
-          </div>
-        </section>
+      <div style="margin-top:12px" class="calc-display">
+        <div id="expr" class="expr"></div>
+        <div id="res" class="res">0</div>
       </div>
-    </main>
 
-    <footer>
-      <span>Made With</span>
-      <span class="heart">❤️</span>
-      <span>By Avinash Gupta!</span>
-    </footer>
-  </div>
+      <div class="grid" id="calc-grid">
+        <!-- buttons injected by JS for easier mode toggle -->
+      </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      /* BASIC CALCULATOR LOGIC */
-      const exprEl = document.getElementById("calc-expression");
-      const resultEl = document.getElementById("calc-result");
-      let calcExpression = "";
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-accent" id="calc-equals">=</button>
+        <button class="btn" id="calc-clear">AC</button>
+        <button class="btn" id="calc-back">⌫</button>
+        <button class="btn" id="calc-copy">Copy</button>
+      </div>
 
-      function updateDisplay() {
-        exprEl.textContent = calcExpression || "";
-      }
+      <div class="divider"></div>
 
-      function safeEvaluate(expression) {
-        // Allow only digits, operators, parentheses, decimal, space, %.
-        if (!/^[0-9+\-*/.%()\s]+$/.test(expression)) {
-          return "Err";
-        }
-        try {
-          const fn = new Function('"use strict"; return (' + expression + ");");
-          const value = fn();
-          if (typeof value === "number" && isFinite(value)) {
-            const rounded = Math.round(value * 1e10) / 1e10;
-            return rounded;
-          }
-          return "Err";
-        } catch (e) {
-          return "Err";
-        }
-      }
+      <!-- Scientific quick keys -->
+      <div id="sci-keys" style="display:none;margin-top:8px" class="compact-grid">
+        <button class="btn small" data-fn="sin">sin</button>
+        <button class="btn small" data-fn="cos">cos</button>
+        <button class="btn small" data-fn="tan">tan</button>
+        <button class="btn small" data-fn="sqrt">√</button>
+        <button class="btn small" data-fn="pow">xʸ</button>
+        <button class="btn small" data-fn="ln">ln</button>
+        <button class="btn small" data-fn="log">log</button>
+        <button class="btn small" data-fn="pi">π</button>
+      </div>
 
-      document.querySelectorAll("[data-input]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const char = btn.getAttribute("data-input");
-          calcExpression += char;
-          updateDisplay();
-        });
-      });
+      <div class="divider"></div>
 
-      document.querySelectorAll("[data-calc]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const action = btn.getAttribute("data-calc");
-          if (action === "clear") {
-            calcExpression = "";
-            resultEl.textContent = "0";
-            updateDisplay();
-          } else if (action === "back") {
-            calcExpression = calcExpression.slice(0, -1);
-            updateDisplay();
-          } else if (action === "equals") {
-            if (!calcExpression.trim()) {
-              resultEl.textContent = "0";
-              return;
-            }
-            const res = safeEvaluate(calcExpression);
-            resultEl.textContent = res;
-          }
-        });
-      });
-
-      // Allow Enter key to trigger equals, Esc to clear
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          const equalsBtn = document.querySelector('[data-calc="equals"]');
-          if (equalsBtn) equalsBtn.click();
-        } else if (e.key === "Escape") {
-          const clearBtn = document.querySelector('[data-calc="clear"]');
-          if (clearBtn) clearBtn.click();
-        }
-      });
-
-      /* AGE CALCULATOR */
-      const dobInput = document.getElementById("dob-input");
-      const ageBtn = document.getElementById("age-btn");
-      const ageResult = document.getElementById("age-result");
-      const ageError = document.getElementById("age-error");
-
-      ageBtn.addEventListener("click", () => {
-        ageError.textContent = "";
-        ageResult.textContent = "";
-
-        const dobValue = dobInput.value;
-        if (!dobValue) {
-          ageError.textContent = "Please select your date of birth.";
-          return;
-        }
-
-        const dob = new Date(dobValue + "T00:00:00");
-        const today = new Date();
-
-        if (dob > today) {
-          ageError.textContent = "Your birth date is in the future. Please check again.";
-          return;
-        }
-
-        let years = today.getFullYear() - dob.getFullYear();
-        let months = today.getMonth() - dob.getMonth();
-        let days = today.getDate() - dob.getDate();
-
-        if (days < 0) {
-          const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-          days += prevMonth.getDate();
-          months--;
-        }
-        if (months < 0) {
-          months += 12;
-          years--;
-        }
-
-        ageResult.textContent = `You are ${years} years, ${months} months, and ${days} days old.`;
-      });
-
-      /* LENGTH / HEIGHT CONVERTER */
-      const lengthValue = document.getElementById("length-value");
-      const lengthFrom = document.getElementById("length-from");
-      const lengthTo = document.getElementById("length-to");
-      const lengthBtn = document.getElementById("length-btn");
-      const lengthResult = document.getElementById("length-result");
-
-      function toMeters(value, unit) {
-        switch (unit) {
-          case "m": return value;
-          case "cm": return value / 100;
-          case "ft": return value * 0.3048;
-          case "in": return value * 0.0254;
-          default: return NaN;
-        }
-      }
-
-      function fromMeters(m, unit) {
-        switch (unit) {
-          case "m": return m;
-          case "cm": return m * 100;
-          case "ft": return m / 0.3048;
-          case "in": return m / 0.0254;
-          default: return NaN;
-        }
-      }
-
-      lengthBtn.addEventListener("click", () => {
-        const val = parseFloat(lengthValue.value);
-        lengthResult.textContent = "";
-        if (isNaN(val)) {
-          lengthResult.textContent = "Please enter a valid number.";
-          return;
-        }
-        const from = lengthFrom.value;
-        const to = lengthTo.value;
-        if (from === to) {
-          lengthResult.innerHTML = `<span class="pill-result"><span class="pill-dot"></span><span>${val.toFixed(4)} ${to}</span></span>`;
-          return;
-        }
-
-        const meters = toMeters(val, from);
-        if (!isFinite(meters)) {
-          lengthResult.textContent = "Unsupported unit.";
-          return;
-        }
-        const converted = fromMeters(meters, to);
-        const rounded = Math.round(converted * 1e4) / 1e4;
-
-        let extra = "";
-        if ((from === "m" && to === "cm") || (from === "cm" && to === "m")) {
-          extra = "Perfect for height conversions.";
-        }
-        if ((from === "cm" && to === "ft") || (from === "m" && to === "ft")) {
-          const feet = Math.floor(converted);
-          const inches = (converted - feet) * 12;
-          const inchesRounded = Math.round(inches * 10) / 10;
-          extra = `${feet} ft ${inchesRounded} in`;
-        }
-
-        lengthResult.innerHTML = `
-          <div class="pill-result">
-            <span class="pill-dot"></span>
-            <span>${val} ${from} = <strong>${rounded} ${to}</strong></span>
+      <!-- Loan / EMI -->
+      <h3>Loan / EMI Calculator</h3>
+      <div class="tools-vertical">
+        <div class="row">
+          <div class="field flex">
+            <label>Principal</label>
+            <input id="emi-principal" type="number" placeholder="100000" />
           </div>
-          ${extra ? `<div class="result-muted" style="margin-top:4px;">${extra}</div>` : ""}
-        `;
-      });
-
-      /* WEIGHT CONVERTER */
-      const weightValue = document.getElementById("weight-value");
-      const weightFrom = document.getElementById("weight-from");
-      const weightTo = document.getElementById("weight-to");
-      const weightBtn = document.getElementById("weight-btn");
-      const weightResult = document.getElementById("weight-result");
-
-      weightBtn.addEventListener("click", () => {
-        const val = parseFloat(weightValue.value);
-        weightResult.textContent = "";
-        if (isNaN(val)) {
-          weightResult.textContent = "Please enter a valid number.";
-          return;
-        }
-        const from = weightFrom.value;
-        const to = weightTo.value;
-
-        if (from === to) {
-          weightResult.innerHTML = `<span class="pill-result"><span class="pill-dot"></span><span>${val.toFixed(2)} ${to}</span></span>`;
-          return;
-        }
-
-        let converted;
-        if (from === "kg" && to === "lb") {
-          converted = val * 2.2046226218;
-        } else if (from === "lb" && to === "kg") {
-          converted = val / 2.2046226218;
-        } else {
-          weightResult.textContent = "Unsupported conversion.";
-          return;
-        }
-
-        const rounded = Math.round(converted * 1e4) / 1e4;
-        weightResult.innerHTML = `
-          <div class="pill-result">
-            <span class="pill-dot"></span>
-            <span>${val} ${from} = <strong>${rounded} ${to}</strong></span>
+          <div class="field" style="width:140px">
+            <label>Rate (%) p.a.</label>
+            <input id="emi-rate" type="number" step="0.01" placeholder="7.5" />
           </div>
-        `;
-      });
-
-      /* TEMPERATURE CONVERTER */
-      const tempValue = document.getElementById("temp-value");
-      const tempFrom = document.getElementById("temp-from");
-      const tempTo = document.getElementById("temp-to");
-      const tempBtn = document.getElementById("temp-btn");
-      const tempResult = document.getElementById("temp-result");
-
-      tempBtn.addEventListener("click", () => {
-        const val = parseFloat(tempValue.value);
-        tempResult.textContent = "";
-        if (isNaN(val)) {
-          tempResult.textContent = "Please enter a valid temperature.";
-          return;
-        }
-        const from = tempFrom.value;
-        const to = tempTo.value;
-
-        if (from === to) {
-          tempResult.innerHTML = `<span class="pill-result"><span class="pill-dot"></span><span>${val.toFixed(2)} °${to}</span></span>`;
-          return;
-        }
-
-        let converted;
-        if (from === "C" && to === "F") {
-          converted = val * 9 / 5 + 32;
-        } else if (from === "F" && to === "C") {
-          converted = (val - 32) * 5 / 9;
-        } else {
-          tempResult.textContent = "Unsupported conversion.";
-          return;
-        }
-
-        const rounded = Math.round(converted * 1e2) / 1e2;
-        tempResult.innerHTML = `
-          <div class="pill-result">
-            <span class="pill-dot"></span>
-            <span>${val} °${from} = <strong>${rounded} °${to}</strong></span>
+          <div class="field" style="width:140px">
+            <label>Tenure (yrs)</label>
+            <input id="emi-years" type="number" placeholder="5" />
           </div>
-        `;
-      });
+        </div>
+        <div style="display:flex;gap:8px">
+          <button id="emi-calc" class="btn">Calculate EMI</button>
+          <button id="emi-reset" class="btn">Reset</button>
+        </div>
+        <div id="emi-result" class="result"></div>
+      </div>
 
-      /* BMI CALCULATOR */
-      const bmiWeight = document.getElementById("bmi-weight");
-      const bmiHeight = document.getElementById("bmi-height");
-      const bmiBtn = document.getElementById("bmi-btn");
-      const bmiResult = document.getElementById("bmi-result");
+      <div class="divider"></div>
 
-      bmiBtn.addEventListener("click", () => {
-        const weight = parseFloat(bmiWeight.value);
-        const heightCm = parseFloat(bmiHeight.value);
-        bmiResult.textContent = "";
+      <!-- Percentage / Discount / Tip -->
+      <h3>Percentage / Discount / Tip</h3>
+      <div class="row">
+        <div class="field flex">
+          <label>Amount</label>
+          <input id="pct-amount" type="number" placeholder="200" />
+        </div>
+        <div class="field" style="width:160px">
+          <label>Percent %</label>
+          <input id="pct-percent" type="number" placeholder="15" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button id="pct-calc" class="btn">Compute</button>
+        </div>
+      </div>
+      <div id="pct-result" class="result"></div>
 
-        if (isNaN(weight) || isNaN(heightCm) || weight <= 0 || heightCm <= 0) {
-          bmiResult.textContent = "Please enter valid weight and height.";
-          return;
-        }
+      <div class="divider"></div>
 
-        const heightM = heightCm / 100;
-        const bmi = weight / (heightM * heightM);
-        const rounded = Math.round(bmi * 10) / 10;
+      <!-- Time Duration & Date Add/Subtract -->
+      <h3>Time & Date Tools</h3>
+      <div class="compact-grid">
+        <div class="field">
+          <label>Start (datetime)</label>
+          <input id="time-start" type="datetime-local" />
+        </div>
+        <div class="field">
+          <label>End (datetime)</label>
+          <input id="time-end" type="datetime-local" />
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button id="time-diff" class="btn">Duration</button>
+        <button id="date-add" class="btn">Add Days</button>
+        <input id="date-add-days" type="number" placeholder="45" style="width:120px;border-radius:10px;padding:8px" />
+      </div>
+      <div id="time-result" class="result"></div>
 
-        let category = "";
-        let cls = "";
-        if (bmi < 18.5) {
-          category = "Underweight";
-          cls = "bmi-under";
-        } else if (bmi < 25) {
-          category = "Normal";
-          cls = "bmi-normal";
-        } else if (bmi < 30) {
-          category = "Overweight";
-          cls = "bmi-over";
-        } else {
-          category = "Obese";
-          cls = "bmi-obese";
-        }
+      <div class="divider"></div>
 
-        bmiResult.innerHTML = `
-          <div class="bmi-tag ${cls}">
-            <span>${rounded}</span>
-            <span>· ${category}</span>
-          </div>
-        `;
-      });
+      <!-- Scientific Calculator note -->
+      <div class="code-note">Tip: use keyboard for the basic calculator. Scientific mode enables trig, log, sqrt, pow and π keys.</div>
+    </section>
 
-      /* CURRENCY CONVERTER (Frankfurter API) */
-      const currencyAmount = document.getElementById("currency-amount");
-      const currencyFrom = document.getElementById("currency-from");
-      const currencyTo = document.getElementById("currency-to");
-      const currencyBtn = document.getElementById("currency-btn");
-      const currencySwap = document.getElementById("currency-swap");
-      const currencyResult = document.getElementById("currency-result");
-      const currencyMeta = document.getElementById("currency-meta");
-      const currencyError = document.getElementById("currency-error");
-
-      currencySwap.addEventListener("click", () => {
-        const tmp = currencyFrom.value;
-        currencyFrom.value = currencyTo.value;
-        currencyTo.value = tmp;
-      });
-
-      async function convertCurrency() {
-        currencyError.textContent = "";
-        currencyResult.textContent = "";
-        currencyMeta.textContent = "";
-
-        const amount = parseFloat(currencyAmount.value);
-        if (isNaN(amount)) {
-          currencyError.textContent = "Please enter a valid amount.";
-          return;
-        }
-
-        const from = currencyFrom.value;
-        const to = currencyTo.value;
-
-        if (from === to) {
-          const rounded = Math.round(amount * 1e4) / 1e4;
-          currencyResult.innerHTML = `
-            <div class="pill-result">
-              <span class="pill-dot"></span>
-              <span>${amount} ${from} = <strong>${rounded} ${to}</strong></span>
+    <!-- RIGHT: converters, BMI, currency, AI, extras -->
+    <aside class="right-col">
+      <div class="card card-scroll">
+        <h3>Converters</h3>
+        <div class="tools">
+          <div class="card" style="padding:10px">
+            <h4 class="mini">Length</h4>
+            <div class="row">
+              <input id="len-val" type="number" step="any" placeholder="1.75" />
+              <select id="len-from"><option value="m">m</option><option value="cm">cm</option><option value="ft">ft</option><option value="in">in</option></select>
+              <select id="len-to"><option value="cm">cm</option><option value="m">m</option><option value="ft">ft</option><option value="in">in</option></select>
             </div>
-          `;
-          currencyMeta.textContent = "Same currency selected.";
-          return;
-        }
+            <div style="display:flex;gap:8px;margin-top:6px"><button id="len-btn" class="btn">Convert</button></div>
+            <div id="len-res" class="result"></div>
+          </div>
 
-        try {
-          const url = `https://api.frankfurter.dev/v1/latest?base=${encodeURIComponent(from)}&symbols=${encodeURIComponent(to)}`;
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          const data = await response.json();
-          const rate = data.rates && data.rates[to];
-
-          if (!rate) {
-            throw new Error("No rate found for this pair.");
-          }
-
-          const converted = amount * rate;
-          const rounded = Math.round(converted * 1e4) / 1e4;
-          const roundedRate = Math.round(rate * 1e6) / 1e6;
-
-          currencyResult.innerHTML = `
-            <div class="pill-result">
-              <span class="pill-dot"></span>
-              <span>${amount} ${from} = <strong>${rounded} ${to}</strong></span>
+          <div class="card" style="padding:10px">
+            <h4 class="mini">Weight</h4>
+            <div class="row">
+              <input id="wt-val" type="number" step="any" placeholder="70" />
+              <select id="wt-from"><option value="kg">kg</option><option value="lb">lb</option></select>
+              <select id="wt-to"><option value="lb">lb</option><option value="kg">kg</option></select>
             </div>
-          `;
-          currencyMeta.textContent = `1 ${from} ≈ ${roundedRate} ${to} · Date: ${data.date}`;
-        } catch (err) {
-          console.error(err);
-          currencyError.textContent = "Could not fetch live rates. Please check your internet connection.";
-        }
-      }
+            <div style="display:flex;gap:8px;margin-top:6px"><button id="wt-btn" class="btn">Convert</button></div>
+            <div id="wt-res" class="result"></div>
+          </div>
 
-      currencyBtn.addEventListener("click", convertCurrency);
+          <div class="card" style="padding:10px">
+            <h4 class="mini">Temperature</h4>
+            <div class="row">
+              <input id="tmp-val" type="number" step="any" placeholder="37" />
+              <select id="tmp-from"><option value="C">°C</option><option value="F">°F</option></select>
+              <select id="tmp-to"><option value="F">°F</option><option value="C">°C</option></select>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:6px"><button id="tmp-btn" class="btn">Convert</button></div>
+            <div id="tmp-res" class="result"></div>
+          </div>
+
+          <div class="card" style="padding:10px">
+            <h4 class="mini">Speed / Area / Volume</h4>
+            <div style="display:flex;gap:6px">
+              <select id="u-type"><option value="speed">Speed</option><option value="area">Area</option><option value="volume">Volume</option></select>
+              <input id="u-val" type="number" step="any" placeholder="1" />
+            </div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <select id="u-from"></select>
+              <select id="u-to"></select>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button id="u-btn" class="btn">Convert</button>
+            </div>
+            <div id="u-res" class="result"></div>
+          </div>
+
+          <div class="card" style="padding:10px">
+            <h4 class="mini">Data / Time units</h4>
+            <div style="display:flex;gap:6px">
+              <input id="dval" type="number" step="any" placeholder="1024" />
+              <select id="dunit"><option value="KB">KB</option><option value="MB">MB</option><option value="GB">GB</option></select>
+              <select id="dunit-to"><option value="MB">MB</option><option value="GB">GB</option><option value="KB">KB</option></select>
+            </div>
+            <div style="margin-top:6px"><button id="d-btn" class="btn">Convert</button></div>
+            <div id="d-res" class="result"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>BMI, Body & Health</h3>
+        <div class="row">
+          <div class="field flex">
+            <label>Weight (kg)</label>
+            <input id="bmi-w" type="number" />
+          </div>
+          <div class="field" style="width:130px">
+            <label>Height (cm)</label>
+            <input id="bmi-h" type="number" />
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button id="bmi-btn" class="btn">Calc BMI</button>
+          <button id="bf-btn" class="btn">Body Fat (%)</button>
+        </div>
+        <div id="bmi-res" class="result"></div>
+        <div class="divider"></div>
+        <h4 class="mini">Ideal Body Weight</h4>
+        <div style="display:flex;gap:8px">
+          <select id="ibw-g"><option value="male">Male</option><option value="female">Female</option></select>
+          <input id="ibw-h" type="number" placeholder="175" />
+          <button id="ibw-btn" class="btn">Calc</button>
+        </div>
+        <div id="ibw-res" class="result"></div>
+      </div>
+
+      <div class="card">
+        <h3>Currency Converter (live)</h3>
+        <div style="display:flex;gap:8px">
+          <input id="cur-amt" type="number" placeholder="1" />
+          <select id="cur-from"><option>USD</option><option>EUR</option><option>INR</option><option>GBP</option><option>JPY</option></select>
+          <select id="cur-to"><option>INR</option><option>USD</option><option>EUR</option><option>GBP</option><option>JPY</option></select>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="cur-btn" class="btn btn-accent">Convert</button>
+          <button id="cur-swap" class="btn">⇄</button>
+        </div>
+        <div id="cur-res" class="result"></div>
+        <div id="cur-meta" class="muted"></div>
+      </div>
+
+      <div class="card">
+        <h3>Investments & Savings</h3>
+        <div class="field">
+          <label>Lump-sum Compound Interest</label>
+          <div class="row">
+            <input id="ci-pr" type="number" placeholder="10000" />
+            <input id="ci-rate" type="number" placeholder="7" />
+            <input id="ci-years" type="number" placeholder="5" />
+            <button id="ci-btn" class="btn">Calc</button>
+          </div>
+          <div id="ci-res" class="result"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="field">
+          <label>SIP / Monthly Investment</label>
+          <div class="row">
+            <input id="sip-amt" type="number" placeholder="5000" />
+            <input id="sip-rate" type="number" placeholder="12" />
+            <input id="sip-years" type="number" placeholder="10" />
+            <button id="sip-btn" class="btn">Calc SIP</button>
+          </div>
+          <div id="sip-res" class="result"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Other Utilities</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div>
+            <label>QR Code (text)</label>
+            <input id="qr-text" type="text" placeholder="https://example.com" />
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <button id="qr-btn" class="btn">Generate QR</button>
+              <a id="qr-link" class="btn" href="#" target="_blank">Open QR</a>
+            </div>
+          </div>
+
+          <div>
+            <label>Password Generator</label>
+            <div class="row">
+              <input id="pw-len" type="number" placeholder="12" />
+              <select id="pw-chars"><option value="alnum">Letters+Digits</option><option value="alnumsym">Letters+Digits+Symbols</option></select>
+              <button id="pw-btn" class="btn">Generate</button>
+            </div>
+            <div id="pw-res" class="result"></div>
+          </div>
+
+          <div>
+            <label>Randomizer / Picker</label>
+            <textarea id="pick-list" rows="2" placeholder="one,two,three"></textarea>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <button id="pick-btn" class="btn">Pick Random</button>
+              <button id="shuffle-btn" class="btn">Shuffle</button>
+            </div>
+            <div id="pick-res" class="result"></div>
+          </div>
+
+          <div>
+            <label>Color Tools</label>
+            <div style="display:flex;gap:8px">
+              <input id="hex-in" type="text" placeholder="#ff0000" />
+              <button id="hex-btn" class="btn">Convert</button>
+            </div>
+            <div id="hex-res" class="result"></div>
+          </div>
+
+          <div>
+            <label>Text Utilities</label>
+            <textarea id="t-in" rows="2" placeholder="Paste text"></textarea>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <button id="count-btn" class="btn">Count</button>
+              <button id="case-btn" class="btn">Title Case</button>
+            </div>
+            <div id="t-res" class="result"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>GPA / CGPA</h3>
+        <div>
+          <label>Enter semester grades comma separated (e.g. 8.5,9,7.5)</label>
+          <input id="gpa-in" type="text" />
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button id="gpa-btn" class="btn">Calc GPA Avg</button>
+          </div>
+          <div id="gpa-res" class="result"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>AI Assistant (optional)</h3>
+        <div class="field">
+          <label>Prompt</label>
+          <textarea id="ai-prompt" rows="3" placeholder="Explain how EMI is calculated..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button id="ai-btn" class="btn btn-accent">Ask AI (via /openai)</button>
+          <button id="ai-btn-local" class="btn">Ask (client key - unsafe)</button>
+        </div>
+        <div id="ai-res" class="result muted"></div>
+
+        <div class="code-note">
+          <strong>Important:</strong> The page calls `/openai` on the same origin by default — host the small Node proxy I provided and point the page to it. Do not embed your OpenAI key in the browser for production. 
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div>Made With</div>
+    <div class="heart">❤️</div>
+    <div>By Avinash Gupta!</div>
+  </footer>
+</div>
+
+<script>
+/* -------------------------
+   Tiny helper utilities
+   ------------------------- */
+const $ = (id) => document.getElementById(id);
+const fmt = (n, p=4) => (Math.round(n * Math.pow(10,p))/Math.pow(10,p)).toString();
+
+/* -------------------------
+   Theme management
+   ------------------------- */
+const body = document.body;
+const toggle = $('toggle-theme');
+const swatches = ['th-0','th-1','th-2','th-3'].map(id=>$(id));
+let currentThemeColor = 0;
+
+function applyTheme(colorIdx){
+  currentThemeColor = colorIdx;
+  // color palettes
+  const palettes = [
+    {accent:'#ef4444',accent2:'#7f1d1d',bg1:'#000',bg2:'#2b0000'},
+    {accent:'#0ea5e9',accent2:'#0369a1',bg1:'#001527',bg2:'#003a6b'},
+    {accent:'#10b981',accent2:'#064e3b',bg1:'#01220f',bg2:'#0f5132'},
+    {accent:'#8b5cf6',accent2:'#5b21b6',bg1:'#240046',bg2:'#6a00f4'}
+  ];
+  const p = palettes[colorIdx];
+  document.documentElement.style.setProperty('--accent', p.accent);
+  document.documentElement.style.setProperty('--accent-2', p.accent2);
+  // highlight selection
+  swatches.forEach((s,i)=>s.dataset.sel = i===colorIdx ? "1":"0");
+}
+applyTheme(0);
+
+swatches.forEach((s, i) => {
+  s.addEventListener('click', ()=> applyTheme(i));
+});
+toggle.addEventListener('click', ()=>{
+  if(body.getAttribute('data-theme') === 'light'){
+    body.setAttribute('data-theme','dark');
+    document.documentElement.style.setProperty('--bg','#000');
+  } else {
+    body.setAttribute('data-theme','light');
+  }
+});
+
+/* -------------------------
+   Calculator
+   ------------------------- */
+const exprEl = $('expr'), resEl = $('res');
+let expr = '';
+
+function updateCalc(){
+  exprEl.textContent = expr;
+}
+function safeEval(s){
+  // simple parser + allow Math functions via mapping
+  try{
+    // replace unicode operators with JS
+    s = s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g, Math.PI);
+    // disallow letters except allowed math functions
+    if(/[^0-9+\-*/(). %,eEPIpi]/.test(s.replace(/sin|cos|tan|sqrt|ln|log|pow/gi,''))){
+      return "Err";
+    }
+    // handle % -> divide by 100 for trailing percent
+    // but more robust: replace x% with (x/100)
+    s = s.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
+    // provide Math functions
+    const M = Math;
+    // Use Function with Math in scope:
+    const fn = new Function('Math','sin','cos','tan','sqrt','ln','log','pow','pi','return (' + s + ')');
+    const val = fn(M, M.sin, M.cos, M.tan, M.sqrt, (x)=>Math.log(x), Math.log10?Math.log10:((x)=>Math.log(x)/Math.LN10), Math.pow, Math.PI);
+    if(typeof val === "number" && isFinite(val)) return fmt(val,6);
+    return "Err";
+  }catch(e){
+    return "Err";
+  }
+}
+
+const calcGrid = $('calc-grid');
+const basicButtons = ['7','8','9','/','4','5','6','*','1','2','3','-','0','.','%','+'];
+const sciBtns = ['(' ,')','π','^','sin','cos','tan','sqrt','ln','log','AC','⌫','ANS','/'];
+function buildButtons(){
+  calcGrid.innerHTML = '';
+  basicButtons.forEach(t=>{
+    const b = document.createElement('button'); b.className='btn'; b.textContent=t;
+    b.addEventListener('click', ()=> {
+      if(t==='AC'){ expr=''; resEl.textContent='0'; updateCalc(); return; }
+      expr += t;
+      updateCalc();
     });
-  </script>
+    calcGrid.appendChild(b);
+  });
+}
+buildButtons();
+
+$('calc-equals').addEventListener('click', ()=> {
+  const out = safeEval(expr);
+  resEl.textContent = out;
+});
+$('calc-clear').addEventListener('click', ()=>{ expr=''; updateCalc(); resEl.textContent='0';});
+$('calc-back').addEventListener('click', ()=>{ expr=expr.slice(0,-1); updateCalc();});
+$('calc-copy').addEventListener('click', ()=>{ navigator.clipboard.writeText(resEl.textContent); alert('Copied result'); });
+
+/* Scientific toggle */
+$('sc-toggle').addEventListener('change', (e)=>{
+  const show = e.target.checked;
+  $('sci-keys').style.display = show ? 'grid' : 'none';
+  if(show){
+    // augment buttons with scientific ops
+    calcGrid.innerHTML = '';
+    const all = ['7','8','9','/','4','5','6','*','1','2','3','-','0','.','%','+','(',')','π','^'];
+    all.forEach(t=>{
+      const b = document.createElement('button'); b.className='btn'; b.textContent=t;
+      b.addEventListener('click', ()=> {
+        if(t==='π'){ expr += 'π'; } else if(t==='^'){ expr += '**'; } else expr += t;
+        updateCalc();
+      });
+      calcGrid.appendChild(b);
+    });
+  } else {
+    buildButtons();
+  }
+});
+
+/* Sci quick keys */
+document.querySelectorAll('#sci-keys button').forEach(b=>{
+  b.addEventListener('click', ()=> {
+    const fn = b.dataset.fn;
+    if(fn==='pi') expr += 'π';
+    else if(fn==='pow') expr += '**';
+    else if(fn==='sqrt') expr += 'sqrt(';
+    else expr += fn + '(';
+    updateCalc();
+  });
+});
+
+/* Keyboard support */
+document.addEventListener('keydown', (e)=>{
+  if(/[\d+\-*/().%]/.test(e.key)){ expr += e.key; updateCalc();}
+  else if(e.key==='Enter'){ $('calc-equals').click(); }
+  else if(e.key==='Backspace'){ $('calc-back').click(); }
+  else if(e.key==='Escape'){ $('calc-clear').click(); }
+});
+
+/* -------------------------
+   EMI Calculator
+   ------------------------- */
+$('emi-calc').addEventListener('click', ()=>{
+  const P = parseFloat($('emi-principal').value) || 0;
+  const r = (parseFloat($('emi-rate').value) || 0)/100/12; // monthly rate
+  const n = (parseFloat($('emi-years').value) || 0) * 12;
+  if(!P || !n){ $('emi-result').textContent = 'Enter principal and tenure'; return; }
+  const emi = (P * r * Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
+  if(!isFinite(emi)){ $('emi-result').textContent = 'Check inputs'; return; }
+  const total = emi * n, interest = total - P;
+  $('emi-result').innerHTML = `EMI: ${fmt(emi,2)} · Total: ${fmt(total,2)} · Interest: ${fmt(interest,2)}`;
+});
+$('emi-reset').addEventListener('click', ()=>{ $('emi-principal').value=''; $('emi-rate').value=''; $('emi-years').value=''; $('emi-result').textContent=''; });
+
+/* -------------------------
+   Percentage / Discount
+   ------------------------- */
+$('pct-calc').addEventListener('click', ()=>{
+  const amt = parseFloat($('pct-amount').value)||0;
+  const p = parseFloat($('pct-percent').value)||0;
+  const change = amt * p/100;
+  const after = amt - change;
+  $('pct-result').textContent = `${p}% of ${amt} = ${fmt(change,2)} · after discount: ${fmt(after,2)}`;
+});
+
+/* -------------------------
+   Time & Date Tools
+   ------------------------- */
+$('time-diff').addEventListener('click', ()=>{
+  const s = new Date($('time-start').value), e=new Date($('time-end').value);
+  if(isNaN(s)||isNaN(e)){ $('time-result').textContent='Pick valid datetimes'; return;}
+  let diff = Math.abs(e - s);
+  const days = Math.floor(diff / (1000*60*60*24));
+  diff -= days * 1000*60*60*24;
+  const hours = Math.floor(diff / (1000*60*60));
+  diff -= hours * 1000*60*60;
+  const minutes = Math.floor(diff / (1000*60));
+  $('time-result').textContent = `${days} days, ${hours} hours, ${minutes} minutes`;
+});
+$('date-add').addEventListener('click', ()=>{
+  const days = parseInt($('date-add-days').value) || 0;
+  const today = new Date();
+  today.setDate(today.getDate()+days);
+  $('time-result').textContent = `Date ${days} days from today: ${today.toISOString().slice(0,10)}`;
+});
+
+/* -------------------------
+   Converters
+   ------------------------- */
+function toMeters(v, u){
+  if(u==='m') return v;
+  if(u==='cm') return v/100;
+  if(u==='ft') return v*0.3048;
+  if(u==='in') return v*0.0254;
+  return NaN;
+}
+function fromMeters(m,u){
+  if(u==='m') return m;
+  if(u==='cm') return m*100;
+  if(u==='ft') return m/0.3048;
+  if(u==='in') return m/0.0254;
+  return NaN;
+}
+$('len-btn').addEventListener('click', ()=>{
+  const v=parseFloat($('len-val').value);
+  const f=$('len-from').value, t=$('len-to').value;
+  if(isNaN(v)){ $('len-res').textContent='Enter number'; return;}
+  const m = toMeters(v,f);
+  const out = fromMeters(m,t);
+  $('len-res').textContent = `${v} ${f} = ${fmt(out,4)} ${t}`;
+});
+$('wt-btn').addEventListener('click', ()=>{
+  const v=parseFloat($('wt-val').value); const f=$('wt-from').value; const t=$('wt-to').value;
+  if(isNaN(v)){ $('wt-res').textContent='Enter number'; return;}
+  let out=NaN;
+  if(f==='kg' && t==='lb') out = v * 2.2046226218;
+  if(f==='lb' && t==='kg') out = v / 2.2046226218;
+  if(f===t) out = v;
+  $('wt-res').textContent = `${v} ${f} = ${fmt(out,4)} ${t}`;
+});
+$('tmp-btn').addEventListener('click', ()=>{
+  const v=parseFloat($('tmp-val').value); const f=$('tmp-from').value; const t=$('tmp-to').value;
+  if(isNaN(v)){ $('tmp-res').textContent='Enter number'; return;}
+  let out;
+  if(f==='C' && t==='F') out = v*9/5 + 32;
+  else if(f==='F' && t==='C') out = (v-32)*5/9;
+  else out = v;
+  $('tmp-res').textContent = `${v}°${f} = ${fmt(out,2)}°${t}`;
+});
+
+/* speed/area/volume dynamic units */
+const units = {
+  speed:{list:['km/h','mph'],convert:(v,f,t)=> f==='km/h' && t==='mph' ? v*0.621371 : (f==='mph' && t==='km/h' ? v/0.621371 : v)},
+  area:{list:['m²','ft²'],convert:(v,f,t)=> f==='m²'&&t==='ft²'? v*10.7639 : (f==='ft²'&&t==='m²'? v/10.7639:v)},
+  volume:{list:['L','gal'],convert:(v,f,t)=> f==='L'&&t==='gal'? v*0.264172 : (f==='gal'&&t==='L'? v/0.264172:v)}
+};
+function rebuildUType(){
+  const t = $('u-type').value;
+  const from = $('u-from'), to=$('u-to');
+  from.innerHTML = ''; to.innerHTML='';
+  units[t].list.forEach(u=>{
+    const o1 = document.createElement('option'); o1.value=u; o1.textContent=u; from.appendChild(o1);
+    const o2 = document.createElement('option'); o2.value=u; o2.textContent=u; to.appendChild(o2);
+  });
+}
+$('u-type').addEventListener('change', rebuildUType);
+rebuildUType();
+$('u-btn').addEventListener('click', ()=> {
+  const v=parseFloat($('u-val').value); if(isNaN(v)){ $('u-res').textContent='Enter number'; return;}
+  const f=$('u-from').value, t=$('u-to').value;
+  const out = units[$('u-type').value].convert(v,f,t);
+  $('u-res').textContent = `${v} ${f} = ${fmt(out,4)} ${t}`;
+});
+
+/* data units */
+$('d-btn').addEventListener('click', ()=>{
+  const v=parseFloat($('dval').value)||0; const a=$('dunit').value; const b=$('dunit-to').value;
+  const mult = {'KB':1/1024,'MB':1,'GB':1024};
+  const out = v * mult[a] / mult[b];
+  $('d-res').textContent = `${v} ${a} = ${fmt(out,4)} ${b}`;
+});
+
+/* -------------------------
+   BMI / Body Fat / IBW
+   ------------------------- */
+$('bmi-btn').addEventListener('click', ()=>{
+  const w=parseFloat($('bmi-w').value), h=parseFloat($('bmi-h').value);
+  if(!w||!h){ $('bmi-res').textContent='Enter weight and height'; return;}
+  const bmi = w / Math.pow(h/100,2);
+  let category='';
+  if(bmi<18.5) category='Underweight'; else if(bmi<25) category='Normal'; else if(bmi<30) category='Overweight'; else category='Obese';
+  $('bmi-res').textContent = `BMI: ${fmt(bmi,1)} · ${category}`;
+});
+$('bf-btn').addEventListener('click', ()=>{
+  // very rough Estimation using BMI method (for experiment only)
+  const w=parseFloat($('bmi-w').value), h=parseFloat($('bmi-h').value);
+  if(!w||!h){ $('bmi-res').textContent='Enter weight and height'; return;}
+  const bmi = w / Math.pow(h/100,2);
+  const bodyFat = (1.20 * bmi) + (0.23 * 30) - 16.2; // assumes age=30, male-like estimate; illustrative only
+  $('bmi-res').textContent += ` · Est. Body Fat: ${fmt(bodyFat,1)}% (approx)`;
+});
+$('ibw-btn').addEventListener('click', ()=>{
+  const gender=$('ibw-g').value, h=parseFloat($('ibw-h').value);
+  if(!h){ $('ibw-res').textContent='Enter height'; return;}
+  // Devine formula
+  const inches = h/2.54;
+  let ibw;
+  if(gender==='male') ibw = 50 + 2.3 * (inches - 60);
+  else ibw = 45.5 + 2.3 * (inches - 60);
+  $('ibw-res').textContent = `Ideal Weight (Devine): ${fmt(ibw,1)} kg (approx)`;
+});
+
+/* -------------------------
+   Currency Converter (Frankfurter)
+   ------------------------- */
+$('cur-swap').addEventListener('click', ()=>{
+  const t=$('cur-to').value, f=$('cur-from').value; $('cur-from').value=t; $('cur-to').value=f;
+});
+$('cur-btn').addEventListener('click', async ()=>{
+  $('cur-res').textContent='...';
+  const amt = parseFloat($('cur-amt').value) || 1;
+  const from = $('cur-from').value, to=$('cur-to').value;
+  if(from===to){ $('cur-res').textContent = `${amt} ${from} = ${amt} ${to}`; return;}
+  try{
+    const url = `https://api.frankfurter.app/latest?amount=${amt}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+    const r = await fetch(url);
+    const j = await r.json();
+    const rate = j.rates && j.rates[to];
+    $('cur-res').textContent = `${amt} ${from} = ${fmt(rate,4)} ${to}`;
+    $('cur-meta').textContent = `Rate base: ${j.base} · Date: ${j.date}`;
+  }catch(e){ $('cur-res').textContent = 'Could not fetch rates'; }
+});
+
+/* -------------------------
+   Compound interest & SIP
+   ------------------------- */
+$('ci-btn').addEventListener('click', ()=>{
+  const P = parseFloat($('ci-pr').value)||0, r=parseFloat($('ci-rate').value)||0, t=parseFloat($('ci-years').value)||0;
+  const A = P * Math.pow(1 + r/100, t);
+  $('ci-res').textContent = `Future value: ${fmt(A,2)} · Interest: ${fmt(A-P,2)}`;
+});
+$('sip-btn').addEventListener('click', ()=>{
+  const m = parseFloat($('sip-amt').value)||0, r = parseFloat($('sip-rate').value)||0, years = parseFloat($('sip-years').value)||0;
+  const n = years * 12;
+  const monthlyRate = r/100/12;
+  const fv = m * ( (Math.pow(1+monthlyRate, n) -1) / monthlyRate ) * (1+monthlyRate);
+  $('sip-res').textContent = `SIP Value after ${years} yrs: ${fmt(fv,2)}`;
+});
+
+/* -------------------------
+   QR Code via Google Chart
+   ------------------------- */
+$('qr-btn').addEventListener('click', ()=>{
+  const txt = encodeURIComponent($('qr-text').value || '');
+  const url = `https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${txt}`;
+  $('qr-link').href = url;
+  $('qr-link').textContent = 'Open QR';
+});
+
+/* -------------------------
+   Password Generator
+   ------------------------- */
+$('pw-btn').addEventListener('click', ()=>{
+  const len = parseInt($('pw-len').value) || 12;
+  const mode = $('pw-chars').value;
+  const lower = 'abcdefghijklmnopqrstuvwxyz';
+  const upper = lower.toUpperCase();
+  const digits = '0123456789';
+  const sym = '!@#$%^&*()-_=+[]{};:,.<>/?';
+  let chars = lower + upper + digits;
+  if(mode==='alnumsym') chars += sym;
+  let out='';
+  for(let i=0;i<len;i++) out += chars.charAt(Math.floor(Math.random()*chars.length));
+  $('pw-res').textContent = out;
+});
+
+/* -------------------------
+   Randomizer / Text tools
+   ------------------------- */
+$('pick-btn').addEventListener('click', ()=>{
+  const list = ($('pick-list').value || '').split(',').map(s=>s.trim()).filter(Boolean);
+  if(!list.length){ $('pick-res').textContent = 'Enter comma separated list'; return;}
+  const pick = list[Math.floor(Math.random()*list.length)];
+  $('pick-res').textContent = `Picked: ${pick}`;
+});
+$('shuffle-btn').addEventListener('click', ()=>{
+  const list = ($('pick-list').value || '').split(',').map(s=>s.trim()).filter(Boolean);
+  for(let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
+  $('pick-res').textContent = `Shuffled: ${list.join(', ')}`;
+});
+
+/* HEX <-> RGB */
+function hexToRgb(hex){
+  hex = hex.replace('#','');
+  if(hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  const num = parseInt(hex,16);
+  return {r:(num>>16)&255,g:(num>>8)&255,b:num&255};
+}
+$('hex-btn').addEventListener('click', ()=>{
+  const hex = $('hex-in').value.trim();
+  try{
+    const rgb = hexToRgb(hex);
+    $('hex-res').textContent = `${hex} → rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+  }catch(e){ $('hex-res').textContent = 'Invalid hex'; }
+});
+
+/* Text utilities */
+$('count-btn').addEventListener('click', ()=>{
+  const txt = $('t-in').value || '';
+  const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+  $('t-res').textContent = `Words: ${words} · Characters: ${txt.length}`;
+});
+$('case-btn').addEventListener('click', ()=>{
+  const txt = $('t-in').value || '';
+  $('t-res').textContent = txt.replace(/\w\S*/g, (w)=> w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+});
+
+/* GPA */
+$('gpa-btn').addEventListener('click', ()=>{
+  const list = ($('gpa-in').value||'').split(',').map(x=>parseFloat(x)).filter(x=>!isNaN(x));
+  if(!list.length){ $('gpa-res').textContent='Enter grades'; return;}
+  const avg = list.reduce((a,b)=>a+b,0)/list.length;
+  $('gpa-res').textContent = `Average: ${fmt(avg,2)}`;
+});
+
+/* -------------------------
+   AI integration (front-end wiring)
+   ------------------------- */
+async function callOpenAIProxy(prompt){
+  // Calls the /openai endpoint (recommended) — host the server code I provided separately
+  try{
+    const r = await fetch('/openai', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt})
+    });
+    const j = await r.json();
+    // Handle chat completions structure
+    const text = (j.choices && j.choices[0] && j.choices[0].message) ? j.choices[0].message.content :
+                 (j.choices && j.choices[0] && j.choices[0].text) ? j.choices[0].text : JSON.stringify(j);
+    return text;
+  }catch(e){
+    return 'Error calling /openai — see console';
+  }
+}
+$('ai-btn').addEventListener('click', async ()=>{
+  const p = $('ai-prompt').value || '';
+  if(!p) { $('ai-res').textContent = 'Enter a prompt'; return; }
+  $('ai-res').textContent = 'Thinking...';
+  const out = await callOpenAIProxy(p);
+  $('ai-res').textContent = out;
+});
+
+/* Optional unsafe client-side direct call (only for quick experiments) */
+$('ai-btn-local').addEventListener('click', async ()=>{
+  const prompt = $('ai-prompt').value || '';
+  if(!prompt){ $('ai-res').textContent='Enter a prompt'; return; }
+  const key = prompt('Paste your OpenAI API key (will remain in this browser session). NOT RECOMMENDED for production.');
+  if(!key) return;
+  $('ai-res').textContent = 'Thinking... (client-side)';
+  try{
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method:'POST',
+      headers:{ 'Authorization': 'Bearer '+key, 'Content-Type':'application/json' },
+      body: JSON.stringify({ model: 'gpt-4o-mini', messages:[{role:'user',content:prompt}], max_tokens:600 })
+    });
+    const j = await r.json();
+    const text = (j.choices && j.choices[0] && j.choices[0].message) ? j.choices[0].message.content : JSON.stringify(j);
+    $('ai-res').textContent = text;
+  }catch(e){
+    console.error(e);
+    $('ai-res').textContent = 'Client-side call failed';
+  }
+});
+
+/* -------------------------
+   Percentage / Scientific extras: allow evaluating expression via equals button
+   ------------------------- */
+document.querySelectorAll('.btn').forEach(b=>{
+  // if button shows digits/operators add same behavior
+  b.addEventListener('click', ()=>{ /* many buttons already wired; safe */ })
+});
+
+/* Small helper: ensure selects have values for converters initial state */
+$('len-from').value='m'; $('len-to').value='cm';
+$('wt-from').value='kg'; $('wt-to').value='lb';
+$('tmp-from').value='C'; $('tmp-to').value='F';
+</script>
 </body>
 </html>
