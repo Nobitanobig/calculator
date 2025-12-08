@@ -49,6 +49,9 @@
     font-family:"Poppins",system-ui,-apple-system,sans-serif;
   }
   
+  /* STOP FLICKER FIX */
+  html { overflow-y: scroll; } 
+  
   body{
     background-color: var(--bg);
     color: var(--text);
@@ -180,7 +183,7 @@
   .dropdown-item:hover { background: var(--btn-bg); }
   .dropdown-item.selected { color: var(--accent); font-weight: 600; background: rgba(128,128,128,0.1); }
   
-  /* CALCULATOR UI - REFINED */
+  /* CALCULATOR UI */
   .sc-switch{
     position: relative; width: 60px; height: 28px; background: var(--input-bg);
     border-radius: 20px; cursor: pointer; border: 1px solid var(--border);
@@ -195,11 +198,11 @@
 
   .calc-display{
     background: var(--input-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px; 
-    text-align: right; position: relative; /* Enabled for absolute positioning */
+    text-align: right; position: relative; 
     min-height: 120px; display: flex; flex-direction: column; justify-content: flex-end;
   }
   
-  /* HISTORY - MOVED TO TOP LEFT */
+  /* HISTORY */
   .history-label {
     position: absolute; top: 12px; left: 16px;
     font-size: 0.65rem; font-weight: 700; color: var(--accent); 
@@ -257,14 +260,23 @@
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
   .divider{ height: 1px; background: var(--border); margin: 16px 0; }
 
-  /* HEALTH STATS GRID */
+  /* HEALTH STATS GRID & INFO ICON */
   .health-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
   .stat-box { 
     background: var(--input-bg); border-radius: 12px; padding: 12px; 
-    display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; text-align: center; 
+    border: 1px solid var(--border); position: relative;
   }
   .stat-val { font-size: 1.1rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
   .stat-lbl { font-size: 0.7rem; color: var(--muted); }
+  
+  .info-icon {
+    position: absolute; top: 6px; right: 8px;
+    width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--muted);
+    color: var(--muted); font-size: 9px; line-height: 13px; font-weight: bold;
+    cursor: pointer; opacity: 0.7;
+  }
+  .info-icon:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
 
   /* QR Area */
   .qr-container {
@@ -319,7 +331,6 @@
       <div class="calc-display">
         <div id="hist-lbl" class="history-label">History</div>
         <div id="calc-history" class="calc-history"></div>
-        
         <div id="calc-expression" class="calc-expression"></div>
         <div id="calc-result" class="calc-result">0</div>
       </div>
@@ -367,8 +378,34 @@
       </div>
       <div class="row">
         <div class="field flex-1"><label class="mini">Amount</label><input id="cur-amt" type="number" placeholder="1"></div>
-        <div class="field flex-1"><label class="mini">From</label><select id="cur-from"><option value="USD" selected>USD</option><option value="EUR">EUR</option><option value="INR">INR</option><option value="GBP">GBP</option><option value="JPY">JPY</option></select></div>
-        <div class="field flex-1"><label class="mini">To</label><select id="cur-to"><option value="INR" selected>INR</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="JPY">JPY</option></select></div>
+        <div class="field flex-1"><label class="mini">From</label>
+          <select id="cur-from">
+            <option value="USD" selected>USD</option>
+            <option value="EUR">EUR</option>
+            <option value="INR">INR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+            <option value="AUD">AUD</option>
+            <option value="CAD">CAD</option>
+            <option value="CNY">CNY</option>
+            <option value="CHF">CHF</option>
+            <option value="NZD">NZD</option>
+          </select>
+        </div>
+        <div class="field flex-1"><label class="mini">To</label>
+          <select id="cur-to">
+            <option value="INR" selected>INR</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+            <option value="AUD">AUD</option>
+            <option value="CAD">CAD</option>
+            <option value="CNY">CNY</option>
+            <option value="CHF">CHF</option>
+            <option value="NZD">NZD</option>
+          </select>
+        </div>
       </div>
       <div class="row">
         <button id="cur-btn" class="btn btn-accent flex-1 btn-action">Convert</button>
@@ -429,7 +466,7 @@
       <div class="category-label">Other Tools</div>
       <div class="chips">
         <button class="chip-btn" data-panel="unit-panel">Converters</button>
-        <button class="chip-btn" data-panel="time-panel">Date Diff</button>
+        <button class="chip-btn" data-panel="time-panel">Day Counter</button>
         <button class="chip-btn" data-panel="text-panel">Password</button>
         <button class="chip-btn" data-panel="gpa-panel">GPA</button>
       </div>
@@ -461,7 +498,10 @@
         <button id="h-btn" class="btn btn-accent btn-action">Calculate Stats</button>
         
         <div id="h-result" class="health-stats" style="display:none;">
-          <div class="stat-box"><div id="res-bmi" class="stat-val">--</div><div class="stat-lbl">BMI Score</div></div>
+          <div class="stat-box">
+             <div class="info-icon" id="bmi-info">i</div>
+             <div id="res-bmi" class="stat-val">--</div><div class="stat-lbl">BMI Score</div>
+          </div>
           <div class="stat-box"><div id="res-bmr" class="stat-val">--</div><div class="stat-lbl">BMR (Cal/Day)</div></div>
           <div class="stat-box"><div id="res-water" class="stat-val">--</div><div class="stat-lbl">Water (L)</div></div>
           <div class="stat-box"><div id="res-protein" class="stat-val">--</div><div class="stat-lbl">Protein (g)</div></div>
@@ -588,7 +628,7 @@
       
       <div id="time-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Date Diff</div><div class="card-sub">Days between dates.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div><div class="card-sub">Count days between dates.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div>
            <div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div>
@@ -659,7 +699,7 @@
     const tape = $('calc-history');
     tape.innerHTML = history.map(h => `<div class="hist-item">${h}</div>`).join('');
     tape.classList.add('show');
-    $('hist-lbl').style.display = 'block'; // Show Label
+    $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
     
     tape.querySelectorAll('.hist-item').forEach(item => {
@@ -700,12 +740,10 @@
   // SMART AC BUTTON
   $('calc-clear').onclick = () => { 
     if(expr === '' && $('calc-result').textContent === '0') {
-        // Double Click Logic: Clear History
         history = [];
         $('calc-history').innerHTML = '';
         $('hist-lbl').style.display = 'none';
     } else {
-        // Single Click Logic: Clear Current
         expr=''; upd(); $('calc-result').textContent='0'; 
     }
   };
@@ -752,15 +790,13 @@
     // BMI
     const bmi = (w / ((h/100)*(h/100))).toFixed(1);
     
-    // BMR (Mifflin-St Jeor)
+    // BMR
     let bmr = (10 * w) + (6.25 * h) - (5 * age);
     bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
     const tdee = Math.round(bmr * act);
     
-    // Water
+    // Water & Protein
     const water = (w / 30).toFixed(1);
-    
-    // Protein
     const pFactor = 0.8 + (act - 1.2); 
     const protein = Math.round(w * pFactor);
 
@@ -774,6 +810,12 @@
     $('h-msg').textContent = `Status: ${msg}`;
   };
 
+  // BMI INFO ICON CLICK
+  $('bmi-info').onclick = (e) => {
+      e.stopPropagation(); // Prevent bubbling
+      alert("BMI Categories (WHO):\n\n• Below 18.5: Underweight\n• 18.5 - 24.9: Normal\n• 25.0 - 29.9: Overweight\n• 30.0 and Above: Obese");
+  };
+
   /* --- 4. TOP TOOLS LOGIC --- */
   $('age-btn').onclick = () => {
     const dVal=$('dob-input').value; if(!dVal)return;
@@ -782,7 +824,6 @@
     $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
   };
 
-  // Currency (Now shows Date)
   $('cur-btn').onclick = async () => {
     const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
     $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
@@ -790,7 +831,7 @@
         const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); 
         const d=await r.json();
         $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; 
-        $('cur-date').textContent = `Updated: ${d.date}`; // Show Date
+        $('cur-date').textContent = `Updated: ${d.date}`; 
         $('cur-source').style.display='block'; 
     }catch{ $('cur-res').textContent="Err"; }
   };
@@ -799,7 +840,6 @@
      f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
   }
 
-  // QR
   $('qr-btn').onclick = () => {
     const txt = $('qr-text').value; if(!txt) return;
     $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
@@ -808,7 +848,7 @@
     $('qr-image').src = url;
   }
 
-  /* --- 5. UNIT CONVERTER --- */
+  /* --- 5. UNIT CONVERTER (FIXED) --- */
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
       let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
@@ -819,13 +859,14 @@
     speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
   };
 
+  // Robust Renderer to prevent Black Border Bug
   function renderUnits(){
     const type = $('u-type').value; const data = uData[type];
     const fS = $('u-from'); const tS = $('u-to');
     
     fS.innerHTML = ''; tS.innerHTML = '';
     
-    // Remove old wrappers safely
+    // Explicitly remove ONLY the custom dropdowns next to these specific inputs
     [fS, tS].forEach(el => {
         el.removeAttribute('data-customized');
         el.style.display = 'block'; 
@@ -837,6 +878,7 @@
     data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
     if(tS.options.length > 1) tS.selectedIndex = 1;
 
+    // Re-init Custom Dropdowns specifically for the Unit Panel
     initCustomDropdowns($('unit-panel'));
   }
   
