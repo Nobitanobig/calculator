@@ -198,6 +198,8 @@
   .btn:active{ transform: scale(0.96); }
   .btn-accent{ background: var(--accent); color: var(--accent-text); padding: 8px 0; font-size: 1rem; }
   .small{ font-size: 0.9rem; padding: 10px; }
+  /* Active state for DEG/RAD button */
+  .btn.active-mode { border: 1px solid var(--accent); color: var(--accent); }
   
   .row{ display: flex; gap: 10px; align-items: center; width: 100%; }
   .flex-1{ flex: 1; }
@@ -262,7 +264,7 @@
       <div class="card-header">
         <div class="title-group">
           <div class="card-title">Calculator</div>
-          <div class="card-sub">Standard & Scientific operations.</div>
+          <div class="card-sub">Scientific Mode & Keyboard Support.</div>
         </div>
         <div id="sc-switch" class="sc-switch">
           <span class="sc-label">SCI</span>
@@ -282,6 +284,7 @@
         <button id="calc-equals" class="btn btn-accent">=</button>
       </div>
       <div id="sci-keys" class="calc-grid" style="margin-top:10px; display:none;">
+        <button class="btn small" id="deg-toggle" style="font-size:0.8rem">DEG</button>
         <button class="btn small" data-fn="sin">sin</button>
         <button class="btn small" data-fn="cos">cos</button>
         <button class="btn small" data-fn="tan">tan</button>
@@ -381,6 +384,7 @@
 
       <div class="chips">
         <button class="chip-btn active" data-panel="loan-panel">Loan / EMI</button>
+        <button class="chip-btn" data-panel="gst-panel">GST / VAT</button>
         <button class="chip-btn" data-panel="unit-panel">Converters</button>
         <button class="chip-btn" data-panel="health-panel">Health</button>
         <button class="chip-btn" data-panel="time-panel">Date</button>
@@ -445,6 +449,32 @@
         </div>
         <button id="pct-calc" class="btn btn-accent" style="width:100%">Compute</button>
         <div id="pct-result" class="result-text"></div>
+      </div>
+
+      <div id="gst-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">GST / VAT Calculator</div>
+           <div class="card-sub">Add or Remove Tax easily.</div>
+        </div>
+        
+        <div class="row">
+           <div class="field flex-1">
+             <label class="mini">Amount</label>
+             <input id="gst-amt" type="number" placeholder="1000">
+           </div>
+           <div class="field flex-1">
+             <label class="mini">Tax Rate %</label>
+             <input id="gst-rate" type="number" placeholder="18">
+           </div>
+        </div>
+        
+        <div class="row" style="margin-bottom:15px; gap:10px;">
+          <button id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add GST (+)</button>
+          <button id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove GST (-)</button>
+        </div>
+        
+        <div id="gst-res" class="result-text"></div>
       </div>
 
       <div id="unit-panel" class="panel">
@@ -632,10 +662,7 @@
     const timeUnit = $('emi-unit').value;
     
     if(!p || !timeVal) return;
-    
-    // Convert to months
     const n = timeUnit === 'years' ? timeVal * 12 : timeVal;
-
     const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
     const totalPay = emi * n;
     const totalInt = totalPay - p;
@@ -644,12 +671,37 @@
 `Monthly EMI: ${cur}${emi.toFixed(2)}
 Total Interest: ${cur}${totalInt.toFixed(2)}
 Total Amount: ${cur}${totalPay.toFixed(2)}`;
-
     $('emi-result').style.whiteSpace = 'pre-wrap';
     $('emi-result').textContent = res;
   }
   
-  /* --- PERCENTAGE (REORDERED) --- */
+  /* --- GST CALCULATOR --- */
+  const calcGST = (mode) => {
+    const amt = parseFloat($('gst-amt').value);
+    const rate = parseFloat($('gst-rate').value);
+    if(isNaN(amt) || isNaN(rate)) return;
+    
+    let net, gst, total;
+    if(mode === 'add') {
+      gst = (amt * rate) / 100;
+      total = amt + gst;
+      net = amt;
+    } else {
+      net = (amt * 100) / (100 + rate);
+      gst = amt - net;
+      total = amt;
+    }
+    
+    $('gst-res').innerHTML = `
+      <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--muted)"><span>Net:</span> <span>${formatNum(net)}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--muted)"><span>GST:</span> <span>${formatNum(gst)}</span></div>
+      <div style="display:flex; justify-content:space-between; font-weight:600; margin-top:4px; font-size:1.1rem"><span>Total:</span> <span>${formatNum(total)}</span></div>
+    `;
+  };
+  $('gst-add').onclick = () => calcGST('add');
+  $('gst-rem').onclick = () => calcGST('remove');
+
+  /* --- PERCENTAGE --- */
   $('pct-calc').onclick = () => {
     const amt = parseFloat($('pct-amount').value);
     const pct = parseFloat($('pct-percent').value);
@@ -659,7 +711,7 @@ Total Amount: ${cur}${totalPay.toFixed(2)}`;
     $('pct-result').textContent = `Discounted Price: ${formatNum(final)} | You Save: ${formatNum(save)}`;
   }
 
-  /* --- CONVERTERS (SMART ZEROS) --- */
+  /* --- CONVERTERS --- */
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
       let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
@@ -686,7 +738,7 @@ Total Amount: ${cur}${totalPay.toFixed(2)}`;
     $('u-res').textContent = `${formatNum(res)} ${$('u-to').value}`;
   }
 
-  /* --- SIP (CURRENCY ADDED) --- */
+  /* --- SIP --- */
   $('sip-btn').onclick = () => {
      const cur = $('sip-currency').value;
      const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
@@ -694,7 +746,7 @@ Total Amount: ${cur}${totalPay.toFixed(2)}`;
      $('sip-res').textContent = `Total Value: ${cur}${formatNum(val)}`;
   }
 
-  /* --- BMI (AGE/GENDER ADDED) --- */
+  /* --- BMI --- */
   $('bmi-btn').onclick = () => {
       const w = parseFloat($('bmi-w').value); const h = parseFloat($('bmi-h').value)/100;
       if(w && h) $('bmi-res').textContent = "BMI: " + (w/(h*h)).toFixed(2);
@@ -708,21 +760,99 @@ Total Amount: ${cur}${totalPay.toFixed(2)}`;
     $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
     $('qr-image').src = url;
   }
-  // Calc Logic
+  
+  /* --- MAIN CALCULATOR LOGIC --- */
   let expr = ''; 
+  let useDeg = true; // Default to Degrees
+  
+  // Custom Global Trig functions for eval to use
+  window.sin = (x) => Math.sin(useDeg ? x * Math.PI/180 : x);
+  window.cos = (x) => Math.cos(useDeg ? x * Math.PI/180 : x);
+  window.tan = (x) => Math.tan(useDeg ? x * Math.PI/180 : x);
+  window.log = (x) => Math.log10(x); // Standard Log base 10
+  window.ln = (x) => Math.log(x);    // Natural Log
+
   const upd = () => $('calc-expression').textContent = expr;
+  
+  // Numpad Generation
   const k = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
-  k.forEach(x => { let b=document.createElement('button'); b.className='btn'; b.textContent=x; b.onclick=()=>{expr+={'÷':'/','×':'*','−':'-'}[x]||x; upd();}; $('calc-grid').appendChild(b); });
-  $('calc-equals').onclick = () => { try { let s=expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,Math.PI); $('calc-result').textContent = formatNum(eval(s)); } catch { $('calc-result').textContent="Err"; } };
+  k.forEach(x => { 
+    let b=document.createElement('button'); b.className='btn'; b.textContent=x; 
+    b.onclick=()=>{expr+={'÷':'/','×':'*','−':'-'}[x]||x; upd();}; 
+    $('calc-grid').appendChild(b); 
+  });
+
+  // Calculate Result
+  $('calc-equals').onclick = () => { 
+    try { 
+      // Replace visual symbols with JS Math
+      let s = expr
+        .replace(/×/g,'*').replace(/÷/g,'/')
+        .replace(/−/g,'-').replace(/π/g, Math.PI)
+        .replace(/√\(/g, 'Math.sqrt(').replace(/\^/g, '**');
+      
+      $('calc-result').textContent = formatNum(eval(s)); 
+    } catch { 
+      $('calc-result').textContent="Err"; 
+    } 
+  };
+  
   $('calc-clear').onclick = () => { expr=''; upd(); $('calc-result').textContent='0'; };
   $('calc-back').onclick = () => { expr=expr.slice(0,-1); upd(); };
+  
+  // Copy with Feedback
+  $('calc-copy').onclick = () => {
+    const res = $('calc-result').textContent;
+    navigator.clipboard.writeText(res).then(() => {
+      const b = $('calc-copy'); const old = b.textContent;
+      b.textContent = "Copied!"; b.style.color="var(--accent)";
+      setTimeout(() => { b.textContent = old; b.style.color=""; }, 1500);
+    });
+  };
+
+  // SCI Toggle
   $('sc-switch').onclick = function(){ this.classList.toggle('on'); $('sci-keys').style.display = this.classList.contains('on')?'grid':'none'; };
-  document.querySelectorAll('#sci-keys .btn').forEach(b => b.onclick = () => { expr+=(b.dataset.fn==='pow'?'**':b.dataset.fn==='pi'?Math.PI:`Math.${b.dataset.fn}(`); upd(); });
+  
+  // SCI Keys Logic
+  document.querySelectorAll('#sci-keys .btn:not(#deg-toggle)').forEach(b => {
+    b.onclick = () => {
+      const fn = b.dataset.fn;
+      if(fn === 'pi') expr += 'π';
+      else if(fn === 'pow') expr += '**';
+      else if(fn === 'sqrt') expr += '√(';
+      else expr += `${fn}(`;
+      upd();
+    }
+  });
+
+  // DEG / RAD Toggle
+  const degBtn = $('deg-toggle');
+  const updateDegBtn = () => {
+    degBtn.textContent = useDeg ? "DEG" : "RAD";
+    if(useDeg) degBtn.classList.add('active-mode'); else degBtn.classList.remove('active-mode');
+  };
+  updateDegBtn();
+  degBtn.onclick = () => { useDeg = !useDeg; updateDegBtn(); };
+
+  /* --- KEYBOARD SUPPORT --- */
+  document.addEventListener('keydown', (e) => {
+    const key = e.key;
+    if (/[0-9]/.test(key)) Array.from(document.querySelectorAll('#calc-grid .btn')).find(b => b.textContent === key)?.click();
+    if (['+', '-', '*', '/', '%', '.'].includes(key)) {
+      const map = {'*':'×', '/':'÷', '-':'−'}; const char = map[key] || key;
+      Array.from(document.querySelectorAll('#calc-grid .btn')).find(b => b.textContent === char)?.click();
+    }
+    if (key === 'Enter' || key === '=') $('calc-equals').click();
+    if (key === 'Backspace') $('calc-back').click();
+    if (key === 'Escape') $('calc-clear').click();
+  });
+
   // Tabs
   document.querySelectorAll('.chip-btn').forEach(b => b.onclick = () => {
      document.querySelectorAll('.chip-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); $(b.dataset.panel).classList.add('active');
   });
+  
   // Age
   $('age-btn').onclick = () => {
     const dVal=$('dob-input').value; if(!dVal)return;
