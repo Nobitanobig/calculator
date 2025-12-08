@@ -12,10 +12,10 @@
     --text: #ffffff;
     --muted: #a1a1aa;
     
-    /* Default Accent (Overwritten by JS) */
-    --accent: #3b82f6; 
-    --accent-text: #ffffff;
-    --accent-bg: #3b82f6; /* For gradients */
+    /* Default Accent (Mono Default) */
+    --accent: #ffffff; 
+    --accent-text: #000000;
+    --accent-bg: #ffffff;
     
     --card-bg: #121212;
     --input-bg: #1c1c1c;
@@ -33,8 +33,9 @@
     --text: #000000;
     --muted: #666666;
     
-    /* Light Mode uses the same accent variables set by JS */
+    --accent: #000000;
     --accent-text: #ffffff;
+    --accent-bg: #000000;
 
     --card-bg: #ffffff;
     --input-bg: #f2f2f7;
@@ -215,8 +216,6 @@
     border-radius: 8px; transition: 0.2s; white-space: nowrap;
   }
   .tab-btn:hover { color: var(--text); background: var(--input-bg); }
-  
-  /* Active Tab uses Gradient BG if available */
   .tab-btn.active { color: var(--accent-text); background: var(--accent-bg); }
   
   .tab-content { display: none; animation: fadeIn 0.2s ease; }
@@ -267,10 +266,7 @@
     transition: transform 0.1s, filter 0.2s; display: flex; align-items: center; justify-content: center;
   }
   .btn:active{ transform: scale(0.96); }
-  
-  /* Accent Button Uses Background Variable for Gradients */
   .btn-accent{ background: var(--accent-bg); color: var(--accent-text); padding: 8px 0; font-size: 1rem; }
-  
   .small{ font-size: 0.9rem; padding: 10px; }
   .btn.active-mode { border: 1px solid var(--accent); color: var(--accent); }
   
@@ -295,12 +291,12 @@
   .panel.active{ display: block; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
   
-  /* FIXED ALIGNMENT DIVIDER */
+  /* FIXED ALIGNMENT DIVIDER (Thinner) */
   .divider{ 
-    height: 1px; 
+    height: 0.5px; /* Thinner line as requested */
     background: var(--border); 
-    margin: 16px -18px; /* Negative margin to pull to edges */
-    width: calc(100% + 36px); /* Width + padding compensation */
+    margin: 16px 0; /* Reverted margins */
+    width: 100%;
   }
 
   .health-stats, .text-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
@@ -371,12 +367,13 @@
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
       <select id="theme-color">
-        <option value="blue" selected>Blue</option>
+        <option value="mono" selected>Default (Mono)</option>
+        <option value="blue">Blue</option>
         <option value="red">Red</option>
         <option value="green">Green</option>
         <option value="orange">Orange</option>
-        <option value="sunset">Sunset</option>
-        <option value="ocean">Ocean</option>
+        <option value="sunset">Sunset (Gradient)</option>
+        <option value="ocean">Ocean (Gradient)</option>
       </select>
     </div>
   </header>
@@ -562,9 +559,9 @@
       <div id="tab-tools" class="tab-content">
         <div class="chips">
           <button class="chip-btn" data-panel="unit-panel">Converters</button>
+          <button class="chip-btn" data-panel="password-panel">Password</button> <button class="chip-btn" data-panel="text-panel">Text Tools</button>
           <button class="chip-btn" data-panel="time-panel">Day Counter</button>
-          <button class="chip-btn" data-panel="text-panel">Text Tools</button>
-          <button class="chip-btn" data-panel="password-panel">Password</button> <button class="chip-btn" data-panel="base-panel">Base Converter</button>
+          <button class="chip-btn" data-panel="base-panel">Base Converter</button>
           <button class="chip-btn" data-panel="gpa-panel">GPA</button>
         </div>
       </div>
@@ -599,6 +596,19 @@
         <div id="goal-res" class="result-text"></div>
       </div>
 
+      <div id="password-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Password Generator</div>
+           <div class="card-sub">Create strong, secure passwords.</div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
+           <button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button>
+        </div>
+        <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
+      </div>
+
       <div id="text-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px">
@@ -617,19 +627,6 @@
            <button id="txt-lower" class="btn small flex-1" style="font-size:0.8rem;">lower</button>
            <button id="txt-clear" class="btn small flex-1" style="font-size:0.8rem;">Clear</button>
         </div>
-      </div>
-
-      <div id="password-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Password Generator</div>
-           <div class="card-sub">Create strong, secure passwords.</div>
-        </div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
-           <button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button>
-        </div>
-        <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
       </div>
 
       <div id="base-panel" class="panel">
@@ -655,7 +652,7 @@
       <div id="health-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Health Station</div>
+           <div class="card-title">Health Station (BMI, BMR)</div>
            <div class="card-sub">BMI, BMR, Water & Protein Analysis.</div>
         </div>
         <div class="row">
@@ -789,7 +786,10 @@
 
       <div id="gpa-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Calculate average of numbers.</div></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">GPA / Average</div>
+           <div class="card-sub">Calculate the average of a list of numbers.</div>
+        </div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
         <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
         <div id="gpa-res" class="result-text"></div>
@@ -842,6 +842,7 @@
       const gstTitle = $('gst-title');
       const sipTitle = $('sip-title');
 
+      // Smart Tax Naming
       if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) {
           taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator";
       } else if (['€', '£'].includes(sym)) {
@@ -850,13 +851,14 @@
           taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator";
       }
 
+      // Smart Invest Naming
       if (sym === '₹') {
           invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator";
       } else {
           invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc";
       }
       
-      // Refresh calculations
+      // Refresh calculations if active
       if($('emi-result').textContent) $('emi-calc').click();
       if($('sip-res').textContent) $('sip-btn').click();
       if($('fuel-res').textContent) $('fuel-btn').click();
@@ -866,27 +868,34 @@
       if($('gst-res').textContent) $('gst-add').click();
   }
 
-  // --- NEW THEME ENGINE (v2.0) ---
+  // --- THEME ENGINE (v2.1 Polish) ---
   function updateThemeColors(themeName) {
     const root = document.documentElement; 
     const isLight = document.body.dataset.theme === 'light';
     
-    // Definitions
-    const themes = {
-        blue:   { bg: '#3b82f6', solid: '#3b82f6' },
-        red:    { bg: '#ef4444', solid: '#ef4444' },
-        green:  { bg: '#22c55e', solid: '#22c55e' },
-        orange: { bg: '#f97316', solid: '#f97316' },
-        sunset: { bg: 'linear-gradient(135deg, #f97316, #ef4444)', solid: '#ef4444' },
-        ocean:  { bg: 'linear-gradient(135deg, #06b6d4, #3b82f6)', solid: '#3b82f6' }
-    };
-
-    const t = themes[themeName] || themes.blue;
-    
-    // Set Variables
-    root.style.setProperty('--accent-bg', t.bg); // For Buttons/Chips
-    root.style.setProperty('--accent', t.solid); // For Text/Borders
-    root.style.setProperty('--accent-text', '#ffffff'); // Always white on accent
+    if (themeName === 'mono') {
+        // Classic Black/White Logic
+        const acc = isLight ? '#000000' : '#ffffff';
+        const txt = isLight ? '#ffffff' : '#000000';
+        root.style.setProperty('--accent-bg', acc);
+        root.style.setProperty('--accent', acc);
+        root.style.setProperty('--accent-text', txt);
+    } else {
+        // Color Themes
+        const themes = {
+            blue:   { bg: '#3b82f6', solid: '#3b82f6' },
+            red:    { bg: '#ef4444', solid: '#ef4444' },
+            green:  { bg: '#22c55e', solid: '#22c55e' },
+            orange: { bg: '#f97316', solid: '#f97316' },
+            sunset: { bg: 'linear-gradient(135deg, #f97316, #ef4444)', solid: '#ef4444' },
+            ocean:  { bg: 'linear-gradient(135deg, #06b6d4, #3b82f6)', solid: '#3b82f6' }
+        };
+        const t = themes[themeName] || themes.blue;
+        
+        root.style.setProperty('--accent-bg', t.bg); 
+        root.style.setProperty('--accent', t.solid); 
+        root.style.setProperty('--accent-text', '#ffffff'); 
+    }
   }
   
   $('toggle-theme').onclick = () => { 
@@ -899,7 +908,7 @@
   
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.onclick = () => {
-      // 1. Switch UI Tabs
+      // 1. UI Switch
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
@@ -915,11 +924,8 @@
   // Chip Switching
   document.querySelectorAll('.chip-btn').forEach(b => {
       b.onclick = (e) => {
-         // Remove active from all chips
          document.querySelectorAll('.chip-btn').forEach(x=>x.classList.remove('active'));
-         // Add active to clicked
          b.classList.add('active');
-         // Hide all panels, Show target
          document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); 
          $(b.dataset.panel).classList.add('active');
       }
@@ -944,14 +950,13 @@
       tabContents.forEach(c => c.style.display = '');
       tabBar.style.display = 'flex';
       chips.forEach(c => c.classList.remove('hidden'));
-      // Restore active tab state
       const activeTabId = document.querySelector('.tab-btn.active').dataset.tab;
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       $(activeTabId).classList.add('active');
     }
   });
 
-  /* --- 3. CALCULATOR LOGIC (UPDATED MATH) --- */
+  /* --- 3. CALCULATOR LOGIC (BUSINESS MATH) --- */
   const updateHistory = (expression, result) => {
     history.push(`${expression} = ${result}`);
     if(history.length > 3) history.shift(); 
@@ -979,18 +984,15 @@
       if(!expr) return;
       let s = expr;
       
-      // BUSINESS LOGIC: Handle "50 - 10%" -> 45
-      // Regex detects: Number [+-] Number %
+      // BUSINESS LOGIC: 50-10% -> 45
       s = s.replace(/(\d+(\.\d+)?)([\+\-])(\d+(\.\d+)?)%/g, (match, n1, _, op, n2) => {
           const val1 = parseFloat(n1);
           const val2 = parseFloat(n2);
           return op === '+' ? val1 * (1 + val2/100) : val1 * (1 - val2/100);
       });
-      
-      // Handle remaining % as simple division (e.g. 10%)
+      // Handle solo percentages
       s = s.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
-      
-      // Standard Math
+      // Standard Math Replacements
       s = s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g, Math.PI).replace(/√\(/g, 'Math.sqrt(').replace(/\^/g, '**');
       
       const res = formatNum(eval(s));
@@ -1182,7 +1184,7 @@
     });
   }
   document.addEventListener('click',()=>document.querySelectorAll('.custom-dropdown').forEach(d=>d.classList.remove('active')));
-  updateThemeColors('blue'); initCustomDropdowns(); renderUnits();
+  updateThemeColors('mono'); initCustomDropdowns(); renderUnits();
 </script>
 </body>
 </html>
