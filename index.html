@@ -186,7 +186,7 @@
   .dropdown-item:hover { background: var(--btn-bg); }
   .dropdown-item.selected { color: var(--accent); font-weight: 600; background: rgba(128,128,128,0.1); }
   
-  /* MODALS (Currency & Info) */
+  /* MODALS */
   .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: var(--modal-bg); z-index: 999;
@@ -284,12 +284,17 @@
   .chip-btn.active{ background: var(--accent-bg); color: var(--accent-text); border-color: transparent; font-weight: 600; }
   .chip-btn.hidden { display: none; }
 
-  /* FIXED: Increased spacing to create visual separation */
+  /* PANEL LOGIC (FIXED) */
+  .panel{ display: none !important; animation: fadeIn 0.3s ease; }
+  .panel.active{ display: block !important; }
+  
+  /* DIVIDER (Visible) */
   .divider{ 
-    height: 0.5px;
+    height: 1px;
     background: var(--border); 
-    margin: 20px 0 16px 0; /* Wider top margin */
+    margin: 16px 0 20px 0; 
     width: 100%;
+    opacity: 0.5;
   }
 
   .health-stats, .text-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
@@ -314,7 +319,7 @@
     position: absolute; right: 0; top: 0;
     font-size: 1.2rem; color: var(--accent); cursor: pointer;
     background: none; border: none; padding: 0;
-    display: none; /* Only shown via JS after calc */
+    display: none;
   }
 
   .qr-container {
@@ -363,7 +368,8 @@
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
       <select id="theme-color">
-        <option value="mono" selected>Default</option> <option value="blue">Blue</option><option value="red">Red</option><option value="green">Green</option>
+        <option value="mono" selected>Default</option>
+        <option value="blue">Blue</option><option value="red">Red</option><option value="green">Green</option>
         <option value="orange">Orange</option><option value="sunset">Sunset</option><option value="ocean">Ocean</option>
       </select>
     </div>
@@ -397,7 +403,7 @@
       <div class="card-header"><div class="title-group"><div class="card-title">Age Calculator</div><div class="card-sub">Calculate exact age.</div></div></div>
       <div class="field"><label class="mini">Date of birth</label><input type="date" id="dob-input"></div>
       <button id="age-btn" class="btn btn-accent btn-action">Calculate Age</button>
-      <div id="age-result" class="result-text"><button class="share-btn" id="share-age">➦</button></div>
+      <div id="age-result" class="result-text"></div>
     </section>
 
     <section class="card">
@@ -411,7 +417,7 @@
         <button id="cur-btn" class="btn btn-accent flex-1 btn-action">Convert</button>
         <button id="cur-swap" class="btn small" style="width:50px; margin-top:10px;">⇄</button>
       </div>
-      <div id="cur-res" class="result-text"><button class="share-btn" id="share-cur">➦</button></div>
+      <div id="cur-res" class="result-text"></div>
       <div id="cur-source" class="muted-text" style="display:none;"><span id="cur-date"></span> | <a href="https://www.frankfurter.app" target="_blank" class="link-btn">Source: Frankfurter API</a></div>
     </section>
 
@@ -495,7 +501,7 @@
           <div class="field" style="width:100px"><label class="mini">Period</label><select id="emi-unit"><option value="years">Years</option><option value="months">Months</option></select></div>
         </div>
         <button id="emi-calc" class="btn btn-accent btn-action">Calculate EMI</button>
-        <div id="emi-result" class="result-text"><button class="share-btn" id="share-emi">➦</button></div>
+        <div id="emi-result" class="result-text"></div>
       </div>
 
       <div id="gst-panel" class="panel">
@@ -509,7 +515,7 @@
           <button id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add Tax (+)</button>
           <button id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove Tax (-)</button>
         </div>
-        <div id="gst-res" class="result-text"><button class="share-btn" id="share-gst">➦</button></div>
+        <div id="gst-res" class="result-text"></div>
       </div>
 
       <div id="invest-panel" class="panel">
@@ -521,7 +527,7 @@
            <div class="field flex-1"><label class="mini">Years</label><input id="sip-years" type="number" placeholder="10"></div>
         </div>
         <button id="sip-btn" class="btn btn-accent btn-action">Calculate Return</button>
-        <div id="sip-res" class="result-text"><button class="share-btn" id="share-sip">➦</button></div>
+        <div id="sip-res" class="result-text"></div>
       </div>
 
       <div id="goal-panel" class="panel">
@@ -533,7 +539,7 @@
            <div class="field flex-1"><label class="mini">Exp. Rate %</label><input id="goal-rate" type="number" placeholder="12"></div>
         </div>
         <button id="goal-btn" class="btn btn-accent btn-action">Calculate Monthly SIP</button>
-        <div id="goal-res" class="result-text"><button class="share-btn" id="share-goal">➦</button></div>
+        <div id="goal-res" class="result-text"></div>
       </div>
 
       <div id="discount-panel" class="panel">
@@ -545,7 +551,7 @@
            <div class="field flex-1"><label class="mini">Disc 2 %</label><input id="disc-2" type="number" placeholder="10"></div>
         </div>
         <button id="disc-btn" class="btn btn-accent btn-action">Calculate Sale Price</button>
-        <div id="disc-res" class="result-text"><button class="share-btn" id="share-disc">➦</button></div>
+        <div id="disc-res" class="result-text"></div>
       </div>
 
       <div id="bill-panel" class="panel">
@@ -557,7 +563,7 @@
         </div>
         <div class="field"><label class="mini">People</label><input id="bill-ppl" type="number" placeholder="4"></div>
         <button id="bill-btn" class="btn btn-accent btn-action">Split Bill</button>
-        <div id="bill-res" class="result-text"><button class="share-btn" id="share-bill">➦</button></div>
+        <div id="bill-res" class="result-text"></div>
       </div>
 
       <div id="ci-panel" class="panel">
@@ -572,12 +578,12 @@
            <div class="field flex-1"><label class="mini">Compounded</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12">Monthly</option></select></div>
         </div>
         <button id="ci-btn" class="btn btn-accent btn-action">Calculate Amount</button>
-        <div id="ci-res" class="result-text"><button class="share-btn" id="share-ci">➦</button></div>
+        <div id="ci-res" class="result-text"></div>
       </div>
 
       <div id="health-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Health Station (BMI, BMR)</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Health Station (BMI/BMR)</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Age</label><input id="h-age" type="number" placeholder="25"></div>
            <div class="field flex-1"><label class="mini">Gender</label><select id="h-gender"><option value="male">Male</option><option value="female">Female</option></select></div>
@@ -606,15 +612,15 @@
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Sleep Cycle</div><div class="card-sub">Optimize your sleep schedule.</div></div>
         <div class="field">
-          <label class="mini">I want to...</label>
+          <label class="mini">Mode</label>
           <select id="sleep-mode">
-            <option value="wake">Wake up at...</option>
-            <option value="sleep">Go to sleep at...</option>
+            <option value="wake">I want to wake up at...</option>
+            <option value="sleep">I plan to sleep at...</option>
           </select>
         </div>
         <div class="field"><label class="mini">Time</label><input id="sleep-time" type="time"></div>
         <button id="sleep-btn" class="btn btn-accent btn-action">Calculate</button>
-        <div id="sleep-res" class="result-text"><button class="share-btn" id="share-sleep">➦</button></div>
+        <div id="sleep-res" class="result-text"></div>
       </div>
 
       <div id="fuel-panel" class="panel">
@@ -626,7 +632,7 @@
         </div>
         <div class="field"><label class="mini">Fuel Price</label><input id="fuel-price" type="number" placeholder="100"></div>
         <button id="fuel-btn" class="btn btn-accent btn-action">Calculate Cost</button>
-        <div id="fuel-res" class="result-text"><button class="share-btn" id="share-fuel">➦</button></div>
+        <div id="fuel-res" class="result-text"></div>
       </div>
 
       <div id="eta-panel" class="panel">
@@ -638,14 +644,14 @@
         </div>
         <div class="field"><label class="mini">Start Time</label><input id="eta-start" type="time"></div>
         <button id="eta-btn" class="btn btn-accent btn-action">Calculate Arrival</button>
-        <div id="eta-res" class="result-text"><button class="share-btn" id="share-eta">➦</button></div>
+        <div id="eta-res" class="result-text"></div>
       </div>
 
       <div id="zone-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Time Zone Converter</div><div class="card-sub">Check world time.</div></div>
         <div class="field"><label class="mini">Select Region</label>
-          <select id="zone-sel" style="display:block !important">
+          <select id="zone-sel">
             <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
             <option value="America/New_York">🇺🇸 New York (EST)</option>
             <option value="Europe/London">🇬🇧 London (GMT)</option>
@@ -666,7 +672,7 @@
         <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
         <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
         <button id="u-btn" class="btn btn-accent btn-action">Convert</button>
-        <div id="u-res" class="result-text"><button class="share-btn" id="share-unit">➦</button></div>
+        <div id="u-res" class="result-text"></div>
       </div>
 
       <div id="text-panel" class="panel">
@@ -679,7 +685,7 @@
       <div id="password-panel" class="panel">
         <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Password Generator</div></div>
         <div class="row"><div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div><button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button></div>
-        <div id="pw-res" class="result-text" style="word-break:break-all;"><button class="share-btn" id="share-pw">➦</button></div>
+        <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
       </div>
 
       <div id="base-panel" class="panel">
@@ -961,7 +967,7 @@
   $('emi-calc').onclick = () => {
     const p=parseFloat($('emi-principal').value), r=parseFloat($('emi-rate').value)/1200, t=parseFloat($('emi-time').value), u=$('emi-unit').value; if(!p)return;
     const n = u==='years'?t*12:t; const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    const msg = `EMI: ${globalSym}${Math.round(emi)}\nTotal: ${globalSym}${Math.round(emi*n)}`;
+    const msg = `EMI: ${globalSym}${Math.round(emi)}\nInterest: ${globalSym}${Math.round((emi*n)-p)}\nTotal: ${globalSym}${Math.round(emi*n)}`;
     $('emi-result').textContent = msg; $('emi-result').style.whiteSpace = 'pre-wrap';
     showResult('emi-result', msg, "Loan EMI", msg); // Re-adds button
   };
@@ -1087,6 +1093,7 @@
   
   // Force Tabs Init
   document.querySelector('[data-tab="tab-finance"]').click();
+  
 </script>
 </body>
 </html>
