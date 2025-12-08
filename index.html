@@ -1,10 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Smart AI Calculator</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     /* DARK THEME VARIABLES */
@@ -82,14 +75,13 @@
   
   .theme-block{ display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
   
-  /* Unified Button/Select Size */
   .pill, .dropdown-trigger {
-    height: 32px; /* Fixed height for consistency */
+    height: 32px;
     display: flex; align-items: center; justify-content: center;
     background: var(--btn-bg);
     color: var(--btn-text);
     border: 1px solid var(--border);
-    padding: 0 12px; /* Horizontal padding only */
+    padding: 0 12px;
     border-radius: 20px;
     font-size: 0.75rem;
     cursor: pointer;
@@ -97,7 +89,7 @@
     transition: 0.2s;
     box-sizing: border-box;
   }
-  
+
   /* CARDS */
   .card{
     background: var(--card-bg);
@@ -117,6 +109,25 @@
   .card-title{ font-size: 1rem; font-weight: 600; }
   .card-sub{ font-size: 0.75rem; color: var(--muted); margin-top: 2px; line-height: 1.3; }
 
+  /* SEARCH BAR */
+  .search-box {
+    position: relative; margin-bottom: 15px;
+  }
+  .search-input {
+    width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    padding: 12px 12px 12px 40px; border-radius: 14px; color: var(--text);
+    font-size: 0.9rem; outline: none; transition: 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; border: 2px solid var(--muted); border-radius: 50%;
+  }
+  .search-icon::after {
+    content: ''; position: absolute; right: -4px; bottom: -4px; width: 6px; height: 2px;
+    background: var(--muted); transform: rotate(45deg);
+  }
+
   /* INPUTS */
   input, textarea {
     width: 100%;
@@ -132,28 +143,20 @@
   }
   input:focus, textarea:focus { border-color: var(--accent); }
 
-  /* --- CUSTOM DROPDOWN STYLES --- */
+  /* DROPDOWNS */
   select { display: none; } 
   .custom-dropdown { position: relative; width: 100%; font-size: 0.9rem; user-select: none; }
   .dropdown-trigger {
-    justify-content: space-between; /* Text left, arrow right */
-    width: 100%;
-    padding-right: 30px; /* Space for arrow */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 60px;
+    justify-content: space-between; width: 100%; padding-right: 30px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 60px;
   }
-  /* Specific override for header dropdown to align right */
   .theme-block .custom-dropdown { width: auto; min-width: 90px; }
-  
   .dropdown-trigger::after {
     content: ''; position: absolute; right: 12px; top: 50%; width: 8px; height: 8px;
     border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
     transform: translateY(-70%) rotate(45deg); transition: 0.2s;
   }
   .custom-dropdown.active .dropdown-trigger::after { transform: translateY(-30%) rotate(-135deg); border-color: var(--accent); }
-  
   .dropdown-menu {
     position: absolute; top: calc(100% + 6px); left: 0; width: 100%; min-width: 100px;
     background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
@@ -170,7 +173,7 @@
   .dropdown-item:hover { background: var(--btn-bg); }
   .dropdown-item.selected { color: var(--accent); font-weight: 600; background: rgba(128,128,128,0.1); }
   
-  /* --- CALCULATOR UI --- */
+  /* CALCULATOR UI */
   .sc-switch{
     position: relative; width: 60px; height: 28px; background: var(--input-bg);
     border-radius: 20px; cursor: pointer; border: 1px solid var(--border);
@@ -182,6 +185,16 @@
   }
   .sc-switch.on .sc-knob{ transform: translateX(30px); background: var(--accent); }
   .sc-label{ position: absolute; right: 8px; font-size: 0.65rem; font-weight: 600; color: var(--muted); pointer-events: none; }
+
+  /* HISTORY TAPE */
+  .calc-history {
+    max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+    margin-bottom: 8px; padding-right: 4px;
+  }
+  .calc-history.show { max-height: 80px; overflow-y: auto; }
+  .hist-item { font-size: 0.8rem; color: var(--muted); cursor: pointer; }
+  .hist-item:hover { color: var(--accent); }
 
   .calc-display{
     background: var(--input-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: right;
@@ -210,8 +223,7 @@
   /* CHIPS & CATEGORIES */
   .category-label {
     font-size: 0.75rem; font-weight: 600; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.5px;
-    margin: 15px 0 8px 4px;
+    text-transform: uppercase; letter-spacing: 0.5px; margin: 15px 0 8px 4px;
   }
   .chips{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 5px; }
   .chip-btn{
@@ -219,11 +231,21 @@
     padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: 0.2s;
   }
   .chip-btn.active{ background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
-  
+  .chip-btn.hidden { display: none; } /* For search filter */
+
   .panel{ display: none; animation: fadeIn 0.3s ease; }
   .panel.active{ display: block; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
   .divider{ height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* HEALTH STATS GRID */
+  .health-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+  .stat-box { 
+    background: var(--input-bg); border-radius: 12px; padding: 12px; 
+    display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid var(--border);
+  }
+  .stat-val { font-size: 1.1rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+  .stat-lbl { font-size: 0.7rem; color: var(--muted); }
 
   /* QR Area */
   .qr-container {
@@ -237,9 +259,7 @@
   footer{ text-align: center; padding: 20px 0; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 20px; }
   .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
   @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.3); } 60% { transform: scale(1); } 100% { transform: scale(1); } }
-
 </style>
-</head>
 <body data-theme="dark">
 
 <div class="app">
@@ -268,7 +288,7 @@
       <div class="card-header">
         <div class="title-group">
           <div class="card-title">Calculator</div>
-          <div class="card-sub">Scientific Mode & Keyboard Support.</div>
+          <div class="card-sub">Scientific Mode & History.</div>
         </div>
         <div id="sc-switch" class="sc-switch">
           <span class="sc-label">SCI</span>
@@ -277,6 +297,7 @@
       </div>
 
       <div class="calc-display">
+        <div id="calc-history" class="calc-history"></div>
         <div id="calc-expression" class="calc-expression"></div>
         <div id="calc-result" class="calc-result">0</div>
       </div>
@@ -317,73 +338,15 @@
 
     <section class="card">
       <div class="card-header">
-        <div class="title-group">
-          <div class="card-title">Currency Converter</div>
-          <div class="card-sub">Live daily exchange rates.</div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="field flex-1">
-          <label class="mini">Amount</label>
-          <input id="cur-amt" type="number" placeholder="1">
-        </div>
-        <div class="field flex-1">
-          <label class="mini">From</label>
-          <select id="cur-from">
-            <option value="USD" selected>USD</option>
-            <option value="EUR">EUR</option>
-            <option value="INR">INR</option>
-            <option value="GBP">GBP</option>
-            <option value="JPY">JPY</option>
-          </select>
-        </div>
-        <div class="field flex-1">
-          <label class="mini">To</label>
-          <select id="cur-to">
-            <option value="INR" selected>INR</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="JPY">JPY</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <button id="cur-btn" class="btn btn-accent flex-1">Convert</button>
-        <button id="cur-swap" class="btn small" style="width:50px">⇄</button>
-      </div>
-      <div id="cur-res" class="result-text"></div>
-      <div id="cur-info" class="muted-text"></div>
-      <div id="cur-source" class="muted-text" style="display:none;">
-        <a href="https://www.frankfurter.app" target="_blank" class="link-btn">Data Source: Frankfurter API</a>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="card-header">
-        <div class="title-group">
-          <div class="card-title">QR Generator</div>
-          <div class="card-sub">Create QR codes for links & text.</div>
-        </div>
-      </div>
-      <div class="field">
-        <label class="mini">Text or URL</label>
-        <input id="qr-text" type="text" placeholder="https://example.com">
-      </div>
-      <button id="qr-btn" class="btn btn-accent" style="width:100%">Generate</button>
-      <div id="qr-container" class="qr-container">
-        <div id="qr-loading" class="loading-txt">Generating QR Code...</div>
-        <img id="qr-image" class="qr-img" alt="QR Code" style="display:none;" />
-        <a id="qr-download" class="link-btn" style="display:none; margin-top:10px;">Download Image</a>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="card-header">
         <div>
           <div class="card-title">More Tools</div>
-          <div class="card-sub">Specialized calculators & converters.</div>
+          <div class="card-sub">Find the right tool for the job.</div>
         </div>
+      </div>
+
+      <div class="search-box">
+        <div class="search-icon"></div>
+        <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, BMI, Tip)...">
       </div>
 
       <div class="category-label">Finance</div>
@@ -391,55 +354,128 @@
         <button class="chip-btn active" data-panel="loan-panel">Loan / EMI</button>
         <button class="chip-btn" data-panel="gst-panel">GST / VAT</button>
         <button class="chip-btn" data-panel="invest-panel">SIP / Invest</button>
+        <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
+        <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
       </div>
 
       <div class="category-label">Health</div>
       <div class="chips">
-        <button class="chip-btn" data-panel="health-panel">BMI</button>
+        <button class="chip-btn" data-panel="health-panel">Health Station</button>
       </div>
 
       <div class="category-label">Other Tools</div>
       <div class="chips">
         <button class="chip-btn" data-panel="unit-panel">Converters</button>
+        <button class="chip-btn" data-panel="currency-panel">Currency</button>
         <button class="chip-btn" data-panel="time-panel">Date Diff</button>
         <button class="chip-btn" data-panel="text-panel">Password</button>
         <button class="chip-btn" data-panel="gpa-panel">GPA</button>
+        <button class="chip-btn" data-panel="qr-panel">QR Gen</button>
+      </div>
+
+      <div id="health-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Health Station</div>
+           <div class="card-sub">BMI, BMR, Water & Protein Intake.</div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Age</label><input id="h-age" type="number" placeholder="25"></div>
+           <div class="field flex-1"><label class="mini">Gender</label><select id="h-gender"><option value="male">Male</option><option value="female">Female</option></select></div>
+        </div>
+        <div class="row">
+          <div class="field flex-1"><label class="mini">Weight (kg)</label><input id="h-weight" type="number" placeholder="70"></div>
+          <div class="field flex-1"><label class="mini">Height (cm)</label><input id="h-height" type="number" placeholder="170"></div>
+        </div>
+        <div class="field">
+          <label class="mini">Activity Level</label>
+          <select id="h-activity">
+            <option value="1.2">Sedentary (Little/No exercise)</option>
+            <option value="1.375">Light (Exercise 1-3 days/wk)</option>
+            <option value="1.55">Moderate (Exercise 3-5 days/wk)</option>
+            <option value="1.725">Active (Exercise 6-7 days/wk)</option>
+            <option value="1.9">Very Active (Physical job)</option>
+          </select>
+        </div>
+        <button id="h-btn" class="btn btn-accent" style="width:100%">Calculate Health Stats</button>
+        
+        <div id="h-result" class="health-stats" style="display:none;">
+          <div class="stat-box">
+             <div id="res-bmi" class="stat-val">--</div>
+             <div class="stat-lbl">BMI Score</div>
+          </div>
+          <div class="stat-box">
+             <div id="res-bmr" class="stat-val">--</div>
+             <div class="stat-lbl">BMR (Calories/Day)</div>
+          </div>
+          <div class="stat-box">
+             <div id="res-water" class="stat-val">--</div>
+             <div class="stat-lbl">Water (Liters)</div>
+          </div>
+          <div class="stat-box">
+             <div id="res-protein" class="stat-val">--</div>
+             <div class="stat-lbl">Protein (Grams)</div>
+          </div>
+        </div>
+        <div id="h-msg" class="result-text" style="text-align:center;"></div>
+      </div>
+
+      <div id="bill-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Bill Splitter</div>
+           <div class="card-sub">Split bills & calculate tips.</div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Total Bill</label><input id="bill-amt" type="number" placeholder="2500"></div>
+           <div class="field flex-1"><label class="mini">Tip %</label><input id="bill-tip" type="number" placeholder="10"></div>
+        </div>
+        <div class="field"><label class="mini">Number of People</label><input id="bill-ppl" type="number" placeholder="4"></div>
+        <button id="bill-btn" class="btn btn-accent" style="width:100%">Split Bill</button>
+        <div id="bill-res" class="result-text"></div>
+      </div>
+
+      <div id="ci-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Compound Interest</div>
+           <div class="card-sub">Calculate wealth growth.</div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Principal</label><input id="ci-p" type="number" placeholder="10000"></div>
+           <div class="field flex-1"><label class="mini">Rate %</label><input id="ci-r" type="number" placeholder="8"></div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Years</label><input id="ci-t" type="number" placeholder="10"></div>
+           <div class="field flex-1"><label class="mini">Compounded</label>
+             <select id="ci-n">
+               <option value="1">Yearly</option>
+               <option value="4">Quarterly</option>
+               <option value="12">Monthly</option>
+             </select>
+           </div>
+        </div>
+        <button id="ci-btn" class="btn btn-accent" style="width:100%">Calculate Amount</button>
+        <div id="ci-res" class="result-text"></div>
       </div>
 
       <div id="loan-panel" class="panel active">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Loan / EMI Calculator</div>
-           <div class="card-sub">Monthly payments & total interest.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">Monthly payments.</div></div>
         <div class="row">
-           <div class="field" style="width:80px">
-              <label class="mini">Currency</label>
-              <select id="emi-currency">
-                 <option value="₹">₹ INR</option>
-                 <option value="$">$ USD</option>
-                 <option value="€">€ EUR</option>
-                 <option value="£">£ GBP</option>
-                 <option value="¥">¥ JPY</option>
-              </select>
-           </div>
+           <div class="field" style="width:80px"><label class="mini">Currency</label><select id="emi-currency"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option></select></div>
            <div class="field flex-1"><label class="mini">Loan Amount</label><input id="emi-principal" type="number" placeholder="100000"></div>
         </div>
         <div class="row">
           <div class="field flex-1"><label class="mini">Rate %</label><input id="emi-rate" type="number" step="0.1" placeholder="7.5"></div>
           <div class="field" style="width:80px"><label class="mini">Tenure</label><input id="emi-time" type="number" placeholder="5"></div>
-          <div class="field" style="width:100px"><label class="mini">Period</label>
-            <select id="emi-unit"><option value="years">Years</option><option value="months">Months</option></select>
-          </div>
+          <div class="field" style="width:100px"><label class="mini">Period</label><select id="emi-unit"><option value="years">Years</option><option value="months">Months</option></select></div>
         </div>
         <button id="emi-calc" class="btn btn-accent" style="width:100%">Calculate EMI</button>
         <div id="emi-result" class="result-text"></div>
-
+        
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Percentage & Discount</div>
-           <div class="card-sub">Find discounts & sale prices.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Percentage</div><div class="card-sub">Discounts & Sales.</div></div>
         <div class="row">
           <div class="field flex-1"><label class="mini">Amount</label><input id="pct-amount" type="number" placeholder="100"></div>
           <div class="field flex-1"><label class="mini">Percent</label><input id="pct-percent" type="number" placeholder="10"></div>
@@ -450,10 +486,7 @@
 
       <div id="gst-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">GST / VAT Calculator</div>
-           <div class="card-sub">Add or Remove Tax easily.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GST / VAT</div><div class="card-sub">Add or Remove Tax.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Amount</label><input id="gst-amt" type="number" placeholder="1000"></div>
            <div class="field flex-1"><label class="mini">Tax Rate %</label><input id="gst-rate" type="number" placeholder="18"></div>
@@ -467,18 +500,8 @@
 
       <div id="unit-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Unit Converter</div>
-           <div class="card-sub">Length, weight, temp & speed.</div>
-        </div>
-        <div class="field"><label class="mini">Type</label>
-          <select id="u-type">
-            <option value="length">Length</option>
-            <option value="weight">Weight</option>
-            <option value="temp">Temperature</option>
-            <option value="speed">Speed</option>
-          </select>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div><div class="card-sub">Length, weight, temp & speed.</div></div>
+        <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
         <div class="row">
           <div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div>
           <button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button>
@@ -489,48 +512,11 @@
         <div id="u-res" class="result-text"></div>
       </div>
 
-      <div id="health-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">BMI Calculator</div>
-           <div class="card-sub">Body Mass Index calculator.</div>
-        </div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Age</label><input id="bmi-age" type="number" placeholder="25"></div>
-           <div class="field flex-1"><label class="mini">Gender</label><select id="bmi-gender"><option>Male</option><option>Female</option></select></div>
-        </div>
-        <div class="row">
-          <div class="field flex-1"><label class="mini">Weight (kg)</label><input id="bmi-w" type="number" placeholder="70"></div>
-          <div class="field flex-1"><label class="mini">Height (cm)</label><input id="bmi-h" type="number" placeholder="170"></div>
-        </div>
-        <button id="bmi-btn" class="btn btn-accent" style="width:100%">Calculate BMI</button>
-        <div id="bmi-res" class="result-text"></div>
-      </div>
-
-      <div id="time-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Duration Calculator</div>
-           <div class="card-sub">Count days between dates.</div>
-        </div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div>
-           <div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div>
-        </div>
-        <button id="time-diff" class="btn btn-accent" style="width:100%">Calculate Days</button>
-        <div id="time-result" class="result-text"></div>
-      </div>
-
       <div id="invest-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">SIP Calculator</div>
-           <div class="card-sub">Estimate investment returns.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">SIP Calculator</div><div class="card-sub">Estimate returns.</div></div>
         <div class="row">
-           <div class="field" style="width:80px"><label class="mini">Currency</label>
-              <select id="sip-currency"><option value="₹">₹</option><option value="$">$</option><option value="€">€</option><option value="£">£</option><option value="¥">¥</option></select>
-           </div>
+           <div class="field" style="width:80px"><label class="mini">Currency</label><select id="sip-currency"><option value="₹">₹</option><option value="$">$</option><option value="€">€</option><option value="£">£</option><option value="¥">¥</option></select></div>
           <div class="field flex-1"><label class="mini">Monthly</label><input id="sip-amt" type="number" placeholder="5000"></div>
         </div>
         <div class="row">
@@ -540,13 +526,49 @@
         <button id="sip-btn" class="btn btn-accent" style="width:100%">Calculate Return</button>
         <div id="sip-res" class="result-text"></div>
       </div>
+      
+      <div id="currency-panel" class="panel">
+         <div class="divider"></div>
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Currency Converter</div><div class="card-sub">Real-time rates.</div></div>
+         <div class="row">
+          <div class="field flex-1"><label class="mini">Amount</label><input id="cur-amt" type="number" placeholder="1"></div>
+          <div class="field flex-1"><label class="mini">From</label><select id="cur-from"><option value="USD" selected>USD</option><option value="EUR">EUR</option><option value="INR">INR</option><option value="GBP">GBP</option><option value="JPY">JPY</option></select></div>
+          <div class="field flex-1"><label class="mini">To</label><select id="cur-to"><option value="INR" selected>INR</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="JPY">JPY</option></select></div>
+        </div>
+        <div class="row">
+          <button id="cur-btn" class="btn btn-accent flex-1">Convert</button>
+          <button id="cur-swap" class="btn small" style="width:50px">⇄</button>
+        </div>
+        <div id="cur-res" class="result-text"></div>
+        <div id="cur-source" class="muted-text" style="display:none;"><a href="https://www.frankfurter.app" target="_blank" class="link-btn">Data Source: Frankfurter API</a></div>
+      </div>
+      
+      <div id="qr-panel" class="panel">
+         <div class="divider"></div>
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">QR Generator</div><div class="card-sub">Make QR Codes.</div></div>
+         <div class="field"><label class="mini">Text or URL</label><input id="qr-text" type="text" placeholder="https://example.com"></div>
+         <button id="qr-btn" class="btn btn-accent" style="width:100%">Generate</button>
+         <div id="qr-container" class="qr-container">
+           <div id="qr-loading" class="loading-txt">Generating...</div>
+           <img id="qr-image" class="qr-img" alt="QR Code" style="display:none;" />
+           <a id="qr-download" class="link-btn" style="display:none; margin-top:10px;">Download</a>
+         </div>
+      </div>
+
+      <div id="time-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Date Diff</div><div class="card-sub">Days between dates.</div></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div>
+           <div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div>
+        </div>
+        <button id="time-diff" class="btn btn-accent" style="width:100%">Calculate Days</button>
+        <div id="time-result" class="result-text"></div>
+      </div>
 
       <div id="text-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Password Generator</div>
-           <div class="card-sub">Secure random passwords.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Password</div><div class="card-sub">Secure passwords.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
            <button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button>
@@ -556,10 +578,7 @@
 
       <div id="gpa-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Average Calculator</div>
-           <div class="card-sub">Simple arithmetic mean.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Simple Mean.</div></div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
         <button id="gpa-btn" class="btn btn-accent" style="width:100%">Calculate Average</button>
         <div id="gpa-res" class="result-text"></div>
@@ -572,209 +591,61 @@
     Made With <span class="heart">❤️</span> By Avinash Gupta!
   </footer>
 </div>
-
 <script>
   const $ = id => document.getElementById(id);
-  // Format with rounding
   const formatNum = (num) => parseFloat(num.toFixed(4));
-  const formatCurrency = (num) => Math.round(num); // Round for Currency
-
-  /* --- INITIALIZE CUSTOM DROPDOWNS --- */
-  function initCustomDropdowns(scope = document) {
-    const selects = scope.querySelectorAll('select:not([data-customized])');
-    selects.forEach(select => {
-      select.setAttribute('data-customized', 'true');
-      const wrapper = document.createElement('div'); wrapper.className = 'custom-dropdown';
-      const trigger = document.createElement('div'); trigger.className = 'dropdown-trigger';
-      trigger.textContent = select.options[select.selectedIndex]?.text || '';
-      
-      // Auto-update trigger text when select value changes programmatically
-      select.addEventListener('change', () => {
-         trigger.textContent = select.options[select.selectedIndex]?.text || '';
-      });
-
-      const menu = document.createElement('div'); menu.className = 'dropdown-menu';
-      Array.from(select.options).forEach(opt => {
-        const item = document.createElement('div'); item.className = 'dropdown-item';
-        if(opt.selected) item.classList.add('selected');
-        item.textContent = opt.text;
-        item.onclick = (e) => {
-          e.stopPropagation();
-          trigger.textContent = opt.text;
-          wrapper.classList.remove('active');
-          menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
-          item.classList.add('selected');
-          select.value = opt.value;
-          select.dispatchEvent(new Event('change'));
-        };
-        menu.appendChild(item);
-      });
-      trigger.onclick = (e) => {
-        e.stopPropagation();
-        document.querySelectorAll('.custom-dropdown').forEach(d => { if(d !== wrapper) d.classList.remove('active'); });
-        wrapper.classList.toggle('active');
-      };
-      wrapper.appendChild(trigger); wrapper.appendChild(menu);
-      select.parentNode.insertBefore(wrapper, select.nextSibling);
-    });
-    document.addEventListener('click', () => { document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active')); });
-  }
-
-  /* --- THEME LOGIC --- */
-  function updateThemeColors(themeName) {
-    const root = document.documentElement;
-    const isLight = document.body.dataset.theme === 'light';
-    let accent, accentText;
-    if (themeName !== 'mono') {
-        if(themeName === 'orange') { accent = '#f97316'; accentText = '#000000'; }
-        else if(themeName === 'blue') { accent = '#3b82f6'; accentText = '#ffffff'; }
-        else if(themeName === 'green') { accent = '#22c55e'; accentText = '#000000'; }
-        else if(themeName === 'purple') { accent = '#a855f7'; accentText = '#ffffff'; }
-    } else {
-        accent = isLight ? '#000000' : '#ffffff'; accentText = isLight ? '#ffffff' : '#000000';
-    }
-    root.style.setProperty('--accent', accent); root.style.setProperty('--accent-text', accentText);
-  }
-  $('toggle-theme').onclick = () => {
-    const body = document.body; body.dataset.theme = body.dataset.theme === 'light' ? 'dark' : 'light';
-    updateThemeColors($('theme-color').value);
-  };
-  $('theme-color').onchange = (e) => updateThemeColors(e.target.value);
-
-  /* --- EMI (ROUNDED) --- */
-  $('emi-calc').onclick = () => {
-    const cur = $('emi-currency').value;
-    const p = parseFloat($('emi-principal').value);
-    const r = parseFloat($('emi-rate').value)/1200;
-    const timeVal = parseFloat($('emi-time').value);
-    const timeUnit = $('emi-unit').value;
-    
-    if(!p || !timeVal) return;
-    const n = timeUnit === 'years' ? timeVal * 12 : timeVal;
-    const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    const totalPay = emi * n;
-    const totalInt = totalPay - p;
-    
-    const res = 
-`Monthly EMI: ${cur}${Math.round(emi)}
-Total Interest: ${cur}${Math.round(totalInt)}
-Total Amount: ${cur}${Math.round(totalPay)}`;
-    $('emi-result').style.whiteSpace = 'pre-wrap';
-    $('emi-result').textContent = res;
-  }
   
-  /* --- GST CALCULATOR --- */
-  const calcGST = (mode) => {
-    const amt = parseFloat($('gst-amt').value);
-    const rate = parseFloat($('gst-rate').value);
-    if(isNaN(amt) || isNaN(rate)) return;
+  /* --- 1. SEARCH BAR LOGIC --- */
+  $('tool-search').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const chips = document.querySelectorAll('.chip-btn');
+    let found = false;
     
-    let net, gst, total;
-    if(mode === 'add') {
-      gst = (amt * rate) / 100;
-      total = amt + gst;
-      net = amt;
-    } else {
-      net = (amt * 100) / (100 + rate);
-      gst = amt - net;
-      total = amt;
-    }
-    
-    $('gst-res').innerHTML = `
-      <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--muted)"><span>Net:</span> <span>${formatNum(net)}</span></div>
-      <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--muted)"><span>GST:</span> <span>${formatNum(gst)}</span></div>
-      <div style="display:flex; justify-content:space-between; font-weight:600; margin-top:4px; font-size:1.1rem"><span>Total:</span> <span>${formatNum(total)}</span></div>
-    `;
-  };
-  $('gst-add').onclick = () => calcGST('add');
-  $('gst-rem').onclick = () => calcGST('remove');
-
-  /* --- PERCENTAGE --- */
-  $('pct-calc').onclick = () => {
-    const amt = parseFloat($('pct-amount').value);
-    const pct = parseFloat($('pct-percent').value);
-    if(isNaN(amt) || isNaN(pct)) return;
-    const save = (amt * pct) / 100;
-    const final = amt - save;
-    $('pct-result').textContent = `Discounted Price: ${formatNum(final)} | You Save: ${formatNum(save)}`;
-  }
-
-  /* --- CONVERTERS (WITH SWAP) --- */
-  const uData = {
-    length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
-      let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
-      if(t==='m') return m; if(t==='cm') return m*100; if(t==='ft') return m*3.2808; if(t==='in') return m*39.37;
-    }},
-    weight: { opts: ['kg','lb'], fn: (v,f,t) => f===t?v : (f==='kg'?v*2.2046:v/2.2046) },
-    temp: { opts: ['C','F'], fn: (v,f,t) => f===t?v : (f==='C'?v*1.8+32 : (v-32)/1.8) },
-    speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
-  };
-  function renderUnits(){
-    const type = $('u-type').value; const data = uData[type];
-    const fS = $('u-from'); const tS = $('u-to');
-    fS.innerHTML = ''; tS.innerHTML = '';
-    data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
-    if(tS.options.length > 1) tS.selectedIndex = 1;
-    const p = fS.closest('.panel'); 
-    // Re-init custom dropdowns for these specific selects
-    p.querySelectorAll('.custom-dropdown').forEach(e => {
-        if(e.querySelector('.dropdown-trigger').textContent === fS.value || e.querySelector('.dropdown-trigger').textContent === tS.value){
-           // don't remove blindly, remove only related to these selects
+    chips.forEach(chip => {
+      const label = chip.textContent.toLowerCase();
+      // Match text or data-panel keywords
+      if(label.includes(term) || chip.dataset.panel.includes(term)) {
+        chip.classList.remove('hidden');
+        if(!found && term.length > 0) {
+           // Optional: Auto-click first result? No, just show them.
         }
+      } else {
+        chip.classList.add('hidden');
+      }
     });
-    // Simpler: Just strip custom attr and re-run init logic for parent
-    fS.removeAttribute('data-customized'); tS.removeAttribute('data-customized');
-    // Remove old wrappers
-    $(fS.parentNode).querySelectorAll('.custom-dropdown').forEach(e=>e.remove());
-    $(tS.parentNode).querySelectorAll('.custom-dropdown').forEach(e=>e.remove());
     
-    initCustomDropdowns(p);
-  }
-  $('u-type').onchange = renderUnits;
-  
-  $('u-btn').onclick = () => {
-    const v = parseFloat($('u-val').value); if(isNaN(v)) return;
-    const res = uData[$('u-type').value].fn(v, $('u-from').value, $('u-to').value);
-    $('u-res').textContent = `${formatNum(res)} ${$('u-to').value}`;
-  }
-  
-  // SWAP FUNCTION
-  $('u-swap').onclick = () => {
-     const f = $('u-from'); const t = $('u-to');
-     const temp = f.value; f.value = t.value; t.value = temp;
-     // Trigger change for UI update
-     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
-     // Auto convert if value exists
-     if($('u-val').value) $('u-btn').click();
-  }
+    // Hide category labels if all their chips are hidden
+    document.querySelectorAll('.category-label').forEach(lbl => {
+      const nextChips = lbl.nextElementSibling;
+      const visible = nextChips.querySelectorAll('.chip-btn:not(.hidden)').length > 0;
+      lbl.style.display = visible ? 'block' : 'none';
+    });
+  });
 
-  /* --- SIP --- */
-  $('sip-btn').onclick = () => {
-     const cur = $('sip-currency').value;
-     const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
-     const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
-     $('sip-res').textContent = `Total Value: ${cur}${Math.round(val)}`;
-  }
-
-  /* --- BMI --- */
-  $('bmi-btn').onclick = () => {
-      const w = parseFloat($('bmi-w').value); const h = parseFloat($('bmi-h').value)/100;
-      if(w && h) $('bmi-res').textContent = "BMI: " + (w/(h*h)).toFixed(2);
-  }
-
-  /* --- OTHERS --- */
-  $('qr-btn').onclick = () => {
-    const txt = $('qr-text').value; if(!txt) return;
-    $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
-    $('qr-image').src = url;
-  }
-  
-  /* --- MAIN CALCULATOR LOGIC --- */
+  /* --- 2. CALCULATOR HISTORY & LOGIC --- */
   let expr = ''; 
-  let useDeg = true; // Default to Degrees
-  
+  let useDeg = true; 
+  let history = []; // Store last 3 calcs
+
+  const updateHistory = (expression, result) => {
+    history.push(`${expression} = ${result}`);
+    if(history.length > 3) history.shift(); // Keep only 3
+    
+    const tape = $('calc-history');
+    tape.innerHTML = history.map(h => `<div class="hist-item">${h}</div>`).join('');
+    tape.classList.add('show');
+    tape.scrollTop = tape.scrollHeight;
+    
+    // Click history to reuse result
+    tape.querySelectorAll('.hist-item').forEach(item => {
+      item.onclick = () => {
+        const val = item.textContent.split('=')[1].trim();
+        expr += val;
+        upd();
+      };
+    });
+  };
+
   window.sin = (x) => Math.sin(useDeg ? x * Math.PI/180 : x);
   window.cos = (x) => Math.cos(useDeg ? x * Math.PI/180 : x);
   window.tan = (x) => Math.tan(useDeg ? x * Math.PI/180 : x);
@@ -792,8 +663,12 @@ Total Amount: ${cur}${Math.round(totalPay)}`;
 
   $('calc-equals').onclick = () => { 
     try { 
+      if(!expr) return;
       let s = expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g, Math.PI).replace(/√\(/g, 'Math.sqrt(').replace(/\^/g, '**');
-      $('calc-result').textContent = formatNum(eval(s)); 
+      const res = formatNum(eval(s));
+      updateHistory(expr, res); // Save to history
+      $('calc-result').textContent = res; 
+      expr = String(res); // Allow chaining
     } catch { $('calc-result').textContent="Err"; } 
   };
   
@@ -820,43 +695,207 @@ Total Amount: ${cur}${Math.round(totalPay)}`;
   });
 
   const degBtn = $('deg-toggle');
-  const updateDegBtn = () => { degBtn.textContent = useDeg ? "DEG" : "RAD"; if(useDeg) degBtn.classList.add('active-mode'); else degBtn.classList.remove('active-mode'); };
-  updateDegBtn();
-  degBtn.onclick = () => { useDeg = !useDeg; updateDegBtn(); };
+  degBtn.onclick = () => { 
+    useDeg = !useDeg; 
+    degBtn.textContent = useDeg ? "DEG" : "RAD"; 
+    degBtn.classList.toggle('active-mode', useDeg); 
+  };
+  degBtn.classList.add('active-mode'); // Init state
 
-  document.addEventListener('keydown', (e) => {
-    const key = e.key;
-    if (/[0-9]/.test(key)) Array.from(document.querySelectorAll('#calc-grid .btn')).find(b => b.textContent === key)?.click();
-    if (['+', '-', '*', '/', '%', '.'].includes(key)) {
-      const map = {'*':'×', '/':'÷', '-':'−'}; const char = map[key] || key;
-      Array.from(document.querySelectorAll('#calc-grid .btn')).find(b => b.textContent === char)?.click();
-    }
-    if (key === 'Enter' || key === '=') $('calc-equals').click();
-    if (key === 'Backspace') $('calc-back').click();
-    if (key === 'Escape') $('calc-clear').click();
-  });
+  /* --- 3. HEALTH STATION (BMR, WATER, PROTEIN) --- */
+  $('h-btn').onclick = () => {
+    const age = parseFloat($('h-age').value);
+    const gender = $('h-gender').value;
+    const w = parseFloat($('h-weight').value); // kg
+    const h = parseFloat($('h-height').value); // cm
+    const act = parseFloat($('h-activity').value);
+    
+    if(!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
+    
+    // 1. BMI
+    const bmi = (w / ((h/100)*(h/100))).toFixed(1);
+    
+    // 2. BMR (Mifflin-St Jeor)
+    let bmr = (10 * w) + (6.25 * h) - (5 * age);
+    bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
+    const tdee = Math.round(bmr * act); // Total Daily Energy Expenditure
+    
+    // 3. Water (Weight / 30)
+    const water = (w / 30).toFixed(1);
+    
+    // 4. Protein (0.8g to 1.6g based on activity)
+    // Scale factor: 1.2 is base, 1.9 is max. Map to 0.8g - 1.8g
+    const pFactor = 0.8 + (act - 1.2); 
+    const protein = Math.round(w * pFactor);
 
+    $('h-result').style.display = 'grid';
+    $('res-bmi').textContent = bmi;
+    $('res-bmr').textContent = tdee;
+    $('res-water').textContent = water + ' L';
+    $('res-protein').textContent = protein + ' g';
+    
+    // Message based on BMI
+    let msg = bmi < 18.5 ? "Underweight" : bmi < 25 ? "Healthy Weight" : bmi < 30 ? "Overweight" : "Obese";
+    $('h-msg').textContent = `Status: ${msg}`;
+  };
+
+  /* --- 4. BILL SPLITTER --- */
+  $('bill-btn').onclick = () => {
+    const amt = parseFloat($('bill-amt').value);
+    const tip = parseFloat($('bill-tip').value) || 0;
+    const ppl = parseFloat($('bill-ppl').value) || 1;
+    
+    if(!amt) return;
+    const totalTip = (amt * tip) / 100;
+    const total = amt + totalTip;
+    const perPerson = total / ppl;
+    
+    $('bill-res').innerHTML = `
+      Tip Amount: ${formatNum(totalTip)}<br>
+      Total Bill: ${formatNum(total)}<br>
+      <span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${formatNum(perPerson)}</span>
+    `;
+  };
+
+  /* --- 5. COMPOUND INTEREST --- */
+  $('ci-btn').onclick = () => {
+    const p = parseFloat($('ci-p').value);
+    const r = parseFloat($('ci-r').value)/100;
+    const t = parseFloat($('ci-t').value);
+    const n = parseFloat($('ci-n').value);
+    
+    if(!p || !r || !t) return;
+    const amount = p * Math.pow((1 + r/n), (n*t));
+    const interest = amount - p;
+    
+    $('ci-res').innerHTML = `
+      Invested: ${Math.round(p)}<br>
+      Interest: <span style="color:#22c55e">+${Math.round(interest)}</span><br>
+      <span style="font-size:1.1rem; font-weight:600">Total Value: ${Math.round(amount)}</span>
+    `;
+  };
+
+  /* --- STANDARD LOGIC (EMI, GST, ETC) --- */
+  // EMI
+  $('emi-calc').onclick = () => {
+    const cur = $('emi-currency').value;
+    const p = parseFloat($('emi-principal').value);
+    const r = parseFloat($('emi-rate').value)/1200;
+    const timeVal = parseFloat($('emi-time').value);
+    const timeUnit = $('emi-unit').value;
+    if(!p || !timeVal) return;
+    const n = timeUnit === 'years' ? timeVal * 12 : timeVal;
+    const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+    const totalPay = emi * n;
+    
+    $('emi-result').textContent = `EMI: ${cur}${Math.round(emi)}\nInterest: ${cur}${Math.round(totalPay-p)}\nTotal: ${cur}${Math.round(totalPay)}`;
+    $('emi-result').style.whiteSpace = 'pre-wrap';
+  };
+  
+  // GST
+  const calcGST = (mode) => {
+    const amt = parseFloat($('gst-amt').value); const rate = parseFloat($('gst-rate').value);
+    if(isNaN(amt)||isNaN(rate)) return;
+    let net, gst, total;
+    if(mode==='add'){ gst=(amt*rate)/100; total=amt+gst; net=amt; }
+    else{ net=(amt*100)/(100+rate); gst=amt-net; total=amt; }
+    $('gst-res').innerHTML=`Net: ${formatNum(net)} | GST: ${formatNum(gst)} | <b style="color:var(--accent)">Total: ${formatNum(total)}</b>`;
+  };
+  $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
+  
+  // Converters
+  const uData = {
+    length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
+      let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
+      if(t==='m') return m; if(t==='cm') return m*100; if(t==='ft') return m*3.2808; if(t==='in') return m*39.37;
+    }},
+    weight: { opts: ['kg','lb'], fn: (v,f,t) => f===t?v : (f==='kg'?v*2.2046:v/2.2046) },
+    temp: { opts: ['C','F'], fn: (v,f,t) => f===t?v : (f==='C'?v*1.8+32 : (v-32)/1.8) },
+    speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
+  };
+  function renderUnits(){
+    const type = $('u-type').value; const data = uData[type];
+    const fS = $('u-from'); const tS = $('u-to');
+    fS.innerHTML = ''; tS.innerHTML = '';
+    data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
+    if(tS.options.length > 1) tS.selectedIndex = 1;
+    fS.removeAttribute('data-customized'); tS.removeAttribute('data-customized');
+    const p = fS.closest('.panel'); 
+    p.querySelectorAll('.custom-dropdown').forEach(e => {
+        if(e.contains(fS)||e.contains(tS)) e.remove(); // Safer removal
+    });
+    // Brute force remove wrappers for this panel to be safe
+    $(fS.parentNode).querySelectorAll('.custom-dropdown').forEach(e=>e.remove());
+    $(tS.parentNode).querySelectorAll('.custom-dropdown').forEach(e=>e.remove());
+    initCustomDropdowns(p);
+  }
+  $('u-type').onchange = renderUnits;
+  $('u-btn').onclick = () => {
+    const v = parseFloat($('u-val').value); if(isNaN(v)) return;
+    const res = uData[$('u-type').value].fn(v, $('u-from').value, $('u-to').value);
+    $('u-res').textContent = `${formatNum(res)} ${$('u-to').value}`;
+  }
+  $('u-swap').onclick = () => {
+     const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp;
+     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
+     if($('u-val').value) $('u-btn').click();
+  }
+
+  // System
+  function initCustomDropdowns(scope = document) {
+    scope.querySelectorAll('select:not([data-customized])').forEach(select => {
+      select.setAttribute('data-customized', 'true');
+      const wrapper = document.createElement('div'); wrapper.className = 'custom-dropdown';
+      const trigger = document.createElement('div'); trigger.className = 'dropdown-trigger';
+      trigger.textContent = select.options[select.selectedIndex]?.text || '';
+      select.addEventListener('change', () => { trigger.textContent = select.options[select.selectedIndex]?.text || ''; });
+      const menu = document.createElement('div'); menu.className = 'dropdown-menu';
+      Array.from(select.options).forEach(opt => {
+        const item = document.createElement('div'); item.className = 'dropdown-item';
+        if(opt.selected) item.classList.add('selected');
+        item.textContent = opt.text;
+        item.onclick = (e) => {
+          e.stopPropagation();
+          wrapper.classList.remove('active');
+          menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+          select.value = opt.value;
+          select.dispatchEvent(new Event('change'));
+        };
+        menu.appendChild(item);
+      });
+      trigger.onclick = (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.custom-dropdown').forEach(d => { if(d !== wrapper) d.classList.remove('active'); });
+        wrapper.classList.toggle('active');
+      };
+      wrapper.appendChild(trigger); wrapper.appendChild(menu);
+      select.parentNode.insertBefore(wrapper, select.nextSibling);
+    });
+  }
+  document.addEventListener('click', () => { document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active')); });
+
+  function updateThemeColors(themeName) {
+    const root = document.documentElement; const isLight = document.body.dataset.theme === 'light';
+    let accent, accentText;
+    if (themeName !== 'mono') {
+        if(themeName === 'orange') { accent = '#f97316'; accentText = '#000000'; }
+        else if(themeName === 'blue') { accent = '#3b82f6'; accentText = '#ffffff'; }
+        else if(themeName === 'green') { accent = '#22c55e'; accentText = '#000000'; }
+        else if(themeName === 'purple') { accent = '#a855f7'; accentText = '#ffffff'; }
+    } else { accent = isLight ? '#000000' : '#ffffff'; accentText = isLight ? '#ffffff' : '#000000'; }
+    root.style.setProperty('--accent', accent); root.style.setProperty('--accent-text', accentText);
+  }
+  $('toggle-theme').onclick = () => { document.body.dataset.theme = document.body.dataset.theme === 'light' ? 'dark' : 'light'; updateThemeColors($('theme-color').value); };
+  $('theme-color').onchange = (e) => updateThemeColors(e.target.value);
+  
+  // Navigation
   document.querySelectorAll('.chip-btn').forEach(b => b.onclick = () => {
      document.querySelectorAll('.chip-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); $(b.dataset.panel).classList.add('active');
   });
-  
-  $('age-btn').onclick = () => {
-    const dVal=$('dob-input').value; if(!dVal)return;
-    const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
-    if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
-    $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
-  };
-  $('cur-btn').onclick = async () => {
-    const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
-    $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
-    try{ const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); const d=await r.json();
-    $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; $('cur-info').textContent=`Updated: ${d.date}`; $('cur-source').style.display='block'; }catch{ $('cur-res').textContent="Err"; }
-  };
-  $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
-  $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
-  $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
 
+  // Init
   updateThemeColors('mono'); initCustomDropdowns(); renderUnits();
 </script>
 </body>
