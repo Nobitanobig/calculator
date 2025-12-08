@@ -23,8 +23,6 @@
     
     --border: #333333;
     --shadow: 0 4px 12px rgba(0,0,0,0.5);
-    
-    --modal-bg: rgba(0,0,0,0.8);
   }
 
   body[data-theme="light"]{
@@ -42,8 +40,6 @@
     
     --border: #d1d1d6;
     --shadow: 0 4px 12px rgba(0,0,0,0.1);
-    
-    --modal-bg: rgba(255,255,255,0.8);
   }
 
   *{box-sizing:border-box;margin:0;padding:0; -webkit-tap-highlight-color: transparent;}
@@ -156,15 +152,17 @@
   }
   input:focus, textarea:focus { border-color: var(--accent); }
 
-  /* DROPDOWNS - GHOST FIX APPLIED HERE */
-  select { display: none !important; } /* Force native select hidden */
+  /* DROPDOWNS */
+  select { display: none; } /* Standard hiding */
   
   .custom-dropdown { position: relative; width: 100%; font-size: 0.9rem; user-select: none; }
   .dropdown-trigger {
     justify-content: space-between; width: 100%; padding-right: 30px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 60px;
   }
-  .theme-block .custom-dropdown { width: auto; min-width: 90px; }
+  /* Specific styling for the Currency Selector in More Tools */
+  .card-header .custom-dropdown { width: auto; min-width: 90px; }
+  
   .dropdown-trigger::after {
     content: ''; position: absolute; right: 12px; top: 50%; width: 8px; height: 8px;
     border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
@@ -178,7 +176,7 @@
     max-height: 250px; overflow-y: auto; flex-direction: column; padding: 6px;
     animation: fadeIn 0.15s ease-out;
   }
-  .theme-block .dropdown-menu { left: auto; right: 0; }
+  .card-header .dropdown-menu { left: auto; right: 0; } /* Align right for header dropdowns */
   .custom-dropdown.active .dropdown-menu { display: flex; }
   .dropdown-item {
     padding: 10px 12px; cursor: pointer; border-radius: 8px; color: var(--text);
@@ -200,6 +198,7 @@
     padding: 24px; border-radius: 24px; border: 1px solid var(--border);
     text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
   }
+  .modal-card .custom-dropdown { margin-bottom: 20px; text-align: left; }
   
   /* CALCULATOR UI */
   .sc-switch{
@@ -313,8 +312,9 @@
 <div id="currency-modal" class="modal-overlay">
   <div class="modal-card">
     <div class="card-title" style="margin-bottom:10px; font-size:1.2rem;">Select Currency</div>
-    <div style="margin-bottom:20px; color:var(--muted); font-size:0.9rem;">Choose your preferred currency for all tools.</div>
-    <select id="modal-currency-select" style="margin-bottom:20px; display:block !important; width:100%; padding:10px; border-radius:10px;">
+    <div style="margin-bottom:15px; color:var(--muted); font-size:0.9rem;">Choose your preferred currency for all tools.</div>
+    
+    <select id="modal-currency-select">
       <option value="₹">₹ INR</option>
       <option value="$">$ USD</option>
       <option value="€">€ EUR</option>
@@ -326,7 +326,11 @@
       <option value="₣">₣ CHF</option>
       <option value="NZ$">NZ$ NZD</option>
     </select>
-    <button id="modal-save-btn" class="btn btn-accent" style="width:100%">Get Started</button>
+    
+    <button id="modal-save-btn" class="btn btn-accent" style="width:100%; margin-top:15px;">Get Started</button>
+    <div style="margin-top:12px; font-size:0.75rem; color:var(--muted);">
+      You can change currency anytime in the <b>More Tools</b> section.
+    </div>
   </div>
 </div>
 
@@ -339,18 +343,7 @@
     </div>
     
     <div class="theme-block">
-      <select id="global-currency" class="pill" style="width:70px;">
-        <option value="₹">₹</option>
-        <option value="$">$</option>
-        <option value="€">€</option>
-        <option value="£">£</option>
-        <option value="¥">¥</option>
-        <option value="A$">A$</option>
-        <option value="C$">C$</option>
-        <option value="₣">₣</option>
-      </select>
-      
-      <button id="toggle-theme" class="pill">Dark/Light</button>
+      <button id="toggle-theme" class="pill">Dark / Light</button>
       <select id="theme-color">
         <option value="mono" selected>Default</option>
         <option value="orange">Orange</option>
@@ -489,6 +482,19 @@
           <div class="card-title">More Tools</div>
           <div class="card-sub">Specialized calculators.</div>
         </div>
+        
+        <select id="global-currency" class="pill" style="min-width:80px;">
+            <option value="₹">₹ INR</option>
+            <option value="$">$ USD</option>
+            <option value="€">€ EUR</option>
+            <option value="£">£ GBP</option>
+            <option value="¥">¥ JPY</option>
+            <option value="A$">A$ AUD</option>
+            <option value="C$">C$ CAD</option>
+            <option value="¥">¥ CNY</option>
+            <option value="₣">₣ CHF</option>
+            <option value="NZ$">NZ$ NZD</option>
+        </select>
       </div>
 
       <div class="search-box">
@@ -757,7 +763,7 @@
   let expr = ''; 
   let useDeg = true; 
   let history = []; 
-  let globalSym = '₹'; // Default
+  let globalSym = '₹'; // Default fallback
 
   /* --- 1. GLOBAL CURRENCY SYSTEM --- */
   
@@ -765,9 +771,9 @@
   const savedCurr = localStorage.getItem('calc_currency');
   if (savedCurr) {
       globalSym = savedCurr;
-      $('global-currency').value = savedCurr;
+      $('global-currency').value = savedCurr; // Sync header dropdown
   } else {
-      // Show Modal if no currency saved
+      // Show Modal if no currency saved (First Visit)
       setTimeout(() => $('currency-modal').classList.add('show'), 500);
   }
 
@@ -778,7 +784,7 @@
       $('currency-modal').classList.remove('show');
   };
 
-  // Header Dropdown Change
+  // More Tools Dropdown Change
   $('global-currency').onchange = (e) => {
       setGlobalCurrency(e.target.value);
   };
@@ -788,11 +794,14 @@
       localStorage.setItem('calc_currency', sym);
       $('global-currency').value = sym;
       
-      // Update UI results immediately if they exist
+      // Update UI results immediately if they exist (Live Refresh)
       if($('emi-result').textContent) $('emi-calc').click();
       if($('sip-res').textContent) $('sip-btn').click();
       if($('fuel-res').textContent) $('fuel-btn').click();
       if($('goal-res').textContent) $('goal-btn').click();
+      if($('bill-res').textContent) $('bill-btn').click();
+      if($('ci-res').textContent) $('ci-btn').click();
+      if($('gst-res').textContent) { /* Re-trigger last GST action if possible, or just wait */ }
   }
 
   /* --- 2. SEARCH BAR LOGIC --- */
@@ -934,7 +943,7 @@
       alert("BMI Categories (WHO):\n\n• Below 18.5: Underweight\n• 18.5 - 24.9: Normal\n• 25.0 - 29.9: Overweight\n• 30.0+: Obese");
   };
 
-  /* --- 5. FINANCE TOOLS (USING GLOBAL CURRENCY) --- */
+  /* --- 5. FINANCE TOOLS (USING GLOBAL SYMBOL) --- */
   
   // Fuel Cost
   $('fuel-btn').onclick = () => {
@@ -984,7 +993,7 @@
     $('ci-res').innerHTML = `Invested: ${Math.round(p)} | Interest: <span style="color:#22c55e">+${Math.round(interest)}</span><br><span style="font-size:1.1rem; font-weight:600">Total: ${globalSym}${Math.round(amount)}</span>`;
   };
 
-  // EMI
+  // EMI (Now uses Global Sym)
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value);
     const r = parseFloat($('emi-rate').value)/1200;
@@ -998,14 +1007,14 @@
     $('emi-result').style.whiteSpace = 'pre-wrap';
   };
   
-  // SIP
+  // SIP (Now uses Global Sym)
   $('sip-btn').onclick = () => {
      const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
      const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
      $('sip-res').textContent = `Total Value: ${globalSym}${Math.round(val)}`;
   }
 
-  // GST
+  // GST (Now uses Global Sym)
   const calcGST = (mode) => {
     const amt = parseFloat($('gst-amt').value); const rate = parseFloat($('gst-rate').value);
     if(isNaN(amt)||isNaN(rate)) return;
@@ -1082,7 +1091,7 @@
   $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
   $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
 
-  // Converters (NUCLEAR FIX)
+  // Converters (NUCLEAR FIX RE-APPLIED)
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
       let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
@@ -1099,17 +1108,14 @@
     
     fS.innerHTML = ''; tS.innerHTML = '';
     
-    // NUCLEAR REMOVAL of old custom dropdowns
+    // NUCLEAR REMOVAL
     const panel = $('unit-panel');
     panel.querySelectorAll('.custom-dropdown').forEach(d => d.remove());
-    
-    // Reset attributes
     panel.querySelectorAll('select').forEach(s => s.removeAttribute('data-customized'));
 
     data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
     if(tS.options.length > 1) tS.selectedIndex = 1;
 
-    // Fresh Init
     initCustomDropdowns(panel);
   }
   $('u-type').onchange = renderUnits;
