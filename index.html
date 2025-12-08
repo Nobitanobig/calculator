@@ -12,9 +12,10 @@
     --text: #ffffff;
     --muted: #a1a1aa;
     
-    /* Dynamic Accent */
-    --accent: #ffffff; 
-    --accent-text: #000000;
+    /* Default Accent (Overwritten by JS) */
+    --accent: #3b82f6; 
+    --accent-text: #ffffff;
+    --accent-bg: #3b82f6; /* For gradients */
     
     --card-bg: #121212;
     --input-bg: #1c1c1c;
@@ -32,7 +33,7 @@
     --text: #000000;
     --muted: #666666;
     
-    --accent: #000000;
+    /* Light Mode uses the same accent variables set by JS */
     --accent-text: #ffffff;
 
     --card-bg: #ffffff;
@@ -191,9 +192,9 @@
   /* CURRENCY MODAL */
   .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); z-index: 999;
+    background: var(--modal-bg); z-index: 999;
     display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
   }
   .modal-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
   .modal-card {
@@ -203,7 +204,7 @@
   }
   .modal-card .custom-dropdown { margin-bottom: 20px; text-align: left; }
   
-  /* NEW TABS LAYOUT (Version 1.9) */
+  /* TABS */
   .tab-bar {
     display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; 
     padding-bottom: 4px; border-bottom: 1px solid var(--border);
@@ -214,7 +215,9 @@
     border-radius: 8px; transition: 0.2s; white-space: nowrap;
   }
   .tab-btn:hover { color: var(--text); background: var(--input-bg); }
-  .tab-btn.active { color: var(--accent-text); background: var(--accent); }
+  
+  /* Active Tab uses Gradient BG if available */
+  .tab-btn.active { color: var(--accent-text); background: var(--accent-bg); }
   
   .tab-content { display: none; animation: fadeIn 0.2s ease; }
   .tab-content.active { display: block; }
@@ -264,7 +267,10 @@
     transition: transform 0.1s, filter 0.2s; display: flex; align-items: center; justify-content: center;
   }
   .btn:active{ transform: scale(0.96); }
-  .btn-accent{ background: var(--accent); color: var(--accent-text); padding: 8px 0; font-size: 1rem; }
+  
+  /* Accent Button Uses Background Variable for Gradients */
+  .btn-accent{ background: var(--accent-bg); color: var(--accent-text); padding: 8px 0; font-size: 1rem; }
+  
   .small{ font-size: 0.9rem; padding: 10px; }
   .btn.active-mode { border: 1px solid var(--accent); color: var(--accent); }
   
@@ -282,13 +288,20 @@
     background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--border);
     padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: 0.2s;
   }
-  .chip-btn.active{ background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
+  .chip-btn.active{ background: var(--accent-bg); color: var(--accent-text); border-color: transparent; font-weight: 600; }
   .chip-btn.hidden { display: none; }
 
   .panel{ display: none; animation: fadeIn 0.3s ease; }
   .panel.active{ display: block; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
-  .divider{ height: 1px; background: var(--border); margin: 16px 0; }
+  
+  /* FIXED ALIGNMENT DIVIDER */
+  .divider{ 
+    height: 1px; 
+    background: var(--border); 
+    margin: 16px -18px; /* Negative margin to pull to edges */
+    width: calc(100% + 36px); /* Width + padding compensation */
+  }
 
   .health-stats, .text-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
   .stat-box { 
@@ -307,7 +320,6 @@
   }
   .info-icon:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
 
-  /* QR Area */
   .qr-container {
     margin-top: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding-top: 15px;
   }
@@ -359,11 +371,12 @@
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
       <select id="theme-color">
-        <option value="mono" selected>Default</option>
-        <option value="orange">Orange</option>
-        <option value="blue">Blue</option>
+        <option value="blue" selected>Blue</option>
+        <option value="red">Red</option>
         <option value="green">Green</option>
-        <option value="purple">Purple</option>
+        <option value="orange">Orange</option>
+        <option value="sunset">Sunset</option>
+        <option value="ocean">Ocean</option>
       </select>
     </div>
   </header>
@@ -526,7 +539,9 @@
       <div id="tab-finance" class="tab-content active">
         <div class="chips">
           <button class="chip-btn active" data-panel="loan-panel">Loan</button>
-          <button class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> <button class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button> <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
+          <button class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> 
+          <button class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button>
+          <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
           <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
           <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
         </div>
@@ -534,7 +549,7 @@
 
       <div id="tab-health" class="tab-content">
         <div class="chips">
-          <button class="chip-btn" data-panel="health-panel">Health Station</button>
+          <button class="chip-btn" data-panel="health-panel">Health Station (BMI, BMR)</button>
         </div>
       </div>
 
@@ -549,7 +564,7 @@
           <button class="chip-btn" data-panel="unit-panel">Converters</button>
           <button class="chip-btn" data-panel="time-panel">Day Counter</button>
           <button class="chip-btn" data-panel="text-panel">Text Tools</button>
-          <button class="chip-btn" data-panel="base-panel">Base Converter</button>
+          <button class="chip-btn" data-panel="password-panel">Password</button> <button class="chip-btn" data-panel="base-panel">Base Converter</button>
           <button class="chip-btn" data-panel="gpa-panel">GPA</button>
         </div>
       </div>
@@ -602,10 +617,13 @@
            <button id="txt-lower" class="btn small flex-1" style="font-size:0.8rem;">lower</button>
            <button id="txt-clear" class="btn small flex-1" style="font-size:0.8rem;">Clear</button>
         </div>
+      </div>
 
+      <div id="password-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px">
            <div class="card-title">Password Generator</div>
+           <div class="card-sub">Create strong, secure passwords.</div>
         </div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
@@ -771,7 +789,7 @@
 
       <div id="gpa-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Simple Mean.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Calculate average of numbers.</div></div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
         <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
         <div id="gpa-res" class="result-text"></div>
@@ -794,9 +812,9 @@
   let history = []; 
   let globalSym = '₹'; 
 
-  /* --- 1. GLOBAL CURRENCY SYSTEM & DYNAMIC RENAMING --- */
+  /* --- 1. GLOBAL CURRENCY & THEME --- */
   
-  // Check Local Storage on Load
+  // Currency Init
   const savedCurr = localStorage.getItem('calc_currency');
   if (savedCurr) {
       setGlobalCurrency(savedCurr);
@@ -804,79 +822,110 @@
       setTimeout(() => $('currency-modal').classList.add('show'), 500);
   }
 
-  // Modal Save Button
   $('modal-save-btn').onclick = () => {
       const selected = $('modal-currency-select').value;
       setGlobalCurrency(selected);
       $('currency-modal').classList.remove('show');
   };
 
-  // Header Dropdown Change
-  $('global-currency').onchange = (e) => {
-      setGlobalCurrency(e.target.value);
-  };
+  $('global-currency').onchange = (e) => setGlobalCurrency(e.target.value);
 
   function setGlobalCurrency(sym) {
       globalSym = sym;
       localStorage.setItem('calc_currency', sym);
-      
-      // Sync selectors
       $('global-currency').value = sym;
       $('modal-currency-select').value = sym;
       
-      // --- DYNAMIC NAMING LOGIC (Smart Tax/Invest) ---
+      // Dynamic Names
       const taxBtn = $('btn-tax');
       const invBtn = $('btn-invest');
       const gstTitle = $('gst-title');
       const sipTitle = $('sip-title');
 
-      // 1. Tax Logic (GST vs VAT vs Tax)
       if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) {
-          taxBtn.textContent = "GST";
-          gstTitle.textContent = "GST Calculator";
+          taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator";
       } else if (['€', '£'].includes(sym)) {
-          taxBtn.textContent = "VAT";
-          gstTitle.textContent = "VAT Calculator";
+          taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator";
       } else {
-          taxBtn.textContent = "Tax";
-          gstTitle.textContent = "Tax Calculator";
+          taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator";
       }
 
-      // 2. Invest Logic (SIP vs Invest)
       if (sym === '₹') {
-          invBtn.textContent = "SIP";
-          sipTitle.textContent = "SIP Calculator";
+          invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator";
       } else {
-          invBtn.textContent = "Invest";
-          sipTitle.textContent = "Investment Calc";
+          invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc";
       }
       
-      // Update Results if they exist
+      // Refresh calculations
       if($('emi-result').textContent) $('emi-calc').click();
       if($('sip-res').textContent) $('sip-btn').click();
       if($('fuel-res').textContent) $('fuel-btn').click();
       if($('goal-res').textContent) $('goal-btn').click();
       if($('bill-res').textContent) $('bill-btn').click();
       if($('ci-res').textContent) $('ci-btn').click();
-      if($('gst-res').textContent) $('gst-add').click(); // Refresh Tax calc
+      if($('gst-res').textContent) $('gst-add').click();
   }
 
-  /* --- 2. TABS & SEARCH LOGIC --- */
+  // --- NEW THEME ENGINE (v2.0) ---
+  function updateThemeColors(themeName) {
+    const root = document.documentElement; 
+    const isLight = document.body.dataset.theme === 'light';
+    
+    // Definitions
+    const themes = {
+        blue:   { bg: '#3b82f6', solid: '#3b82f6' },
+        red:    { bg: '#ef4444', solid: '#ef4444' },
+        green:  { bg: '#22c55e', solid: '#22c55e' },
+        orange: { bg: '#f97316', solid: '#f97316' },
+        sunset: { bg: 'linear-gradient(135deg, #f97316, #ef4444)', solid: '#ef4444' },
+        ocean:  { bg: 'linear-gradient(135deg, #06b6d4, #3b82f6)', solid: '#3b82f6' }
+    };
+
+    const t = themes[themeName] || themes.blue;
+    
+    // Set Variables
+    root.style.setProperty('--accent-bg', t.bg); // For Buttons/Chips
+    root.style.setProperty('--accent', t.solid); // For Text/Borders
+    root.style.setProperty('--accent-text', '#ffffff'); // Always white on accent
+  }
   
-  // Tab Switching
+  $('toggle-theme').onclick = () => { 
+      document.body.dataset.theme = document.body.dataset.theme === 'light' ? 'dark' : 'light'; 
+      updateThemeColors($('theme-color').value); 
+  };
+  $('theme-color').onchange = (e) => updateThemeColors(e.target.value);
+
+  /* --- 2. TABS & AUTO-SWITCH LOGIC --- */
+  
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.onclick = () => {
-      // Remove active class from all
+      // 1. Switch UI Tabs
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      
-      // Activate clicked
       btn.classList.add('active');
-      $(btn.dataset.tab).classList.add('active');
+      const content = $(btn.dataset.tab);
+      content.classList.add('active');
+      
+      // 2. Auto-Click First Tool (Smart Switch)
+      const firstChip = content.querySelector('.chip-btn');
+      if(firstChip) firstChip.click();
     };
   });
 
-  // Smart Search (Searches across ALL tabs)
+  // Chip Switching
+  document.querySelectorAll('.chip-btn').forEach(b => {
+      b.onclick = (e) => {
+         // Remove active from all chips
+         document.querySelectorAll('.chip-btn').forEach(x=>x.classList.remove('active'));
+         // Add active to clicked
+         b.classList.add('active');
+         // Hide all panels, Show target
+         document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); 
+         $(b.dataset.panel).classList.add('active');
+      }
+  });
+
+  // Search Logic
   $('tool-search').addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
     const chips = document.querySelectorAll('.chip-btn');
@@ -884,56 +933,37 @@
     const tabBar = document.querySelector('.tab-bar');
     
     if (term.length > 0) {
-      // Search Mode: Show all contents, hide tab bar
       tabContents.forEach(c => c.style.display = 'block');
       tabBar.style.display = 'none';
-      
       chips.forEach(chip => {
         const label = chip.textContent.toLowerCase();
-        if(label.includes(term) || chip.dataset.panel.includes(term)) {
-          chip.classList.remove('hidden');
-        } else {
-          chip.classList.add('hidden');
-        }
+        if(label.includes(term) || chip.dataset.panel.includes(term)) chip.classList.remove('hidden');
+        else chip.classList.add('hidden');
       });
     } else {
-      // Normal Mode: Revert to tabs
-      tabContents.forEach(c => c.style.display = ''); // Clear inline style
+      tabContents.forEach(c => c.style.display = '');
       tabBar.style.display = 'flex';
       chips.forEach(c => c.classList.remove('hidden'));
-      
-      // Restore active tab
+      // Restore active tab state
       const activeTabId = document.querySelector('.tab-btn.active').dataset.tab;
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       $(activeTabId).classList.add('active');
     }
   });
 
-  /* --- 3. CALCULATOR LOGIC --- */
+  /* --- 3. CALCULATOR LOGIC (UPDATED MATH) --- */
   const updateHistory = (expression, result) => {
     history.push(`${expression} = ${result}`);
     if(history.length > 3) history.shift(); 
-    
     const tape = $('calc-history');
     tape.innerHTML = history.map(h => `<div class="hist-item">${h}</div>`).join('');
     tape.classList.add('show');
     $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
-    
     tape.querySelectorAll('.hist-item').forEach(item => {
-      item.onclick = () => {
-        const val = item.textContent.split('=')[1].trim();
-        expr += val;
-        upd();
-      };
+      item.onclick = () => { expr += item.textContent.split('=')[1].trim(); upd(); };
     });
   };
-
-  window.sin = (x) => Math.sin(useDeg ? x * Math.PI/180 : x);
-  window.cos = (x) => Math.cos(useDeg ? x * Math.PI/180 : x);
-  window.tan = (x) => Math.tan(useDeg ? x * Math.PI/180 : x);
-  window.log = (x) => Math.log10(x);
-  window.ln = (x) => Math.log(x);
 
   const upd = () => $('calc-expression').textContent = expr;
   
@@ -947,7 +977,22 @@
   $('calc-equals').onclick = () => { 
     try { 
       if(!expr) return;
-      let s = expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g, Math.PI).replace(/√\(/g, 'Math.sqrt(').replace(/\^/g, '**');
+      let s = expr;
+      
+      // BUSINESS LOGIC: Handle "50 - 10%" -> 45
+      // Regex detects: Number [+-] Number %
+      s = s.replace(/(\d+(\.\d+)?)([\+\-])(\d+(\.\d+)?)%/g, (match, n1, _, op, n2) => {
+          const val1 = parseFloat(n1);
+          const val2 = parseFloat(n2);
+          return op === '+' ? val1 * (1 + val2/100) : val1 * (1 - val2/100);
+      });
+      
+      // Handle remaining % as simple division (e.g. 10%)
+      s = s.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
+      
+      // Standard Math
+      s = s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g, Math.PI).replace(/√\(/g, 'Math.sqrt(').replace(/\^/g, '**');
+      
       const res = formatNum(eval(s));
       updateHistory(expr, res);
       $('calc-result').textContent = res; 
@@ -957,14 +1002,9 @@
   
   $('calc-clear').onclick = () => { 
     if(expr === '' && $('calc-result').textContent === '0') {
-        history = [];
-        $('calc-history').innerHTML = '';
-        $('hist-lbl').style.display = 'none';
-    } else {
-        expr=''; upd(); $('calc-result').textContent='0'; 
-    }
+        history = []; $('calc-history').innerHTML = ''; $('hist-lbl').style.display = 'none';
+    } else { expr=''; upd(); $('calc-result').textContent='0'; }
   };
-
   $('calc-back').onclick = () => { expr=expr.slice(0,-1); upd(); };
   $('calc-copy').onclick = () => {
     const res = $('calc-result').textContent;
@@ -974,9 +1014,7 @@
       setTimeout(() => { b.textContent = old; b.style.color=""; }, 1500);
     });
   };
-
   $('sc-switch').onclick = function(){ this.classList.toggle('on'); $('sci-keys').style.display = this.classList.contains('on')?'grid':'none'; };
-  
   document.querySelectorAll('#sci-keys .btn:not(#deg-toggle)').forEach(b => {
     b.onclick = () => {
       const fn = b.dataset.fn;
@@ -984,173 +1022,116 @@
       upd();
     }
   });
-
   const degBtn = $('deg-toggle');
-  degBtn.onclick = () => { 
-    useDeg = !useDeg; 
-    degBtn.textContent = useDeg ? "DEG" : "RAD"; 
-    degBtn.classList.toggle('active-mode', useDeg); 
-  };
+  degBtn.onclick = () => { useDeg = !useDeg; degBtn.textContent = useDeg ? "DEG" : "RAD"; degBtn.classList.toggle('active-mode', useDeg); };
   degBtn.classList.add('active-mode');
 
-  /* --- 4. HEALTH STATION --- */
+  /* --- 4. TOOL LOGIC --- */
+  
+  // Health
   $('h-btn').onclick = () => {
-    const age = parseFloat($('h-age').value);
+    const age = parseFloat($('h-age').value), w = parseFloat($('h-weight').value), h = parseFloat($('h-height').value), act = parseFloat($('h-activity').value);
     const gender = $('h-gender').value;
-    const w = parseFloat($('h-weight').value);
-    const h = parseFloat($('h-height').value);
-    const act = parseFloat($('h-activity').value);
-    
     if(!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
     
     const bmi = (w / ((h/100)*(h/100))).toFixed(1);
     let bmr = (10 * w) + (6.25 * h) - (5 * age);
     bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
-    const tdee = Math.round(bmr * act);
-    const water = (w / 30).toFixed(1);
-    const pFactor = 0.8 + (act - 1.2); 
-    const protein = Math.round(w * pFactor);
-
+    
     $('h-result').style.display = 'grid';
     $('res-bmi').textContent = bmi;
-    $('res-bmr').textContent = tdee;
-    $('res-water').textContent = water;
-    $('res-protein').textContent = protein;
-    
-    let msg = bmi < 18.5 ? "Underweight" : bmi < 25 ? "Healthy Weight" : bmi < 30 ? "Overweight" : "Obese";
-    $('h-msg').textContent = `Status: ${msg}`;
+    $('res-bmr').textContent = Math.round(bmr * act);
+    $('res-water').textContent = (w / 30).toFixed(1);
+    $('res-protein').textContent = Math.round(w * (0.8 + (act - 1.2)));
+    $('h-msg').textContent = `Status: ${bmi < 18.5 ? "Underweight" : bmi < 25 ? "Healthy" : bmi < 30 ? "Overweight" : "Obese"}`;
   };
+  $('bmi-info').onclick = (e) => { e.stopPropagation(); alert("BMI Categories:\n< 18.5: Underweight\n18.5-24.9: Normal\n25-29.9: Overweight\n30+: Obese"); };
 
-  $('bmi-info').onclick = (e) => {
-      e.stopPropagation();
-      alert("BMI Categories (WHO):\n\n• Below 18.5: Underweight\n• 18.5 - 24.9: Normal\n• 25.0 - 29.9: Overweight\n• 30.0+: Obese");
-  };
-
-  /* --- 5. FINANCE & TOOLS --- */
+  // Finance
   $('fuel-btn').onclick = () => {
-    const d = parseFloat($('fuel-dist').value);
-    const m = parseFloat($('fuel-mil').value);
-    const p = parseFloat($('fuel-price').value);
+    const d = parseFloat($('fuel-dist').value), m = parseFloat($('fuel-mil').value), p = parseFloat($('fuel-price').value);
     if(!d || !m || !p) return;
-    const fuelNeeded = d / m;
-    const cost = fuelNeeded * p;
-    $('fuel-res').innerHTML = `Fuel Needed: ${formatNum(fuelNeeded)} L<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Total Cost: ${globalSym}${Math.round(cost)}</span>`;
+    $('fuel-res').innerHTML = `Fuel: ${formatNum(d/m)} L<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Cost: ${globalSym}${Math.round((d/m)*p)}</span>`;
   };
-
   $('goal-btn').onclick = () => {
-    const target = parseFloat($('goal-target').value);
-    const t = parseFloat($('goal-time').value); 
-    const r = parseFloat($('goal-rate').value); 
+    const target = parseFloat($('goal-target').value), t = parseFloat($('goal-time').value), r = parseFloat($('goal-rate').value);
     if(!target || !t || !r) return;
-    const i = r / 1200; const n = t * 12;   
-    const factor = ( (Math.pow(1+i, n) - 1) / i ) * (1+i);
-    const monthly = target / factor;
-    $('goal-res').innerHTML = `To reach goal in ${t} years:<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Invest ${globalSym}${Math.round(monthly)} / month</span>`;
+    const i = r/1200, n = t*12, factor = ((Math.pow(1+i,n)-1)/i)*(1+i);
+    $('goal-res').innerHTML = `Goal: ${globalSym}${target}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">SIP: ${globalSym}${Math.round(target/factor)}/mo</span>`;
   };
-
   $('bill-btn').onclick = () => {
-    const amt = parseFloat($('bill-amt').value);
-    const tip = parseFloat($('bill-tip').value) || 0;
-    const ppl = parseFloat($('bill-ppl').value) || 1;
+    const amt = parseFloat($('bill-amt').value), tip = parseFloat($('bill-tip').value)||0, ppl = parseFloat($('bill-ppl').value)||1;
     if(!amt) return;
-    const totalTip = (amt * tip) / 100;
-    const total = amt + totalTip;
-    const perPerson = total / ppl;
-    $('bill-res').innerHTML = `Tip: ${formatNum(totalTip)} | Total: ${formatNum(total)}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${globalSym}${formatNum(perPerson)}</span>`;
+    const total = amt + (amt * tip / 100);
+    $('bill-res').innerHTML = `Total: ${globalSym}${formatNum(total)}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${globalSym}${formatNum(total/ppl)}</span>`;
   };
-
   $('ci-btn').onclick = () => {
-    const p = parseFloat($('ci-p').value);
-    const r = parseFloat($('ci-r').value)/100;
-    const t = parseFloat($('ci-t').value);
-    const n = parseFloat($('ci-n').value);
-    if(!p || !r || !t) return;
-    const amount = p * Math.pow((1 + r/n), (n*t));
-    const interest = amount - p;
-    $('ci-res').innerHTML = `Invested: ${Math.round(p)} | Interest: <span style="color:#22c55e">+${Math.round(interest)}</span><br><span style="font-size:1.1rem; font-weight:600">Total: ${globalSym}${Math.round(amount)}</span>`;
+    const p = parseFloat($('ci-p').value), r = parseFloat($('ci-r').value)/100, t = parseFloat($('ci-t').value), n = parseFloat($('ci-n').value);
+    if(!p) return;
+    const amt = p * Math.pow((1 + r/n), (n*t));
+    $('ci-res').innerHTML = `Interest: ${globalSym}${Math.round(amt-p)}<br><span style="font-size:1.1rem; font-weight:600">Total: ${globalSym}${Math.round(amt)}</span>`;
   };
-
   $('emi-calc').onclick = () => {
-    const p = parseFloat($('emi-principal').value);
-    const r = parseFloat($('emi-rate').value)/1200;
-    const timeVal = parseFloat($('emi-time').value);
-    const timeUnit = $('emi-unit').value;
-    if(!p || !timeVal) return;
-    const n = timeUnit === 'years' ? timeVal * 12 : timeVal;
+    const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value)/1200, t = parseFloat($('emi-time').value), u = $('emi-unit').value;
+    if(!p) return;
+    const n = u==='years'?t*12:t;
     const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    const totalPay = emi * n;
-    $('emi-result').textContent = `EMI: ${globalSym}${Math.round(emi)}\nInterest: ${globalSym}${Math.round(totalPay-p)}\nTotal: ${globalSym}${Math.round(totalPay)}`;
+    $('emi-result').textContent = `EMI: ${globalSym}${Math.round(emi)}\nTotal: ${globalSym}${Math.round(emi*n)}`;
     $('emi-result').style.whiteSpace = 'pre-wrap';
   };
-  
   $('sip-btn').onclick = () => {
      const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
      const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
      $('sip-res').textContent = `Total Value: ${globalSym}${Math.round(val)}`;
   }
-
   const calcGST = (mode) => {
-    const amt = parseFloat($('gst-amt').value); const rate = parseFloat($('gst-rate').value);
-    if(isNaN(amt)||isNaN(rate)) return;
+    const amt = parseFloat($('gst-amt').value), rate = parseFloat($('gst-rate').value);
+    if(!amt) return;
     let net, gst, total;
-    if(mode==='add'){ gst=(amt*rate)/100; total=amt+gst; net=amt; }
-    else{ net=(amt*100)/(100+rate); gst=amt-net; total=amt; }
-    $('gst-res').innerHTML=`Net: ${formatNum(net)} | Tax: ${formatNum(gst)} | <b style="color:var(--accent)">Total: ${globalSym}${formatNum(total)}</b>`;
+    if(mode==='add'){ gst=(amt*rate)/100; total=amt+gst; } else { net=(amt*100)/(100+rate); gst=amt-net; total=amt; }
+    $('gst-res').innerHTML=`Tax: ${formatNum(gst)} | <b style="color:var(--accent)">Total: ${globalSym}${formatNum(total)}</b>`;
   };
   $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
 
-  // Text Tools
+  // Tools
   const updateTextStats = () => {
     const txt = $('txt-in').value;
     $('txt-chars').textContent = txt.length;
-    const words = txt.trim().split(/\s+/).filter(w => w.length > 0).length;
-    $('txt-words').textContent = words;
+    $('txt-words').textContent = txt.trim().split(/\s+/).filter(w => w.length > 0).length;
   };
   $('txt-in').addEventListener('input', updateTextStats);
   $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); updateTextStats(); };
   $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); updateTextStats(); };
   $('txt-clear').onclick = () => { $('txt-in').value = ''; updateTextStats(); };
 
-  // Base Converter
-  $('base-btn').onclick = () => {
-    const num = $('base-num').value;
-    const from = parseInt($('base-from').value);
-    if(!num) return;
-    try {
-      const dec = parseInt(num, from);
-      if(isNaN(dec)) throw new Error();
-      $('base-res').innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>DEC:</span> <b>${dec.toString(10)}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>BIN:</span> <b>${dec.toString(2)}</b></div>
-        <div style="display:flex; justify-content:space-between;"><span>HEX:</span> <b>${dec.toString(16).toUpperCase()}</b></div>
-      `;
-    } catch { $('base-res').textContent = "Invalid Number"; }
+  $('pw-btn').onclick = () => { 
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+      let p = ""; for(let i=0;i<$('pw-len').value;i++) p+=chars.charAt(Math.floor(Math.random()*chars.length));
+      $('pw-res').textContent=p; 
   };
 
-  /* --- 6. TOP TOOLS & SYSTEM --- */
+  $('base-btn').onclick = () => {
+    try {
+      const dec = parseInt($('base-num').value, parseInt($('base-from').value));
+      if(isNaN(dec)) throw new Error();
+      $('base-res').innerHTML = `DEC: ${dec}<br>BIN: ${dec.toString(2)}<br>HEX: ${dec.toString(16).toUpperCase()}`;
+    } catch { $('base-res').textContent = "Invalid"; }
+  };
+
+  // Top Tools
   $('age-btn').onclick = () => {
     const dVal=$('dob-input').value; if(!dVal)return;
     const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
     if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
     $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
   };
-
   $('cur-btn').onclick = async () => {
     const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
     $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
-    try{ 
-        const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); 
-        const d=await r.json();
-        $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; 
-        $('cur-date').textContent = `Updated: ${d.date}`; 
-        $('cur-source').style.display='block'; 
-    }catch{ $('cur-res').textContent="Err"; }
+    try{ const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); const d=await r.json();
+    $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display='block'; }catch{ $('cur-res').textContent="Err"; }
   };
-  $('cur-swap').onclick = () => {
-     const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp;
-     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
-  }
-
+  $('cur-swap').onclick = () => { const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
   $('qr-btn').onclick = () => {
     const txt = $('qr-text').value; if(!txt) return;
     $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
@@ -1158,110 +1139,50 @@
     $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
     $('qr-image').src = url;
   }
-
   $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
-  $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
   $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
 
-  // Converters
+  // Converter Logic
   const uData = {
-    length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
-      let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
-      if(t==='m') return m; if(t==='cm') return m*100; if(t==='ft') return m*3.2808; if(t==='in') return m*39.37;
-    }},
+    length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => { let m=v; if(f==='cm')m=v/100; if(f==='ft')m=v/3.2808; if(f==='in')m=v/39.37; if(t==='m')return m; if(t==='cm')return m*100; if(t==='ft')return m*3.2808; if(t==='in')return m*39.37; } },
     weight: { opts: ['kg','lb'], fn: (v,f,t) => f===t?v : (f==='kg'?v*2.2046:v/2.2046) },
     temp: { opts: ['C','F'], fn: (v,f,t) => f===t?v : (f==='C'?v*1.8+32 : (v-32)/1.8) },
     speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
   };
-
   function renderUnits(){
-    const type = $('u-type').value; const data = uData[type];
-    const fS = $('u-from'); const tS = $('u-to');
+    const type = $('u-type').value, data = uData[type];
+    const fS = $('u-from'), tS = $('u-to');
     fS.innerHTML = ''; tS.innerHTML = '';
-    
     const panel = $('unit-panel');
     panel.querySelectorAll('.custom-dropdown').forEach(d => d.remove());
     panel.querySelectorAll('select').forEach(s => s.removeAttribute('data-customized'));
-
     data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
     if(tS.options.length > 1) tS.selectedIndex = 1;
-
     initCustomDropdowns(panel);
   }
   $('u-type').onchange = renderUnits;
-  
-  $('u-btn').onclick = () => {
-    const v = parseFloat($('u-val').value); if(isNaN(v)) return;
-    const res = uData[$('u-type').value].fn(v, $('u-from').value, $('u-to').value);
-    $('u-res').textContent = `${formatNum(res)} ${$('u-to').value}`;
-  }
-  $('u-swap').onclick = () => {
-     const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp;
-     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
-     if($('u-val').value) $('u-btn').click();
-  }
-
-  // System
-  function initCustomDropdowns(scope = document) {
-    scope.querySelectorAll('select:not([data-customized])').forEach(select => {
-      select.setAttribute('data-customized', 'true');
-      const wrapper = document.createElement('div'); wrapper.className = 'custom-dropdown';
-      const trigger = document.createElement('div'); trigger.className = 'dropdown-trigger';
-      trigger.textContent = select.options[select.selectedIndex]?.text || '';
-      select.addEventListener('change', () => { trigger.textContent = select.options[select.selectedIndex]?.text || ''; });
-      
-      const menu = document.createElement('div'); menu.className = 'dropdown-menu';
-      Array.from(select.options).forEach(opt => {
-        const item = document.createElement('div'); item.className = 'dropdown-item';
-        if(opt.selected) item.classList.add('selected');
-        item.textContent = opt.text;
-        item.onclick = (e) => {
-          e.stopPropagation();
-          wrapper.classList.remove('active');
-          menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
-          item.classList.add('selected');
-          select.value = opt.value;
-          select.dispatchEvent(new Event('change'));
-        };
-        menu.appendChild(item);
-      });
-      trigger.onclick = (e) => {
-        e.stopPropagation();
-        document.querySelectorAll('.custom-dropdown').forEach(d => { if(d !== wrapper) d.classList.remove('active'); });
-        wrapper.classList.toggle('active');
-      };
-      wrapper.appendChild(trigger); wrapper.appendChild(menu);
-      select.parentNode.insertBefore(wrapper, select.nextSibling);
-    });
-  }
-  document.addEventListener('click', () => { document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active')); });
-
-  function updateThemeColors(themeName) {
-    const root = document.documentElement; const isLight = document.body.dataset.theme === 'light';
-    let accent, accentText;
-    if (themeName !== 'mono') {
-        if(themeName === 'orange') { accent = '#f97316'; accentText = '#000000'; }
-        else if(themeName === 'blue') { accent = '#3b82f6'; accentText = '#ffffff'; }
-        else if(themeName === 'green') { accent = '#22c55e'; accentText = '#000000'; }
-        else if(themeName === 'purple') { accent = '#a855f7'; accentText = '#ffffff'; }
-    } else { accent = isLight ? '#000000' : '#ffffff'; accentText = isLight ? '#ffffff' : '#000000'; }
-    root.style.setProperty('--accent', accent); root.style.setProperty('--accent-text', accentText);
-  }
-  $('toggle-theme').onclick = () => { document.body.dataset.theme = document.body.dataset.theme === 'light' ? 'dark' : 'light'; updateThemeColors($('theme-color').value); };
-  $('theme-color').onchange = (e) => updateThemeColors(e.target.value);
-  
-  document.querySelectorAll('.chip-btn').forEach(b => b.onclick = () => {
-     document.querySelectorAll('.chip-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-     // Logic for Tabbed Panels: Show the panel, hide others in the same tab
-     const panel = $(b.dataset.panel);
-     const parentTab = panel.parentElement; // .tab-content (Wait, no, panel is direct child of main)
-     // Correction: Panels are all siblings. We need to hide all panels, then show this one.
-     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-     panel.classList.add('active');
-  });
+  $('u-btn').onclick = () => { const v=parseFloat($('u-val').value); if(!isNaN(v)) $('u-res').textContent = `${formatNum(uData[$('u-type').value].fn(v,$('u-from').value,$('u-to').value))} ${$('u-to').value}`; };
+  $('u-swap').onclick = () => { const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); if($('u-val').value) $('u-btn').click(); };
 
   // Init
-  updateThemeColors('mono'); initCustomDropdowns(); renderUnits();
+  function initCustomDropdowns(scope=document){
+    scope.querySelectorAll('select:not([data-customized])').forEach(s => {
+      s.setAttribute('data-customized','true');
+      const w=document.createElement('div'); w.className='custom-dropdown';
+      const t=document.createElement('div'); t.className='dropdown-trigger'; t.textContent=s.options[s.selectedIndex]?.text||'';
+      s.addEventListener('change',()=>t.textContent=s.options[s.selectedIndex]?.text||'');
+      const m=document.createElement('div'); m.className='dropdown-menu';
+      Array.from(s.options).forEach(o=>{
+        const i=document.createElement('div'); i.className='dropdown-item'; if(o.selected)i.classList.add('selected'); i.textContent=o.text;
+        i.onclick=(e)=>{e.stopPropagation(); w.classList.remove('active'); m.querySelectorAll('.selected').forEach(x=>x.classList.remove('selected')); i.classList.add('selected'); s.value=o.value; s.dispatchEvent(new Event('change'));};
+        m.appendChild(i);
+      });
+      t.onclick=(e)=>{e.stopPropagation(); document.querySelectorAll('.custom-dropdown').forEach(d=>{if(d!==w)d.classList.remove('active')}); w.classList.toggle('active');};
+      w.appendChild(t); w.appendChild(m); s.parentNode.insertBefore(w,s.nextSibling);
+    });
+  }
+  document.addEventListener('click',()=>document.querySelectorAll('.custom-dropdown').forEach(d=>d.classList.remove('active')));
+  updateThemeColors('blue'); initCustomDropdowns(); renderUnits();
 </script>
 </body>
 </html>
