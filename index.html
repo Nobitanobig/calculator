@@ -101,7 +101,7 @@
   .card{
     background: var(--card-bg);
     border-radius: 24px;
-    padding: 18px;
+    padding: 20px 18px 24px 18px; /* Increased bottom padding for balance */
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
     transition: background 0.3s ease;
@@ -110,7 +110,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
   }
   .title-group { display: flex; flex-direction: column; }
   .card-title{ font-size: 1rem; font-weight: 600; }
@@ -220,8 +220,11 @@
   .small{ font-size: 0.9rem; padding: 10px; }
   .btn.active-mode { border: 1px solid var(--accent); color: var(--accent); }
   
+  /* FIXED SPACING FOR ACTION BUTTONS */
+  .btn-action { margin-top: 15px; margin-bottom: 5px; width: 100%; }
+
   .row{ display: flex; gap: 10px; align-items: center; width: 100%; }
-  .flex-1{ flex: 1; }
+  .flex-1{ flex: 1; min-width: 0; /* Fix flex collapse */ }
   .field{ display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
   .mini{ font-size: 0.75rem; color: var(--muted); padding-left: 4px;}
   .result-text{ margin-top: 8px; font-size: 0.95rem; font-weight: 500; line-height: 1.5; }
@@ -230,7 +233,7 @@
   /* CHIPS & CATEGORIES */
   .category-label {
     font-size: 0.75rem; font-weight: 600; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.5px; margin: 15px 0 8px 4px;
+    text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 10px 4px;
   }
   .chips{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 5px; }
   .chip-btn{
@@ -238,7 +241,7 @@
     padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: 0.2s;
   }
   .chip-btn.active{ background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
-  .chip-btn.hidden { display: none; } /* For search filter */
+  .chip-btn.hidden { display: none; }
 
   .panel{ display: none; animation: fadeIn 0.3s ease; }
   .panel.active{ display: block; }
@@ -340,15 +343,54 @@
         <label class="mini">Date of birth</label>
         <input type="date" id="dob-input">
       </div>
-      <button id="age-btn" class="btn btn-accent" style="width:100%">Calculate Age</button>
+      <button id="age-btn" class="btn btn-accent btn-action">Calculate Age</button>
       <div id="age-result" class="result-text"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+         <div class="title-group">
+          <div class="card-title">Currency Converter</div>
+          <div class="card-sub">Real-time exchange rates.</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field flex-1"><label class="mini">Amount</label><input id="cur-amt" type="number" placeholder="1"></div>
+        <div class="field flex-1"><label class="mini">From</label><select id="cur-from"><option value="USD" selected>USD</option><option value="EUR">EUR</option><option value="INR">INR</option><option value="GBP">GBP</option><option value="JPY">JPY</option></select></div>
+        <div class="field flex-1"><label class="mini">To</label><select id="cur-to"><option value="INR" selected>INR</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="JPY">JPY</option></select></div>
+      </div>
+      <div class="row">
+        <button id="cur-btn" class="btn btn-accent flex-1 btn-action">Convert</button>
+        <button id="cur-swap" class="btn small" style="width:50px; margin-top:10px;">⇄</button>
+      </div>
+      <div id="cur-res" class="result-text"></div>
+      <div id="cur-source" class="muted-text" style="display:none;"><a href="https://www.frankfurter.app" target="_blank" class="link-btn">Data Source: Frankfurter API</a></div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div class="title-group">
+          <div class="card-title">QR Generator</div>
+          <div class="card-sub">Create QR codes for links & text.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="mini">Text or URL</label>
+        <input id="qr-text" type="text" placeholder="https://example.com">
+      </div>
+      <button id="qr-btn" class="btn btn-accent btn-action">Generate</button>
+      <div id="qr-container" class="qr-container">
+        <div id="qr-loading" class="loading-txt">Generating...</div>
+        <img id="qr-image" class="qr-img" alt="QR Code" style="display:none;" />
+        <a id="qr-download" class="link-btn" style="display:none; margin-top:10px;">Download</a>
+      </div>
     </section>
 
     <section class="card">
       <div class="card-header">
         <div>
           <div class="card-title">More Tools</div>
-          <div class="card-sub">Find the right tool for the job.</div>
+          <div class="card-sub">Specialized calculators.</div>
         </div>
       </div>
 
@@ -374,18 +416,16 @@
       <div class="category-label">Other Tools</div>
       <div class="chips">
         <button class="chip-btn" data-panel="unit-panel">Converters</button>
-        <button class="chip-btn" data-panel="currency-panel">Currency</button>
         <button class="chip-btn" data-panel="time-panel">Date Diff</button>
         <button class="chip-btn" data-panel="text-panel">Password</button>
         <button class="chip-btn" data-panel="gpa-panel">GPA</button>
-        <button class="chip-btn" data-panel="qr-panel">QR Gen</button>
       </div>
 
       <div id="health-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Health Station</div>
-           <div class="card-sub">BMI, BMR, Water & Protein Intake.</div>
+           <div class="card-title">Health Station (BMI, BMR, Protein)</div>
+           <div class="card-sub">Complete health analysis.</div>
         </div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Age</label><input id="h-age" type="number" placeholder="25"></div>
@@ -405,25 +445,13 @@
             <option value="1.9">Very Active (Physical job)</option>
           </select>
         </div>
-        <button id="h-btn" class="btn btn-accent" style="width:100%">Calculate Health Stats</button>
+        <button id="h-btn" class="btn btn-accent btn-action">Calculate Stats</button>
         
         <div id="h-result" class="health-stats" style="display:none;">
-          <div class="stat-box">
-             <div id="res-bmi" class="stat-val">--</div>
-             <div class="stat-lbl">BMI Score</div>
-          </div>
-          <div class="stat-box">
-             <div id="res-bmr" class="stat-val">--</div>
-             <div class="stat-lbl">BMR (Calories/Day)</div>
-          </div>
-          <div class="stat-box">
-             <div id="res-water" class="stat-val">--</div>
-             <div class="stat-lbl">Water (Liters)</div>
-          </div>
-          <div class="stat-box">
-             <div id="res-protein" class="stat-val">--</div>
-             <div class="stat-lbl">Protein (Grams)</div>
-          </div>
+          <div class="stat-box"><div id="res-bmi" class="stat-val">--</div><div class="stat-lbl">BMI Score</div></div>
+          <div class="stat-box"><div id="res-bmr" class="stat-val">--</div><div class="stat-lbl">BMR (Cal/Day)</div></div>
+          <div class="stat-box"><div id="res-water" class="stat-val">--</div><div class="stat-lbl">Water (L)</div></div>
+          <div class="stat-box"><div id="res-protein" class="stat-val">--</div><div class="stat-lbl">Protein (g)</div></div>
         </div>
         <div id="h-msg" class="result-text" style="text-align:center;"></div>
       </div>
@@ -439,7 +467,7 @@
            <div class="field flex-1"><label class="mini">Tip %</label><input id="bill-tip" type="number" placeholder="10"></div>
         </div>
         <div class="field"><label class="mini">Number of People</label><input id="bill-ppl" type="number" placeholder="4"></div>
-        <button id="bill-btn" class="btn btn-accent" style="width:100%">Split Bill</button>
+        <button id="bill-btn" class="btn btn-accent btn-action">Split Bill</button>
         <div id="bill-res" class="result-text"></div>
       </div>
 
@@ -463,7 +491,7 @@
              </select>
            </div>
         </div>
-        <button id="ci-btn" class="btn btn-accent" style="width:100%">Calculate Amount</button>
+        <button id="ci-btn" class="btn btn-accent btn-action">Calculate Amount</button>
         <div id="ci-res" class="result-text"></div>
       </div>
 
@@ -479,17 +507,8 @@
           <div class="field" style="width:80px"><label class="mini">Tenure</label><input id="emi-time" type="number" placeholder="5"></div>
           <div class="field" style="width:100px"><label class="mini">Period</label><select id="emi-unit"><option value="years">Years</option><option value="months">Months</option></select></div>
         </div>
-        <button id="emi-calc" class="btn btn-accent" style="width:100%">Calculate EMI</button>
+        <button id="emi-calc" class="btn btn-accent btn-action">Calculate EMI</button>
         <div id="emi-result" class="result-text"></div>
-        
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Percentage</div><div class="card-sub">Discounts & Sales.</div></div>
-        <div class="row">
-          <div class="field flex-1"><label class="mini">Amount</label><input id="pct-amount" type="number" placeholder="100"></div>
-          <div class="field flex-1"><label class="mini">Percent</label><input id="pct-percent" type="number" placeholder="10"></div>
-        </div>
-        <button id="pct-calc" class="btn btn-accent" style="width:100%">Compute</button>
-        <div id="pct-result" class="result-text"></div>
       </div>
 
       <div id="gst-panel" class="panel">
@@ -499,7 +518,7 @@
            <div class="field flex-1"><label class="mini">Amount</label><input id="gst-amt" type="number" placeholder="1000"></div>
            <div class="field flex-1"><label class="mini">Tax Rate %</label><input id="gst-rate" type="number" placeholder="18"></div>
         </div>
-        <div class="row" style="margin-bottom:15px; gap:10px;">
+        <div class="row" style="margin-top:15px; gap:10px;">
           <button id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add GST (+)</button>
           <button id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove GST (-)</button>
         </div>
@@ -509,14 +528,31 @@
       <div id="unit-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div><div class="card-sub">Length, weight, temp & speed.</div></div>
-        <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
-        <div class="row">
-          <div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div>
-          <button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button>
-          <div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div>
+        
+        <div class="field">
+            <label class="mini">Type</label>
+            <select id="u-type">
+                <option value="length">Length</option>
+                <option value="weight">Weight</option>
+                <option value="temp">Temperature</option>
+                <option value="speed">Speed</option>
+            </select>
         </div>
+        
+        <div class="row">
+          <div class="field flex-1">
+              <label class="mini">From</label>
+              <select id="u-from"></select>
+          </div>
+          <button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button>
+          <div class="field flex-1">
+              <label class="mini">To</label>
+              <select id="u-to"></select>
+          </div>
+        </div>
+        
         <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
-        <button id="u-btn" class="btn btn-accent" style="width:100%">Convert</button>
+        <button id="u-btn" class="btn btn-accent btn-action">Convert</button>
         <div id="u-res" class="result-text"></div>
       </div>
 
@@ -531,38 +567,10 @@
            <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
            <div class="field flex-1"><label class="mini">Years</label><input id="sip-years" type="number" placeholder="10"></div>
         </div>
-        <button id="sip-btn" class="btn btn-accent" style="width:100%">Calculate Return</button>
+        <button id="sip-btn" class="btn btn-accent btn-action">Calculate Return</button>
         <div id="sip-res" class="result-text"></div>
       </div>
       
-      <div id="currency-panel" class="panel">
-         <div class="divider"></div>
-         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Currency Converter</div><div class="card-sub">Real-time rates.</div></div>
-         <div class="row">
-          <div class="field flex-1"><label class="mini">Amount</label><input id="cur-amt" type="number" placeholder="1"></div>
-          <div class="field flex-1"><label class="mini">From</label><select id="cur-from"><option value="USD" selected>USD</option><option value="EUR">EUR</option><option value="INR">INR</option><option value="GBP">GBP</option><option value="JPY">JPY</option></select></div>
-          <div class="field flex-1"><label class="mini">To</label><select id="cur-to"><option value="INR" selected>INR</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="JPY">JPY</option></select></div>
-        </div>
-        <div class="row">
-          <button id="cur-btn" class="btn btn-accent flex-1">Convert</button>
-          <button id="cur-swap" class="btn small" style="width:50px">⇄</button>
-        </div>
-        <div id="cur-res" class="result-text"></div>
-        <div id="cur-source" class="muted-text" style="display:none;"><a href="https://www.frankfurter.app" target="_blank" class="link-btn">Data Source: Frankfurter API</a></div>
-      </div>
-      
-      <div id="qr-panel" class="panel">
-         <div class="divider"></div>
-         <div class="title-group" style="margin-bottom:10px"><div class="card-title">QR Generator</div><div class="card-sub">Make QR Codes.</div></div>
-         <div class="field"><label class="mini">Text or URL</label><input id="qr-text" type="text" placeholder="https://example.com"></div>
-         <button id="qr-btn" class="btn btn-accent" style="width:100%">Generate</button>
-         <div id="qr-container" class="qr-container">
-           <div id="qr-loading" class="loading-txt">Generating...</div>
-           <img id="qr-image" class="qr-img" alt="QR Code" style="display:none;" />
-           <a id="qr-download" class="link-btn" style="display:none; margin-top:10px;">Download</a>
-         </div>
-      </div>
-
       <div id="time-panel" class="panel">
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Date Diff</div><div class="card-sub">Days between dates.</div></div>
@@ -570,7 +578,7 @@
            <div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div>
            <div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div>
         </div>
-        <button id="time-diff" class="btn btn-accent" style="width:100%">Calculate Days</button>
+        <button id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
         <div id="time-result" class="result-text"></div>
       </div>
 
@@ -588,7 +596,7 @@
         <div class="divider"></div>
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Simple Mean.</div></div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
-        <button id="gpa-btn" class="btn btn-accent" style="width:100%">Calculate Average</button>
+        <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
         <div id="gpa-res" class="result-text"></div>
       </div>
 
@@ -626,21 +634,20 @@
     });
   });
 
-  /* --- 2. CALCULATOR HISTORY & LOGIC --- */
+  /* --- 2. CALCULATOR LOGIC & HISTORY --- */
   let expr = ''; 
   let useDeg = true; 
-  let history = []; // Store last 3 calcs
+  let history = []; 
 
   const updateHistory = (expression, result) => {
     history.push(`${expression} = ${result}`);
-    if(history.length > 3) history.shift(); // Keep only 3
+    if(history.length > 3) history.shift(); 
     
     const tape = $('calc-history');
     tape.innerHTML = history.map(h => `<div class="hist-item">${h}</div>`).join('');
     tape.classList.add('show');
     tape.scrollTop = tape.scrollHeight;
     
-    // Click history to reuse result
     tape.querySelectorAll('.hist-item').forEach(item => {
       item.onclick = () => {
         const val = item.textContent.split('=')[1].trim();
@@ -670,9 +677,9 @@
       if(!expr) return;
       let s = expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g, Math.PI).replace(/√\(/g, 'Math.sqrt(').replace(/\^/g, '**');
       const res = formatNum(eval(s));
-      updateHistory(expr, res); // Save to history
+      updateHistory(expr, res);
       $('calc-result').textContent = res; 
-      expr = String(res); // Allow chaining
+      expr = String(res); 
     } catch { $('calc-result').textContent="Err"; } 
   };
   
@@ -704,81 +711,147 @@
     degBtn.textContent = useDeg ? "DEG" : "RAD"; 
     degBtn.classList.toggle('active-mode', useDeg); 
   };
-  degBtn.classList.add('active-mode'); // Init state
+  degBtn.classList.add('active-mode');
 
-  /* --- 3. HEALTH STATION (BMR, WATER, PROTEIN) --- */
+  /* --- 3. HEALTH STATION --- */
   $('h-btn').onclick = () => {
     const age = parseFloat($('h-age').value);
     const gender = $('h-gender').value;
-    const w = parseFloat($('h-weight').value); // kg
-    const h = parseFloat($('h-height').value); // cm
+    const w = parseFloat($('h-weight').value);
+    const h = parseFloat($('h-height').value);
     const act = parseFloat($('h-activity').value);
     
     if(!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
     
-    // 1. BMI
+    // BMI
     const bmi = (w / ((h/100)*(h/100))).toFixed(1);
     
-    // 2. BMR (Mifflin-St Jeor)
+    // BMR (Mifflin-St Jeor)
     let bmr = (10 * w) + (6.25 * h) - (5 * age);
     bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
-    const tdee = Math.round(bmr * act); // Total Daily Energy Expenditure
+    const tdee = Math.round(bmr * act);
     
-    // 3. Water (Weight / 30)
+    // Water
     const water = (w / 30).toFixed(1);
     
-    // 4. Protein (0.8g to 1.6g based on activity)
+    // Protein
     const pFactor = 0.8 + (act - 1.2); 
     const protein = Math.round(w * pFactor);
 
     $('h-result').style.display = 'grid';
     $('res-bmi').textContent = bmi;
     $('res-bmr').textContent = tdee;
-    $('res-water').textContent = water + ' L';
-    $('res-protein').textContent = protein + ' g';
+    $('res-water').textContent = water;
+    $('res-protein').textContent = protein;
     
-    // Message based on BMI
     let msg = bmi < 18.5 ? "Underweight" : bmi < 25 ? "Healthy Weight" : bmi < 30 ? "Overweight" : "Obese";
     $('h-msg').textContent = `Status: ${msg}`;
   };
 
-  /* --- 4. BILL SPLITTER --- */
+  /* --- 4. TOP TOOLS LOGIC --- */
+  // Age
+  $('age-btn').onclick = () => {
+    const dVal=$('dob-input').value; if(!dVal)return;
+    const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
+    if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
+    $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
+  };
+
+  // Currency (Now Fixed at Top)
+  $('cur-btn').onclick = async () => {
+    const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
+    $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
+    try{ const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); const d=await r.json();
+    $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; $('cur-source').style.display='block'; }catch{ $('cur-res').textContent="Err"; }
+  };
+  $('cur-swap').onclick = () => {
+     const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp;
+     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
+  }
+
+  // QR
+  $('qr-btn').onclick = () => {
+    const txt = $('qr-text').value; if(!txt) return;
+    $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
+    $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
+    $('qr-image').src = url;
+  }
+
+  /* --- 5. UNIT CONVERTER (FIXED) --- */
+  const uData = {
+    length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
+      let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
+      if(t==='m') return m; if(t==='cm') return m*100; if(t==='ft') return m*3.2808; if(t==='in') return m*39.37;
+    }},
+    weight: { opts: ['kg','lb'], fn: (v,f,t) => f===t?v : (f==='kg'?v*2.2046:v/2.2046) },
+    temp: { opts: ['C','F'], fn: (v,f,t) => f===t?v : (f==='C'?v*1.8+32 : (v-32)/1.8) },
+    speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
+  };
+
+  // Robust Renderer to prevent Black Border/Disappearing Dropdowns
+  function renderUnits(){
+    const type = $('u-type').value; const data = uData[type];
+    const fS = $('u-from'); const tS = $('u-to');
+    
+    // 1. Reset Native Selects
+    fS.innerHTML = ''; tS.innerHTML = '';
+    
+    // 2. Remove ANY existing custom wrappers specifically for these two
+    [fS, tS].forEach(el => {
+        el.removeAttribute('data-customized');
+        el.style.display = 'block'; // Ensure native is visible briefly
+        if(el.nextElementSibling && el.nextElementSibling.classList.contains('custom-dropdown')) {
+            el.nextElementSibling.remove();
+        }
+    });
+
+    // 3. Populate Options
+    data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
+    if(tS.options.length > 1) tS.selectedIndex = 1;
+
+    // 4. Re-Initialize Custom Dropdowns for the Unit Panel
+    initCustomDropdowns($('unit-panel'));
+  }
+  
+  $('u-type').onchange = renderUnits;
+  
+  $('u-btn').onclick = () => {
+    const v = parseFloat($('u-val').value); if(isNaN(v)) return;
+    const res = uData[$('u-type').value].fn(v, $('u-from').value, $('u-to').value);
+    $('u-res').textContent = `${formatNum(res)} ${$('u-to').value}`;
+  }
+  $('u-swap').onclick = () => {
+     const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp;
+     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
+     if($('u-val').value) $('u-btn').click();
+  }
+
+  /* --- 6. OTHER TOOLS --- */
+  // Bill Splitter
   $('bill-btn').onclick = () => {
     const amt = parseFloat($('bill-amt').value);
     const tip = parseFloat($('bill-tip').value) || 0;
     const ppl = parseFloat($('bill-ppl').value) || 1;
-    
     if(!amt) return;
     const totalTip = (amt * tip) / 100;
     const total = amt + totalTip;
     const perPerson = total / ppl;
-    
-    $('bill-res').innerHTML = `
-      Tip Amount: ${formatNum(totalTip)}<br>
-      Total Bill: ${formatNum(total)}<br>
-      <span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${formatNum(perPerson)}</span>
-    `;
+    $('bill-res').innerHTML = `Tip: ${formatNum(totalTip)} | Total: ${formatNum(total)}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${formatNum(perPerson)}</span>`;
   };
 
-  /* --- 5. COMPOUND INTEREST --- */
+  // Compound Interest
   $('ci-btn').onclick = () => {
     const p = parseFloat($('ci-p').value);
     const r = parseFloat($('ci-r').value)/100;
     const t = parseFloat($('ci-t').value);
     const n = parseFloat($('ci-n').value);
-    
     if(!p || !r || !t) return;
     const amount = p * Math.pow((1 + r/n), (n*t));
     const interest = amount - p;
-    
-    $('ci-res').innerHTML = `
-      Invested: ${Math.round(p)}<br>
-      Interest: <span style="color:#22c55e">+${Math.round(interest)}</span><br>
-      <span style="font-size:1.1rem; font-weight:600">Total Value: ${Math.round(amount)}</span>
-    `;
+    $('ci-res').innerHTML = `Invested: ${Math.round(p)} | Interest: <span style="color:#22c55e">+${Math.round(interest)}</span><br><span style="font-size:1.1rem; font-weight:600">Total: ${Math.round(amount)}</span>`;
   };
 
-  /* --- STANDARD LOGIC (EMI, GST, ETC) --- */
   // EMI
   $('emi-calc').onclick = () => {
     const cur = $('emi-currency').value;
@@ -790,7 +863,6 @@
     const n = timeUnit === 'years' ? timeVal * 12 : timeVal;
     const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
     const totalPay = emi * n;
-    
     $('emi-result').textContent = `EMI: ${cur}${Math.round(emi)}\nInterest: ${cur}${Math.round(totalPay-p)}\nTotal: ${cur}${Math.round(totalPay)}`;
     $('emi-result').style.whiteSpace = 'pre-wrap';
   };
@@ -806,66 +878,6 @@
   };
   $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
 
-  // Percentage
-  $('pct-calc').onclick = () => {
-    const amt = parseFloat($('pct-amount').value);
-    const pct = parseFloat($('pct-percent').value);
-    if(isNaN(amt) || isNaN(pct)) return;
-    const save = (amt * pct) / 100;
-    const final = amt - save;
-    $('pct-result').textContent = `Discounted Price: ${formatNum(final)} | You Save: ${formatNum(save)}`;
-  }
-  
-  // Converters
-  const uData = {
-    length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
-      let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
-      if(t==='m') return m; if(t==='cm') return m*100; if(t==='ft') return m*3.2808; if(t==='in') return m*39.37;
-    }},
-    weight: { opts: ['kg','lb'], fn: (v,f,t) => f===t?v : (f==='kg'?v*2.2046:v/2.2046) },
-    temp: { opts: ['C','F'], fn: (v,f,t) => f===t?v : (f==='C'?v*1.8+32 : (v-32)/1.8) },
-    speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
-  };
-  function renderUnits(){
-    const type = $('u-type').value; const data = uData[type];
-    const fS = $('u-from'); const tS = $('u-to');
-    fS.innerHTML = ''; tS.innerHTML = '';
-    data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
-    if(tS.options.length > 1) tS.selectedIndex = 1;
-    fS.removeAttribute('data-customized'); tS.removeAttribute('data-customized');
-    const p = fS.closest('.panel'); 
-    p.querySelectorAll('.custom-dropdown').forEach(e => {
-        if(e.contains(fS)||e.contains(tS)) e.remove(); // Safer removal
-    });
-    // Brute force remove wrappers for this panel to be safe
-    $(fS.parentNode).querySelectorAll('.custom-dropdown').forEach(e=>e.remove());
-    $(tS.parentNode).querySelectorAll('.custom-dropdown').forEach(e=>e.remove());
-    initCustomDropdowns(p);
-  }
-  $('u-type').onchange = renderUnits;
-  $('u-btn').onclick = () => {
-    const v = parseFloat($('u-val').value); if(isNaN(v)) return;
-    const res = uData[$('u-type').value].fn(v, $('u-from').value, $('u-to').value);
-    $('u-res').textContent = `${formatNum(res)} ${$('u-to').value}`;
-  }
-  $('u-swap').onclick = () => {
-     const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp;
-     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
-     if($('u-val').value) $('u-btn').click();
-  }
-
-  // Currency
-  $('cur-btn').onclick = async () => {
-    const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
-    $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
-    try{ const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); const d=await r.json();
-    $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; $('cur-source').style.display='block'; }catch{ $('cur-res').textContent="Err"; }
-  };
-  $('cur-swap').onclick = () => {
-     const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp;
-     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change'));
-  }
-
   // SIP
   $('sip-btn').onclick = () => {
      const cur = $('sip-currency').value;
@@ -874,33 +886,12 @@
      $('sip-res').textContent = `Total Value: ${cur}${Math.round(val)}`;
   }
 
-  // QR
-  $('qr-btn').onclick = () => {
-    const txt = $('qr-text').value; if(!txt) return;
-    $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
-    $('qr-image').src = url;
-  }
-
-  // Time
+  // Time, Text, GPA
   $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
-  
-  // Text
   $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
-  
-  // GPA
   $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
 
-  // Age
-  $('age-btn').onclick = () => {
-    const dVal=$('dob-input').value; if(!dVal)return;
-    const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
-    if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
-    $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
-  };
-
-  // System
+  /* --- SYSTEM FUNCTIONS --- */
   function initCustomDropdowns(scope = document) {
     scope.querySelectorAll('select:not([data-customized])').forEach(select => {
       select.setAttribute('data-customized', 'true');
@@ -908,6 +899,7 @@
       const trigger = document.createElement('div'); trigger.className = 'dropdown-trigger';
       trigger.textContent = select.options[select.selectedIndex]?.text || '';
       select.addEventListener('change', () => { trigger.textContent = select.options[select.selectedIndex]?.text || ''; });
+      
       const menu = document.createElement('div'); menu.className = 'dropdown-menu';
       Array.from(select.options).forEach(opt => {
         const item = document.createElement('div'); item.className = 'dropdown-item';
@@ -948,7 +940,6 @@
   $('toggle-theme').onclick = () => { document.body.dataset.theme = document.body.dataset.theme === 'light' ? 'dark' : 'light'; updateThemeColors($('theme-color').value); };
   $('theme-color').onchange = (e) => updateThemeColors(e.target.value);
   
-  // Navigation
   document.querySelectorAll('.chip-btn').forEach(b => b.onclick = () => {
      document.querySelectorAll('.chip-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); $(b.dataset.panel).classList.add('active');
