@@ -12,7 +12,7 @@
     --text: #ffffff;
     --muted: #a1a1aa;
     
-    /* Dynamic Accent Variables */
+    /* Dynamic Accent */
     --accent: #ffffff; 
     --accent-text: #000000;
     
@@ -23,18 +23,13 @@
     
     --border: #333333;
     --shadow: 0 4px 12px rgba(0,0,0,0.5);
-    
-    --dd-bg: #1c1c1c;
-    --dd-hover: #333333;
   }
 
   body[data-theme="light"]{
-    /* LIGHT THEME VARIABLES */
     --bg: #f2f2f7;
     --text: #000000;
     --muted: #666666;
     
-    /* Default Accent for Light Mode (Mono) */
     --accent: #000000;
     --accent-text: #ffffff;
 
@@ -45,9 +40,6 @@
     
     --border: #d1d1d6;
     --shadow: 0 4px 12px rgba(0,0,0,0.1);
-    
-    --dd-bg: #ffffff;
-    --dd-hover: #f2f2f7;
   }
 
   *{box-sizing:border-box;margin:0;padding:0; -webkit-tap-highlight-color: transparent;}
@@ -73,8 +65,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    position: relative;
-    padding-bottom: 40px;
+    padding-bottom: 50px;
   }
 
   /* HEADER */
@@ -85,30 +76,12 @@
     padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
   }
-  .brand{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  h1{
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-  }
-  .subtitle{
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-top: 2px;
-  }
+  .brand{ display: flex; flex-direction: column; justify-content: center; }
+  h1{ font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+  .subtitle{ font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
   
-  .theme-block{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-  }
+  .theme-block{ display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
   
-  /* THEME TOGGLE */
   .pill{
     background: var(--btn-bg);
     color: var(--btn-text);
@@ -133,17 +106,12 @@
   .card-header{
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 12px;
   }
-  .card-title{
-    font-size: 1rem;
-    font-weight: 600;
-  }
-  .card-sub{
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
+  .title-group { display: flex; flex-direction: column; }
+  .card-title{ font-size: 1rem; font-weight: 600; }
+  .card-sub{ font-size: 0.75rem; color: var(--muted); margin-top: 2px; line-height: 1.3; }
 
   /* INPUTS */
   input, textarea {
@@ -158,25 +126,17 @@
     appearance: none; 
     transition: border 0.2s;
   }
-  input:focus, textarea:focus {
-    border-color: var(--accent);
-  }
+  input:focus, textarea:focus { border-color: var(--accent); }
 
   /* --- CUSTOM DROPDOWN STYLES --- */
   select { display: none; } 
-
-  .custom-dropdown {
-    position: relative;
-    width: 100%;
-    font-size: 0.9rem;
-    user-select: none;
-  }
+  .custom-dropdown { position: relative; width: 100%; font-size: 0.9rem; user-select: none; }
   .dropdown-trigger {
     background: var(--input-bg);
     color: var(--text);
     border: 1px solid var(--border);
     padding: 10px 12px;
-    padding-right: 35px; /* Space for arrow */
+    padding-right: 35px;
     border-radius: 14px;
     cursor: pointer;
     display: block;
@@ -184,253 +144,93 @@
     overflow: hidden;
     text-overflow: ellipsis;
     transition: 0.2s;
-    min-width: 90px;
+    min-width: 60px; /* Compact for currency */
     position: relative;
   }
-  /* Fixed Arrow Position */
   .dropdown-trigger::after {
-    content: '';
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    width: 8px;
-    height: 8px;
-    border-right: 2px solid var(--muted);
-    border-bottom: 2px solid var(--muted);
-    transform: translateY(-70%) rotate(45deg);
-    transition: 0.2s;
+    content: ''; position: absolute; right: 14px; top: 50%; width: 8px; height: 8px;
+    border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+    transform: translateY(-70%) rotate(45deg); transition: 0.2s;
   }
-  .custom-dropdown.active .dropdown-trigger::after {
-    transform: translateY(-30%) rotate(-135deg);
-    border-color: var(--accent);
-  }
+  .custom-dropdown.active .dropdown-trigger::after { transform: translateY(-30%) rotate(-135deg); border-color: var(--accent); }
   
   .dropdown-menu {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    width: 100%;
-    min-width: 120px;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    z-index: 100;
-    display: none;
-    max-height: 250px;
-    overflow-y: auto;
-    flex-direction: column;
-    padding: 6px;
+    position: absolute; top: calc(100% + 6px); left: 0; width: 100%; min-width: 100px;
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none;
+    max-height: 250px; overflow-y: auto; flex-direction: column; padding: 6px;
     animation: fadeIn 0.15s ease-out;
   }
-  .theme-block .dropdown-menu {
-    left: auto;
-    right: 0;
-  }
-  
-  .custom-dropdown.active .dropdown-menu {
-    display: flex;
-  }
-  
+  .theme-block .dropdown-menu { left: auto; right: 0; }
+  .custom-dropdown.active .dropdown-menu { display: flex; }
   .dropdown-item {
-    padding: 10px 12px;
-    cursor: pointer;
-    border-radius: 8px;
-    color: var(--text);
-    transition: background 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    padding: 10px 12px; cursor: pointer; border-radius: 8px; color: var(--text);
+    transition: background 0.1s; display: flex; align-items: center; justify-content: space-between;
   }
-  .dropdown-item:hover {
-    background: var(--btn-bg);
-  }
-  .dropdown-item.selected {
-    color: var(--accent);
-    font-weight: 600;
-    background: rgba(128,128,128,0.1);
-  }
+  .dropdown-item:hover { background: var(--btn-bg); }
+  .dropdown-item.selected { color: var(--accent); font-weight: 600; background: rgba(128,128,128,0.1); }
   
-  /* --- CALCULATOR --- */
+  /* --- CALCULATOR UI --- */
   .sc-switch{
-    position: relative;
-    width: 60px;
-    height: 28px;
-    background: var(--input-bg);
-    border-radius: 20px;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 2px;
+    position: relative; width: 60px; height: 28px; background: var(--input-bg);
+    border-radius: 20px; cursor: pointer; border: 1px solid var(--border);
+    display: flex; align-items: center; padding: 2px;
   }
   .sc-knob{
-    width: 22px;
-    height: 22px;
-    background: var(--text);
-    border-radius: 50%;
-    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    width: 22px; height: 22px; background: var(--text); border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
-  .sc-switch.on .sc-knob{
-    transform: translateX(30px);
-    background: var(--accent);
-  }
-  .sc-label{
-    position: absolute;
-    right: 8px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--muted);
-    pointer-events: none;
-  }
+  .sc-switch.on .sc-knob{ transform: translateX(30px); background: var(--accent); }
+  .sc-label{ position: absolute; right: 8px; font-size: 0.65rem; font-weight: 600; color: var(--muted); pointer-events: none; }
 
   .calc-display{
-    background: var(--input-bg);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    text-align: right;
+    background: var(--input-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: right;
   }
-  .calc-expression{
-    font-size: 0.9rem;
-    color: var(--muted);
-    min-height: 20px;
-  }
-  .calc-result{
-    font-size: 2.2rem;
-    font-weight: 500;
-    color: var(--text);
-  }
-  .calc-grid{
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
+  .calc-expression{ font-size: 0.9rem; color: var(--muted); min-height: 20px; }
+  .calc-result{ font-size: 2.2rem; font-weight: 500; color: var(--text); }
+  .calc-grid{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 
   .btn{
-    background: var(--btn-bg);
-    color: var(--btn-text);
-    border: none;
-    border-radius: 50px;
-    padding: 12px 0;
-    font-size: 1.1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: transform 0.1s, filter 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 50px;
+    padding: 12px 0; font-size: 1.1rem; font-weight: 500; cursor: pointer;
+    transition: transform 0.1s, filter 0.2s; display: flex; align-items: center; justify-content: center;
   }
   .btn:active{ transform: scale(0.96); }
+  .btn-accent{ background: var(--accent); color: var(--accent-text); padding: 8px 0; font-size: 1rem; }
+  .small{ font-size: 0.9rem; padding: 10px; }
   
-  .btn-accent{
-    background: var(--accent);
-    color: var(--accent-text);
-    padding: 8px 0; 
-    font-size: 1rem; 
-  }
-  
-  .small{
-    font-size: 0.9rem;
-    padding: 10px;
-  }
-  
-  .row{
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    width: 100%;
-  }
+  .row{ display: flex; gap: 10px; align-items: center; width: 100%; }
   .flex-1{ flex: 1; }
   .field{ display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
   .mini{ font-size: 0.75rem; color: var(--muted); padding-left: 4px;}
-  .result-text{ margin-top: 8px; font-size: 0.95rem; font-weight: 500; }
+  .result-text{ margin-top: 8px; font-size: 0.95rem; font-weight: 500; line-height: 1.5; }
   .muted-text { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
   
   /* CHIPS */
-  .chips{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
+  .chips{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
   .chip-btn{
-    background: var(--btn-bg);
-    color: var(--btn-text);
-    border: 1px solid var(--border);
-    padding: 8px 14px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: 0.2s;
+    background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: 0.2s;
   }
-  .chip-btn.active{
-    background: var(--accent);
-    color: var(--accent-text);
-    border-color: var(--accent);
-    font-weight: 600;
-  }
+  .chip-btn.active{ background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
   
   .panel{ display: none; animation: fadeIn 0.3s ease; }
   .panel.active{ display: block; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
-
   .divider{ height: 1px; background: var(--border); margin: 16px 0; }
 
-  /* QR Result Area - Compact by default */
+  /* QR Area */
   .qr-container {
-    margin-top: 0;
-    display: none; /* Hidden by default to save space */
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding-top: 15px;
+    margin-top: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding-top: 15px;
   }
-  .qr-container.show {
-    display: flex;
-  }
-  .qr-img {
-    border-radius: 8px;
-    border: 4px solid #fff;
-    max-width: 180px;
-  }
-  .loading-txt {
-    font-size: 0.8rem;
-    color: var(--accent);
-    margin-bottom: 10px;
-  }
+  .qr-container.show { display: flex; }
+  .qr-img { border-radius: 8px; border: 4px solid #fff; max-width: 180px; }
+  .loading-txt { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; }
+  .link-btn { text-decoration: none; font-size: 0.75rem; color: var(--muted); border-bottom: 1px dotted var(--muted); cursor: pointer; }
 
-  .link-btn {
-    text-decoration: none;
-    font-size: 0.75rem;
-    color: var(--muted);
-    border-bottom: 1px dotted var(--muted);
-    cursor: pointer;
-  }
-
-  /* Footer */
-  footer{
-    text-align: center;
-    padding: 20px 0;
-    color: var(--muted);
-    font-size: 0.8rem;
-    border-top: 1px solid var(--border);
-    margin-top: 20px;
-  }
-  .heart {
-    display: inline-block;
-    color: var(--accent);
-    animation: heartbeat 1.5s infinite;
-  }
-  @keyframes heartbeat {
-    0% { transform: scale(1); }
-    15% { transform: scale(1.3); }
-    30% { transform: scale(1); }
-    45% { transform: scale(1.3); }
-    60% { transform: scale(1); }
-    100% { transform: scale(1); }
-  }
+  footer{ text-align: center; padding: 20px 0; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 20px; }
+  .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
+  @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.3); } 60% { transform: scale(1); } 100% { transform: scale(1); } }
 
 </style>
 </head>
@@ -446,7 +246,6 @@
     
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
-      
       <select id="theme-color">
         <option value="mono" selected>Default</option>
         <option value="orange">Orange</option>
@@ -461,7 +260,10 @@
     
     <section class="card">
       <div class="card-header">
-        <div class="card-title">Calculator</div>
+        <div class="title-group">
+          <div class="card-title">Calculator</div>
+          <div class="card-sub">Standard & Scientific operations.</div>
+        </div>
         <div id="sc-switch" class="sc-switch">
           <span class="sc-label">SCI</span>
           <div class="sc-knob"></div>
@@ -472,16 +274,13 @@
         <div id="calc-expression" class="calc-expression"></div>
         <div id="calc-result" class="calc-result">0</div>
       </div>
-
       <div id="calc-grid" class="calc-grid"></div>
-
       <div class="calc-grid" style="margin-top:10px">
         <button id="calc-clear" class="btn small">AC</button>
         <button id="calc-back" class="btn small">⌫</button>
         <button id="calc-copy" class="btn small">Copy</button>
         <button id="calc-equals" class="btn btn-accent">=</button>
       </div>
-
       <div id="sci-keys" class="calc-grid" style="margin-top:10px; display:none;">
         <button class="btn small" data-fn="sin">sin</button>
         <button class="btn small" data-fn="cos">cos</button>
@@ -496,7 +295,10 @@
 
     <section class="card">
       <div class="card-header">
-        <div class="card-title">Age Calculator</div>
+         <div class="title-group">
+          <div class="card-title">Age Calculator</div>
+          <div class="card-sub">Calculate your exact age from DOB.</div>
+        </div>
       </div>
       <div class="field">
         <label class="mini">Date of birth</label>
@@ -508,7 +310,10 @@
 
     <section class="card">
       <div class="card-header">
-        <div class="card-title">Currency Converter</div>
+        <div class="title-group">
+          <div class="card-title">Currency Converter</div>
+          <div class="card-sub">Live daily exchange rates.</div>
+        </div>
       </div>
       <div class="row">
         <div class="field flex-1">
@@ -549,14 +354,16 @@
 
     <section class="card">
       <div class="card-header">
-        <div class="card-title">QR Generator</div>
+        <div class="title-group">
+          <div class="card-title">QR Generator</div>
+          <div class="card-sub">Create QR codes for links & text.</div>
+        </div>
       </div>
       <div class="field">
         <label class="mini">Text or URL</label>
         <input id="qr-text" type="text" placeholder="https://example.com">
       </div>
       <button id="qr-btn" class="btn btn-accent" style="width:100%">Generate</button>
-      
       <div id="qr-container" class="qr-container">
         <div id="qr-loading" class="loading-txt">Generating QR Code...</div>
         <img id="qr-image" class="qr-img" alt="QR Code" style="display:none;" />
@@ -568,7 +375,7 @@
       <div class="card-header">
         <div>
           <div class="card-title">More Tools</div>
-          <div class="card-sub">Select a tool to open it below.</div>
+          <div class="card-sub">Specialized calculators & converters.</div>
         </div>
       </div>
 
@@ -584,20 +391,57 @@
 
       <div id="loan-panel" class="panel active">
         <div class="divider"></div>
-        <div class="card-title" style="margin-bottom:10px">Loan / EMI Calculator</div>
-        <div class="row">
-          <div class="field flex-1"><label class="mini">Principal</label><input id="emi-principal" type="number" placeholder="100000"></div>
-          <div class="field flex-1"><label class="mini">Rate %</label><input id="emi-rate" type="number" step="0.1" placeholder="7.5"></div>
-          <div class="field flex-1"><label class="mini">Years</label><input id="emi-years" type="number" placeholder="5"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Loan / EMI Calculator</div>
+           <div class="card-sub">Monthly payments & total interest.</div>
         </div>
+        
+        <div class="row">
+           <div class="field" style="width:80px">
+              <label class="mini">Currency</label>
+              <select id="emi-currency">
+                 <option value="₹">₹ INR</option>
+                 <option value="$">$ USD</option>
+                 <option value="€">€ EUR</option>
+                 <option value="£">£ GBP</option>
+                 <option value="¥">¥ JPY</option>
+              </select>
+           </div>
+           <div class="field flex-1">
+             <label class="mini">Loan Amount</label>
+             <input id="emi-principal" type="number" placeholder="100000">
+           </div>
+        </div>
+
+        <div class="row">
+          <div class="field flex-1">
+            <label class="mini">Rate %</label>
+            <input id="emi-rate" type="number" step="0.1" placeholder="7.5">
+          </div>
+          <div class="field" style="width:80px">
+            <label class="mini">Tenure</label>
+            <input id="emi-time" type="number" placeholder="5">
+          </div>
+          <div class="field" style="width:100px">
+            <label class="mini">Period</label>
+            <select id="emi-unit">
+               <option value="years">Years</option>
+               <option value="months">Months</option>
+            </select>
+          </div>
+        </div>
+
         <button id="emi-calc" class="btn btn-accent" style="width:100%">Calculate EMI</button>
         <div id="emi-result" class="result-text"></div>
 
         <div class="divider"></div>
-        <div class="card-title" style="margin-bottom:10px">Percentage & Discount</div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Percentage & Discount</div>
+           <div class="card-sub">Find discounts & sale prices.</div>
+        </div>
         <div class="row">
-          <div class="field flex-1"><label class="mini">Amount</label><input id="pct-amount" type="number" placeholder="200"></div>
-          <div class="field flex-1"><label class="mini">Percent</label><input id="pct-percent" type="number" placeholder="15"></div>
+          <div class="field flex-1"><label class="mini">Amount</label><input id="pct-amount" type="number" placeholder="100"></div>
+          <div class="field flex-1"><label class="mini">Percent</label><input id="pct-percent" type="number" placeholder="10"></div>
         </div>
         <button id="pct-calc" class="btn btn-accent" style="width:100%">Compute</button>
         <div id="pct-result" class="result-text"></div>
@@ -605,7 +449,10 @@
 
       <div id="unit-panel" class="panel">
         <div class="divider"></div>
-        <div class="card-title" style="margin-bottom:10px">Unit Converter</div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Unit Converter</div>
+           <div class="card-sub">Length, weight, temp & speed.</div>
+        </div>
         <div class="field"><label class="mini">Type</label>
           <select id="u-type">
             <option value="length">Length</option>
@@ -625,10 +472,21 @@
 
       <div id="health-panel" class="panel">
         <div class="divider"></div>
-        <div class="card-title" style="margin-bottom:10px">BMI Calculator</div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">BMI Calculator</div>
+           <div class="card-sub">Body Mass Index calculator.</div>
+        </div>
         <div class="row">
-          <div class="field flex-1"><label class="mini">Weight (kg)</label><input id="bmi-w" type="number"></div>
-          <div class="field flex-1"><label class="mini">Height (cm)</label><input id="bmi-h" type="number"></div>
+           <div class="field flex-1"><label class="mini">Age</label><input id="bmi-age" type="number" placeholder="25"></div>
+           <div class="field flex-1"><label class="mini">Gender</label>
+             <select id="bmi-gender">
+               <option>Male</option><option>Female</option>
+             </select>
+           </div>
+        </div>
+        <div class="row">
+          <div class="field flex-1"><label class="mini">Weight (kg)</label><input id="bmi-w" type="number" placeholder="70"></div>
+          <div class="field flex-1"><label class="mini">Height (cm)</label><input id="bmi-h" type="number" placeholder="170"></div>
         </div>
         <button id="bmi-btn" class="btn btn-accent" style="width:100%">Calculate BMI</button>
         <div id="bmi-res" class="result-text"></div>
@@ -636,7 +494,10 @@
 
       <div id="time-panel" class="panel">
         <div class="divider"></div>
-        <div class="card-title" style="margin-bottom:10px">Duration Calculator</div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Duration Calculator</div>
+           <div class="card-sub">Count days between dates.</div>
+        </div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div>
            <div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div>
@@ -647,19 +508,33 @@
 
       <div id="invest-panel" class="panel">
         <div class="divider"></div>
-        <div class="card-title" style="margin-bottom:10px">SIP Calculator</div>
-        <div class="row">
-          <div class="field flex-1"><label class="mini">Monthly</label><input id="sip-amt" type="number" placeholder="5000"></div>
-          <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">SIP Calculator</div>
+           <div class="card-sub">Estimate investment returns.</div>
         </div>
-        <div class="field"><label class="mini">Years</label><input id="sip-years" type="number" placeholder="10"></div>
+        <div class="row">
+           <div class="field" style="width:80px">
+              <label class="mini">Currency</label>
+              <select id="sip-currency">
+                 <option value="₹">₹</option><option value="$">$</option><option value="€">€</option><option value="£">£</option><option value="¥">¥</option>
+              </select>
+           </div>
+          <div class="field flex-1"><label class="mini">Monthly</label><input id="sip-amt" type="number" placeholder="5000"></div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
+           <div class="field flex-1"><label class="mini">Years</label><input id="sip-years" type="number" placeholder="10"></div>
+        </div>
         <button id="sip-btn" class="btn btn-accent" style="width:100%">Calculate Return</button>
         <div id="sip-res" class="result-text"></div>
       </div>
 
       <div id="text-panel" class="panel">
         <div class="divider"></div>
-        <div class="card-title" style="margin-bottom:10px">Password Generator</div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Password Generator</div>
+           <div class="card-sub">Secure random passwords.</div>
+        </div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
            <button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button>
@@ -669,7 +544,10 @@
 
       <div id="gpa-panel" class="panel">
         <div class="divider"></div>
-        <div class="card-title" style="margin-bottom:10px">Average Calculator</div>
+        <div class="title-group" style="margin-bottom:10px">
+           <div class="card-title">Average Calculator</div>
+           <div class="card-sub">Simple arithmetic mean.</div>
+        </div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
         <button id="gpa-btn" class="btn btn-accent" style="width:100%">Calculate Average</button>
         <div id="gpa-res" class="result-text"></div>
@@ -685,28 +563,21 @@
 
 <script>
   const $ = id => document.getElementById(id);
+  
+  // Smart Number Formatter: strips trailing zeros
+  const formatNum = (num) => parseFloat(num.toFixed(4));
 
   /* --- INITIALIZE CUSTOM DROPDOWNS --- */
   function initCustomDropdowns(scope = document) {
     const selects = scope.querySelectorAll('select:not([data-customized])');
-    
     selects.forEach(select => {
-      select.setAttribute('data-customized', 'true'); // Prevent double init
-      
-      const wrapper = document.createElement('div');
-      wrapper.className = 'custom-dropdown';
-      
-      const trigger = document.createElement('div');
-      trigger.className = 'dropdown-trigger';
+      select.setAttribute('data-customized', 'true');
+      const wrapper = document.createElement('div'); wrapper.className = 'custom-dropdown';
+      const trigger = document.createElement('div'); trigger.className = 'dropdown-trigger';
       trigger.textContent = select.options[select.selectedIndex]?.text || '';
-      
-      const menu = document.createElement('div');
-      menu.className = 'dropdown-menu';
-      
-      // Populate
+      const menu = document.createElement('div'); menu.className = 'dropdown-menu';
       Array.from(select.options).forEach(opt => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item';
+        const item = document.createElement('div'); item.className = 'dropdown-item';
         if(opt.selected) item.classList.add('selected');
         item.textContent = opt.text;
         item.onclick = (e) => {
@@ -720,278 +591,160 @@
         };
         menu.appendChild(item);
       });
-      
       trigger.onclick = (e) => {
         e.stopPropagation();
-        document.querySelectorAll('.custom-dropdown').forEach(d => {
-          if(d !== wrapper) d.classList.remove('active');
-        });
+        document.querySelectorAll('.custom-dropdown').forEach(d => { if(d !== wrapper) d.classList.remove('active'); });
         wrapper.classList.toggle('active');
       };
-      
-      wrapper.appendChild(trigger);
-      wrapper.appendChild(menu);
+      wrapper.appendChild(trigger); wrapper.appendChild(menu);
       select.parentNode.insertBefore(wrapper, select.nextSibling);
     });
-    
-    document.addEventListener('click', () => {
-      document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active'));
-    });
+    document.addEventListener('click', () => { document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active')); });
   }
 
-  /* --- THEME LOGIC (Fixed for Light Mode) --- */
+  /* --- THEME LOGIC --- */
   function updateThemeColors(themeName) {
     const root = document.documentElement;
     const isLight = document.body.dataset.theme === 'light';
     let accent, accentText;
-
     if (themeName !== 'mono') {
-        // If color selected, FORCE it even in light mode
         if(themeName === 'orange') { accent = '#f97316'; accentText = '#000000'; }
         else if(themeName === 'blue') { accent = '#3b82f6'; accentText = '#ffffff'; }
         else if(themeName === 'green') { accent = '#22c55e'; accentText = '#000000'; }
         else if(themeName === 'purple') { accent = '#a855f7'; accentText = '#ffffff'; }
     } else {
-        // Mono follows mode
-        accent = isLight ? '#000000' : '#ffffff';
-        accentText = isLight ? '#ffffff' : '#000000';
+        accent = isLight ? '#000000' : '#ffffff'; accentText = isLight ? '#ffffff' : '#000000';
     }
+    root.style.setProperty('--accent', accent); root.style.setProperty('--accent-text', accentText);
+  }
+  $('toggle-theme').onclick = () => {
+    const body = document.body; body.dataset.theme = body.dataset.theme === 'light' ? 'dark' : 'light';
+    updateThemeColors($('theme-color').value);
+  };
+  $('theme-color').onchange = (e) => updateThemeColors(e.target.value);
 
-    root.style.setProperty('--accent', accent);
-    root.style.setProperty('--accent-text', accentText);
+  /* --- EMI (ENHANCED) --- */
+  $('emi-calc').onclick = () => {
+    const cur = $('emi-currency').value;
+    const p = parseFloat($('emi-principal').value);
+    const r = parseFloat($('emi-rate').value)/1200;
+    const timeVal = parseFloat($('emi-time').value);
+    const timeUnit = $('emi-unit').value;
+    
+    if(!p || !timeVal) return;
+    
+    // Convert to months
+    const n = timeUnit === 'years' ? timeVal * 12 : timeVal;
+
+    const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+    const totalPay = emi * n;
+    const totalInt = totalPay - p;
+    
+    const res = 
+`Monthly EMI: ${cur}${emi.toFixed(2)}
+Total Interest: ${cur}${totalInt.toFixed(2)}
+Total Amount: ${cur}${totalPay.toFixed(2)}`;
+
+    $('emi-result').style.whiteSpace = 'pre-wrap';
+    $('emi-result').textContent = res;
+  }
+  
+  /* --- PERCENTAGE (REORDERED) --- */
+  $('pct-calc').onclick = () => {
+    const amt = parseFloat($('pct-amount').value);
+    const pct = parseFloat($('pct-percent').value);
+    if(isNaN(amt) || isNaN(pct)) return;
+    const save = (amt * pct) / 100;
+    const final = amt - save;
+    $('pct-result').textContent = `Discounted Price: ${formatNum(final)} | You Save: ${formatNum(save)}`;
   }
 
-  $('toggle-theme').addEventListener('click', () => {
-    const body = document.body;
-    body.dataset.theme = body.dataset.theme === 'light' ? 'dark' : 'light';
-    updateThemeColors($('theme-color').value);
-  });
-
-  $('theme-color').addEventListener('change', (e) => {
-    updateThemeColors(e.target.value);
-  });
-
-  /* --- CONVERTER LOGIC (Refined) --- */
+  /* --- CONVERTERS (SMART ZEROS) --- */
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => {
-      let m = v;
-      if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
+      let m = v; if(f==='cm') m=v/100; if(f==='ft') m=v/3.2808; if(f==='in') m=v/39.37;
       if(t==='m') return m; if(t==='cm') return m*100; if(t==='ft') return m*3.2808; if(t==='in') return m*39.37;
     }},
     weight: { opts: ['kg','lb'], fn: (v,f,t) => f===t?v : (f==='kg'?v*2.2046:v/2.2046) },
     temp: { opts: ['C','F'], fn: (v,f,t) => f===t?v : (f==='C'?v*1.8+32 : (v-32)/1.8) },
     speed: { opts: ['kmph','mph'], fn: (v,f,t) => f===t?v : (f==='kmph'?v*0.6213:v/0.6213) }
   };
-
-  // Re-build dropdowns when Type changes
   function renderUnits(){
-    const type = $('u-type').value;
-    const data = uData[type];
-    const fromSel = $('u-from');
-    const toSel = $('u-to');
-    
-    fromSel.innerHTML = ''; 
-    toSel.innerHTML = '';
-    
-    data.opts.forEach(o => {
-      fromSel.add(new Option(o,o));
-      toSel.add(new Option(o,o));
-    });
-
-    // Smart Default: Set To = 2nd item so it's not same as From
-    if(toSel.options.length > 1) toSel.selectedIndex = 1;
-
-    // Refresh Custom UI
-    const parent = fromSel.closest('.row');
-    parent.querySelectorAll('.custom-dropdown').forEach(e => e.remove());
-    fromSel.removeAttribute('data-customized');
-    toSel.removeAttribute('data-customized');
-    initCustomDropdowns(parent);
+    const type = $('u-type').value; const data = uData[type];
+    const fS = $('u-from'); const tS = $('u-to');
+    fS.innerHTML = ''; tS.innerHTML = '';
+    data.opts.forEach(o => { fS.add(new Option(o,o)); tS.add(new Option(o,o)); });
+    if(tS.options.length > 1) tS.selectedIndex = 1;
+    const p = fS.closest('.row'); p.querySelectorAll('.custom-dropdown').forEach(e => e.remove());
+    fS.removeAttribute('data-customized'); tS.removeAttribute('data-customized');
+    initCustomDropdowns(p);
   }
-  
-  $('u-type').addEventListener('change', renderUnits);
-
+  $('u-type').onchange = renderUnits;
   $('u-btn').onclick = () => {
-    const v = parseFloat($('u-val').value);
-    if(isNaN(v)) return;
-    const type = $('u-type').value;
-    const f = $('u-from').value;
-    const t = $('u-to').value;
-    const res = uData[type].fn(v, f, t);
-    $('u-res').textContent = `${res.toFixed(4)} ${t}`; // Show unit
+    const v = parseFloat($('u-val').value); if(isNaN(v)) return;
+    const res = uData[$('u-type').value].fn(v, $('u-from').value, $('u-to').value);
+    $('u-res').textContent = `${formatNum(res)} ${$('u-to').value}`;
   }
 
-  /* --- EMI (Monthly/Yearly) --- */
-  $('emi-calc').onclick = () => {
-    const p = parseFloat($('emi-principal').value);
-    const r = parseFloat($('emi-rate').value)/1200;
-    const years = parseFloat($('emi-years').value);
-    const n = years*12;
-    
-    if(!p || !years) return;
-
-    const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    
-    let res = `Monthly EMI: ${emi.toFixed(2)}`;
-    if(years > 1) {
-       res += `\nYearly Payment: ${(emi*12).toFixed(2)}`;
-    }
-    
-    // Using pre-wrap for new line
-    $('emi-result').style.whiteSpace = 'pre-wrap';
-    $('emi-result').textContent = res;
-  }
-  
-  /* --- PERCENTAGE (Fixed) --- */
-  $('pct-calc').onclick = () => {
-    const amt = parseFloat($('pct-amount').value);
-    const pct = parseFloat($('pct-percent').value);
-    if(isNaN(amt) || isNaN(pct)) return;
-    const val = (amt * pct) / 100;
-    const final = amt - val;
-    $('pct-result').textContent = `${pct}% of ${amt} = ${val.toFixed(2)} | Off: ${final.toFixed(2)}`;
-  }
-
-  /* --- QR GENERATOR (No space bug) --- */
-  $('qr-btn').onclick = () => {
-    const txt = $('qr-text').value;
-    if(!txt) return;
-    
-    const container = $('qr-container');
-    const loading = $('qr-loading');
-    const img = $('qr-image');
-    const dlLink = $('qr-download');
-    
-    container.classList.add('show');
-    img.style.display = 'none';
-    dlLink.style.display = 'none';
-    loading.style.display = 'block';
-
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    
-    img.onload = () => {
-      loading.style.display = 'none';
-      img.style.display = 'block';
-      
-      fetch(url).then(res => res.blob()).then(blob => {
-          const blobUrl = URL.createObjectURL(blob);
-          dlLink.href = blobUrl;
-          dlLink.download = "qrcode.png";
-          dlLink.style.display = "inline-block";
-      });
-    };
-    img.src = url;
-  }
-
-  /* --- OTHER UTILS --- */
-  // Calculator
-  let expression = '';
-  const resEl = $('calc-result');
-  const exprEl = $('calc-expression');
-  function updateDisplay(){ exprEl.textContent = expression; }
-  function calculate() {
-    try {
-      let safe = expression.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,Math.PI);
-      if(/[^0-9+\-*/(). %eE]/.test(safe.replace(/sin|cos|tan|sqrt|ln|log|pow/g,''))) throw "Inv";
-      const val = new Function('Math', 'return ' + safe)(Math);
-      if(!isFinite(val) || isNaN(val)) throw "Err";
-      resEl.textContent = Number(val.toFixed(8));
-    } catch(e) { resEl.textContent = "Error"; }
-  }
-  const keys = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
-  keys.forEach(k => {
-    const btn = document.createElement('button');
-    btn.className = 'btn'; btn.textContent = k;
-    btn.onclick = () => { expression += {'÷':'/','×':'*','−':'-'}[k] || k; updateDisplay(); };
-    $('calc-grid').appendChild(btn);
-  });
-  $('calc-equals').onclick = calculate;
-  $('calc-clear').onclick = () => { expression=''; updateDisplay(); resEl.textContent='0'; };
-  $('calc-back').onclick = () => { expression=expression.slice(0,-1); updateDisplay(); };
-  $('calc-copy').onclick = () => { navigator.clipboard.writeText(resEl.textContent); };
-  
-  $('sc-switch').onclick = function(){ this.classList.toggle('on'); $('sci-keys').style.display = this.classList.contains('on') ? 'grid' : 'none'; };
-  document.querySelectorAll('#sci-keys .btn').forEach(b => {
-    b.onclick = () => { expression += (b.dataset.fn==='pow'?'**': b.dataset.fn==='pi'?Math.PI : `Math.${b.dataset.fn}(`); updateDisplay(); }
-  });
-
-  // Tabs
-  document.querySelectorAll('.chip-btn').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-      btn.classList.add('active');
-      $(btn.dataset.panel).classList.add('active');
-    };
-  });
-
-  // Age
-  $('age-btn').onclick = () => {
-    const dVal = $('dob-input').value;
-    if(!dVal) return;
-    const dob = new Date(dVal); const today = new Date();
-    let y = today.getFullYear() - dob.getFullYear();
-    let m = today.getMonth() - dob.getMonth();
-    let d = today.getDate() - dob.getDate();
-    if (d < 0) { m--; d += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); }
-    if (m < 0) { y--; m += 12; }
-    $('age-result').textContent = `${y} Years, ${m} Months, ${d} Days`;
-  }
-
-  // Currency
-  $('cur-btn').onclick = async () => {
-    const amt = $('cur-amt').value || 1;
-    const f = $('cur-from').value; const t = $('cur-to').value;
-    $('cur-res').textContent = "Fetching...";
-    $('cur-info').textContent = ""; $('cur-source').style.display = "none";
-    try {
-      const r = await fetch(`https://api.frankfurter.app/latest?amount=${amt}&from=${f}&to=${t}`);
-      const d = await r.json();
-      $('cur-res').textContent = `${amt} ${f} = ${d.rates[t]} ${t}`;
-      $('cur-info').textContent = `Last market update: ${new Date(d.date).toLocaleDateString()}`;
-      $('cur-source').style.display = "block";
-    } catch(e){ $('cur-res').textContent = "Error"; }
-  }
-
-  // SIP
+  /* --- SIP (CURRENCY ADDED) --- */
   $('sip-btn').onclick = () => {
+     const cur = $('sip-currency').value;
      const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
      const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
-     $('sip-res').textContent = "Value: " + (val?val.toFixed(2):0);
+     $('sip-res').textContent = `Total Value: ${cur}${formatNum(val)}`;
   }
 
-  // Pass Gen
-  $('pw-btn').onclick = () => {
-    const c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
-    let l = $('pw-len').value, o = "";
-    for(let i=0;i<l;i++) o += c.charAt(Math.floor(Math.random()*c.length));
-    $('pw-res').textContent = o;
-  }
-  
-  // GPA
-  $('gpa-btn').onclick = () => {
-    const n = $('gpa-in').value.split(',').map(Number).filter(x => !isNaN(x));
-    $('gpa-res').textContent = "Average: " + (n.length ? (n.reduce((a,b)=>a+b,0)/n.length).toFixed(2) : 0);
-  }
-  
-  // Date
-  $('time-diff').onclick = () => {
-      const d1 = new Date($('time-start').value); const d2 = new Date($('time-end').value);
-      const diff = Math.ceil(Math.abs(d2-d1)/(1000*60*60*24));
-      $('time-result').textContent = isNaN(diff) ? "Select dates" : diff + " days";
-  }
-  
-  // BMI
+  /* --- BMI (AGE/GENDER ADDED) --- */
   $('bmi-btn').onclick = () => {
       const w = parseFloat($('bmi-w').value); const h = parseFloat($('bmi-h').value)/100;
       if(w && h) $('bmi-res').textContent = "BMI: " + (w/(h*h)).toFixed(2);
   }
 
-  // INIT
-  updateThemeColors('mono');
-  initCustomDropdowns();
-  renderUnits(); // Triggers initCustomDropdowns for converters
+  /* --- OTHERS --- */
+  $('qr-btn').onclick = () => {
+    const txt = $('qr-text').value; if(!txt) return;
+    $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
+    $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
+    $('qr-image').src = url;
+  }
+  // Calc Logic
+  let expr = ''; 
+  const upd = () => $('calc-expression').textContent = expr;
+  const k = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
+  k.forEach(x => { let b=document.createElement('button'); b.className='btn'; b.textContent=x; b.onclick=()=>{expr+={'÷':'/','×':'*','−':'-'}[x]||x; upd();}; $('calc-grid').appendChild(b); });
+  $('calc-equals').onclick = () => { try { let s=expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,Math.PI); $('calc-result').textContent = formatNum(eval(s)); } catch { $('calc-result').textContent="Err"; } };
+  $('calc-clear').onclick = () => { expr=''; upd(); $('calc-result').textContent='0'; };
+  $('calc-back').onclick = () => { expr=expr.slice(0,-1); upd(); };
+  $('sc-switch').onclick = function(){ this.classList.toggle('on'); $('sci-keys').style.display = this.classList.contains('on')?'grid':'none'; };
+  document.querySelectorAll('#sci-keys .btn').forEach(b => b.onclick = () => { expr+=(b.dataset.fn==='pow'?'**':b.dataset.fn==='pi'?Math.PI:`Math.${b.dataset.fn}(`); upd(); });
+  // Tabs
+  document.querySelectorAll('.chip-btn').forEach(b => b.onclick = () => {
+     document.querySelectorAll('.chip-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); $(b.dataset.panel).classList.add('active');
+  });
+  // Age
+  $('age-btn').onclick = () => {
+    const dVal=$('dob-input').value; if(!dVal)return;
+    const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
+    if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
+    $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
+  };
+  // Currency
+  $('cur-btn').onclick = async () => {
+    const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
+    $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
+    try{ const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); const d=await r.json();
+    $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; $('cur-info').textContent=`Updated: ${d.date}`; $('cur-source').style.display='block'; }catch{ $('cur-res').textContent="Err"; }
+  };
+  // Date
+  $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
+  // Text
+  $('pw-btn').onclick = () => { const c="A-Za-z0-9!@#$"; let o=""; for(let i=0;i<$('pw-len').value;i++)o+="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%".charAt(Math.floor(Math.random()*67)); $('pw-res').textContent=o; };
+  $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
 
+  // Init
+  updateThemeColors('mono'); initCustomDropdowns(); renderUnits();
 </script>
 </body>
 </html>
