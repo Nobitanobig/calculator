@@ -12,7 +12,7 @@
     --text: #ffffff;
     --muted: #a1a1aa;
     
-    /* Default Accent (Mono Default) - Overridden by JS */
+    /* Default Accent */
     --accent: #ffffff; 
     --accent-text: #000000;
     --accent-bg: #ffffff;
@@ -33,10 +33,7 @@
     --text: #000000;
     --muted: #666666;
     
-    /* FIXED: Removed accent overrides here. Light mode now respects JS colors. */
-    /* --accent: #000000; */
-    /* --accent-text: #ffffff; */
-    /* --accent-bg: #000000; */
+    /* Light Mode Accent is handled dynamically by JS now */
 
     --card-bg: #ffffff;
     --input-bg: #f2f2f7;
@@ -208,8 +205,8 @@
   
   /* TABS */
   .tab-bar {
-    display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; 
-    padding-bottom: 4px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; 
+    padding-bottom: 4px;
   }
   .tab-btn {
     background: transparent; color: var(--muted); border: none;
@@ -277,7 +274,7 @@
   .flex-1{ flex: 1; min-width: 0; }
   .field{ display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
   .mini{ font-size: 0.75rem; color: var(--muted); padding-left: 4px;}
-  .result-text{ margin-top: 8px; font-size: 0.95rem; font-weight: 500; line-height: 1.5; }
+  .result-text{ margin-top: 8px; font-size: 0.95rem; font-weight: 500; line-height: 1.5; position: relative;}
   .muted-text { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
   
   .chips{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 5px; }
@@ -288,11 +285,15 @@
   .chip-btn.active{ background: var(--accent-bg); color: var(--accent-text); border-color: transparent; font-weight: 600; }
   .chip-btn.hidden { display: none; }
 
-  /* FIXED: Increased spacing for divider */
+  .panel{ display: none; animation: fadeIn 0.3s ease; }
+  .panel.active{ display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
+  
+  /* FIXED ALIGNMENT DIVIDER (Thinner & Centered) */
   .divider{ 
     height: 0.5px;
     background: var(--border); 
-    margin: 12px 0 16px 0; /* Increased top margin */
+    margin: 16px 0 20px 0; 
     width: 100%;
   }
 
@@ -312,6 +313,13 @@
     cursor: pointer; opacity: 0.7;
   }
   .info-icon:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
+  
+  /* SHARE BUTTON */
+  .share-btn {
+    position: absolute; right: 0; top: 0;
+    font-size: 1.2rem; color: var(--accent); cursor: pointer;
+    background: none; border: none; padding: 0;
+  }
 
   .qr-container {
     margin-top: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding-top: 15px;
@@ -332,24 +340,12 @@
   <div class="modal-card">
     <div class="card-title" style="margin-bottom:10px; font-size:1.2rem;">Select Currency</div>
     <div style="margin-bottom:15px; color:var(--muted); font-size:0.9rem;">Choose your preferred currency for all tools.</div>
-    
     <select id="modal-currency-select">
-      <option value="₹">₹ INR</option>
-      <option value="$">$ USD</option>
-      <option value="€">€ EUR</option>
-      <option value="£">£ GBP</option>
-      <option value="¥">¥ JPY</option>
-      <option value="A$">A$ AUD</option>
-      <option value="C$">C$ CAD</option>
-      <option value="¥">¥ CNY</option>
-      <option value="₣">₣ CHF</option>
-      <option value="NZ$">NZ$ NZD</option>
+      <option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option>
+      <option value="A$">A$ AUD</option><option value="C$">C$ CAD</option><option value="¥">¥ CNY</option><option value="₣">₣ CHF</option><option value="NZ$">NZ$ NZD</option>
     </select>
-    
     <button id="modal-save-btn" class="btn btn-accent" style="width:100%; margin-top:15px;">Get Started</button>
-    <div style="margin-top:12px; font-size:0.75rem; color:var(--muted);">
-      You can change currency anytime in the <b>More Tools</b> section.
-    </div>
+    <div style="margin-top:12px; font-size:0.75rem; color:var(--muted);">Change anytime in <b>More Tools</b>.</div>
   </div>
 </div>
 
@@ -360,16 +356,12 @@
       <h1>Smart AI Calculator</h1>
       <div class="subtitle">Minimal, fast & versatile.</div>
     </div>
-    
     <div class="theme-block">
       <button id="toggle-theme" class="pill">Dark / Light</button>
       <select id="theme-color">
-        <option value="mono" selected>Default</option> <option value="blue">Blue</option>
-        <option value="red">Red</option>
-        <option value="green">Green</option>
-        <option value="orange">Orange</option>
-        <option value="sunset">Sunset (Gradient)</option>
-        <option value="ocean">Ocean (Gradient)</option>
+        <option value="mono" selected>Default (Mono)</option>
+        <option value="blue">Blue</option><option value="red">Red</option><option value="green">Green</option>
+        <option value="orange">Orange</option><option value="sunset">Sunset</option><option value="ocean">Ocean</option>
       </select>
     </div>
   </header>
@@ -378,16 +370,9 @@
     
     <section class="card">
       <div class="card-header">
-        <div class="title-group">
-          <div class="card-title">Calculator</div>
-          <div class="card-sub">Scientific Mode & Smart History.</div>
-        </div>
-        <div id="sc-switch" class="sc-switch">
-          <span class="sc-label">SCI</span>
-          <div class="sc-knob"></div>
-        </div>
+        <div class="title-group"><div class="card-title">Calculator</div><div class="card-sub">Scientific Mode & Smart History.</div></div>
+        <div id="sc-switch" class="sc-switch"><span class="sc-label">SCI</span><div class="sc-knob"></div></div>
       </div>
-
       <div class="calc-display">
         <div id="hist-lbl" class="history-label">History</div>
         <div id="calc-history" class="calc-history"></div>
@@ -396,98 +381,40 @@
       </div>
       <div id="calc-grid" class="calc-grid"></div>
       <div class="calc-grid" style="margin-top:10px">
-        <button id="calc-clear" class="btn small">AC</button>
-        <button id="calc-back" class="btn small">⌫</button>
-        <button id="calc-copy" class="btn small">Copy</button>
-        <button id="calc-equals" class="btn btn-accent">=</button>
+        <button id="calc-clear" class="btn small">AC</button><button id="calc-back" class="btn small">⌫</button><button id="calc-copy" class="btn small">Copy</button><button id="calc-equals" class="btn btn-accent">=</button>
       </div>
       <div id="sci-keys" class="calc-grid" style="margin-top:10px; display:none;">
         <button class="btn small" id="deg-toggle" style="font-size:0.8rem">DEG</button>
-        <button class="btn small" data-fn="sin">sin</button>
-        <button class="btn small" data-fn="cos">cos</button>
-        <button class="btn small" data-fn="tan">tan</button>
-        <button class="btn small" data-fn="sqrt">√</button>
-        <button class="btn small" data-fn="ln">ln</button>
-        <button class="btn small" data-fn="log">log</button>
-        <button class="btn small" data-fn="pow">xʸ</button>
-        <button class="btn small" data-fn="pi">π</button>
+        <button class="btn small" data-fn="sin">sin</button><button class="btn small" data-fn="cos">cos</button><button class="btn small" data-fn="tan">tan</button>
+        <button class="btn small" data-fn="sqrt">√</button><button class="btn small" data-fn="ln">ln</button><button class="btn small" data-fn="log">log</button><button class="btn small" data-fn="pow">xʸ</button><button class="btn small" data-fn="pi">π</button>
       </div>
     </section>
 
     <section class="card">
-      <div class="card-header">
-         <div class="title-group">
-          <div class="card-title">Age Calculator</div>
-          <div class="card-sub">Calculate your exact age from DOB.</div>
-        </div>
-      </div>
-      <div class="field">
-        <label class="mini">Date of birth</label>
-        <input type="date" id="dob-input">
-      </div>
+      <div class="card-header"><div class="title-group"><div class="card-title">Age Calculator</div><div class="card-sub">Calculate exact age.</div></div></div>
+      <div class="field"><label class="mini">Date of birth</label><input type="date" id="dob-input"></div>
       <button id="age-btn" class="btn btn-accent btn-action">Calculate Age</button>
-      <div id="age-result" class="result-text"></div>
+      <div id="age-result" class="result-text"><button class="share-btn" id="share-age">➦</button></div>
     </section>
 
     <section class="card">
-      <div class="card-header">
-         <div class="title-group">
-          <div class="card-title">Currency Converter</div>
-          <div class="card-sub">Real-time exchange rates.</div>
-        </div>
-      </div>
+      <div class="card-header"><div class="title-group"><div class="card-title">Currency Converter</div><div class="card-sub">Real-time rates.</div></div></div>
       <div class="row">
         <div class="field flex-1"><label class="mini">Amount</label><input id="cur-amt" type="number" placeholder="1"></div>
-        <div class="field flex-1"><label class="mini">From</label>
-          <select id="cur-from">
-            <option value="USD" selected>USD</option>
-            <option value="EUR">EUR</option>
-            <option value="INR">INR</option>
-            <option value="GBP">GBP</option>
-            <option value="JPY">JPY</option>
-            <option value="AUD">AUD</option>
-            <option value="CAD">CAD</option>
-            <option value="CNY">CNY</option>
-            <option value="CHF">CHF</option>
-            <option value="NZD">NZD</option>
-          </select>
-        </div>
-        <div class="field flex-1"><label class="mini">To</label>
-          <select id="cur-to">
-            <option value="INR" selected>INR</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="JPY">JPY</option>
-            <option value="AUD">AUD</option>
-            <option value="CAD">CAD</option>
-            <option value="CNY">CNY</option>
-            <option value="CHF">CHF</option>
-            <option value="NZD">NZD</option>
-          </select>
-        </div>
+        <div class="field flex-1"><label class="mini">From</label><select id="cur-from"><option value="USD" selected>USD</option><option value="EUR">EUR</option><option value="INR">INR</option><option value="GBP">GBP</option><option value="JPY">JPY</option><option value="AUD">AUD</option><option value="CAD">CAD</option><option value="CNY">CNY</option><option value="CHF">CHF</option><option value="NZD">NZD</option></select></div>
+        <div class="field flex-1"><label class="mini">To</label><select id="cur-to"><option value="INR" selected>INR</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="JPY">JPY</option><option value="AUD">AUD</option><option value="CAD">CAD</option><option value="CNY">CNY</option><option value="CHF">CHF</option><option value="NZD">NZD</option></select></div>
       </div>
       <div class="row">
         <button id="cur-btn" class="btn btn-accent flex-1 btn-action">Convert</button>
         <button id="cur-swap" class="btn small" style="width:50px; margin-top:10px;">⇄</button>
       </div>
-      <div id="cur-res" class="result-text"></div>
-      <div id="cur-source" class="muted-text" style="display:none;">
-        <span id="cur-date"></span> | <a href="https://www.frankfurter.app" target="_blank" class="link-btn">Source: Frankfurter API</a>
-      </div>
+      <div id="cur-res" class="result-text"><button class="share-btn" id="share-cur">➦</button></div>
+      <div id="cur-source" class="muted-text" style="display:none;"><span id="cur-date"></span> | <a href="https://www.frankfurter.app" target="_blank" class="link-btn">Source: Frankfurter API</a></div>
     </section>
 
     <section class="card">
-      <div class="card-header">
-        <div class="title-group">
-          <div class="card-title">QR Generator</div>
-          <div class="card-sub">Create QR codes for links & text.</div>
-        </div>
-      </div>
-      <div class="field">
-        <label class="mini">Text or URL</label>
-        <input id="qr-text" type="text" placeholder="https://example.com">
-      </div>
+      <div class="card-header"><div class="title-group"><div class="card-title">QR Generator</div><div class="card-sub">Create QR codes.</div></div></div>
+      <div class="field"><label class="mini">Text or URL</label><input id="qr-text" type="text" placeholder="https://example.com"></div>
       <button id="qr-btn" class="btn btn-accent btn-action">Generate</button>
       <div id="qr-container" class="qr-container">
         <div id="qr-loading" class="loading-txt">Generating...</div>
@@ -498,28 +425,16 @@
 
     <section class="card">
       <div class="card-header">
-        <div>
-          <div class="card-title">More Tools</div>
-          <div class="card-sub">Specialized calculators.</div>
-        </div>
-        
+        <div><div class="card-title">More Tools</div><div class="card-sub">Specialized calculators.</div></div>
         <select id="global-currency" style="min-width:80px;">
-            <option value="₹">₹ INR</option>
-            <option value="$">$ USD</option>
-            <option value="€">€ EUR</option>
-            <option value="£">£ GBP</option>
-            <option value="¥">¥ JPY</option>
-            <option value="A$">A$ AUD</option>
-            <option value="C$">C$ CAD</option>
-            <option value="¥">¥ CNY</option>
-            <option value="₣">₣ CHF</option>
-            <option value="NZ$">NZ$ NZD</option>
+            <option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option>
+            <option value="A$">A$ AUD</option><option value="C$">C$ CAD</option><option value="¥">¥ CNY</option><option value="₣">₣ CHF</option><option value="NZ$">NZ$ NZD</option>
         </select>
       </div>
 
       <div class="search-box">
         <div class="search-icon"></div>
-        <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, Fuel, BMI)...">
+        <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, Fuel, Sleep)...">
       </div>
 
       <div class="tab-bar">
@@ -535,21 +450,21 @@
           <button class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> 
           <button class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button>
           <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
-          <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
+          <button class="chip-btn" data-panel="discount-panel">Discount</button> <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
           <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
         </div>
       </div>
 
       <div id="tab-health" class="tab-content">
         <div class="chips">
-          <button class="chip-btn" data-panel="health-panel">Health Station (BMI, BMR)</button>
-        </div>
+          <button class="chip-btn" data-panel="health-panel">Health Station</button>
+          <button class="chip-btn" data-panel="sleep-panel">Sleep Cycle</button> </div>
       </div>
 
       <div id="tab-travel" class="tab-content">
         <div class="chips">
           <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
-        </div>
+          <button class="chip-btn" data-panel="eta-panel">Trip ETA</button> <button class="chip-btn" data-panel="zone-panel">Time Zone</button> </div>
       </div>
 
       <div id="tab-tools" class="tab-content">
@@ -563,95 +478,99 @@
         </div>
       </div>
 
-      <div id="fuel-panel" class="panel">
+      <div id="loan-panel" class="panel active">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Fuel Cost Calculator</div>
-           <div class="card-sub">Calculate trip cost & fuel required.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">Monthly payments.</div></div>
+        <div class="field"><label class="mini">Loan Amount</label><input id="emi-principal" type="number" placeholder="100000"></div>
         <div class="row">
-           <div class="field flex-1"><label class="mini">Distance (km)</label><input id="fuel-dist" type="number" placeholder="300"></div>
-           <div class="field flex-1"><label class="mini">Mileage (km/l)</label><input id="fuel-mil" type="number" placeholder="15"></div>
+          <div class="field flex-1"><label class="mini">Rate %</label><input id="emi-rate" type="number" step="0.1" placeholder="7.5"></div>
+          <div class="field" style="width:80px"><label class="mini">Tenure</label><input id="emi-time" type="number" placeholder="5"></div>
+          <div class="field" style="width:100px"><label class="mini">Period</label><select id="emi-unit"><option value="years">Years</option><option value="months">Months</option></select></div>
         </div>
-        <div class="field"><label class="mini">Fuel Price (per liter)</label><input id="fuel-price" type="number" placeholder="100"></div>
-        <button id="fuel-btn" class="btn btn-accent btn-action">Calculate Cost</button>
-        <div id="fuel-res" class="result-text"></div>
+        <button id="emi-calc" class="btn btn-accent btn-action">Calculate EMI</button>
+        <div id="emi-result" class="result-text"><button class="share-btn" id="share-emi">➦</button></div>
+      </div>
+
+      <div id="gst-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="gst-title">GST / VAT</div><div class="card-sub">Add or Remove Tax.</div></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Amount</label><input id="gst-amt" type="number" placeholder="1000"></div>
+           <div class="field flex-1"><label class="mini">Tax Rate %</label><input id="gst-rate" type="number" placeholder="18"></div>
+        </div>
+        <div class="row" style="margin-top:15px; gap:10px;">
+          <button id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add Tax (+)</button>
+          <button id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove Tax (-)</button>
+        </div>
+        <div id="gst-res" class="result-text"><button class="share-btn" id="share-gst">➦</button></div>
+      </div>
+
+      <div id="invest-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="sip-title">SIP Calculator</div><div class="card-sub">Estimate returns.</div></div>
+        <div class="field"><label class="mini">Monthly Amount</label><input id="sip-amt" type="number" placeholder="5000"></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
+           <div class="field flex-1"><label class="mini">Years</label><input id="sip-years" type="number" placeholder="10"></div>
+        </div>
+        <button id="sip-btn" class="btn btn-accent btn-action">Calculate Return</button>
+        <div id="sip-res" class="result-text"><button class="share-btn" id="share-sip">➦</button></div>
       </div>
 
       <div id="goal-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Goal Planner</div>
-           <div class="card-sub">How much to invest to reach a goal?</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Goal Planner</div><div class="card-sub">Target investment.</div></div>
         <div class="field"><label class="mini">Target Amount</label><input id="goal-target" type="number" placeholder="10000000"></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Years</label><input id="goal-time" type="number" placeholder="10"></div>
            <div class="field flex-1"><label class="mini">Exp. Rate %</label><input id="goal-rate" type="number" placeholder="12"></div>
         </div>
         <button id="goal-btn" class="btn btn-accent btn-action">Calculate Monthly SIP</button>
-        <div id="goal-res" class="result-text"></div>
+        <div id="goal-res" class="result-text"><button class="share-btn" id="share-goal">➦</button></div>
       </div>
 
-      <div id="text-panel" class="panel">
+      <div id="discount-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Text Analysis</div>
-           <div class="card-sub">Word count & transformation.</div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Discount Stacker</div><div class="card-sub">Sale price calculator.</div></div>
+        <div class="field"><label class="mini">Original Price</label><input id="disc-price" type="number" placeholder="2000"></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Disc 1 %</label><input id="disc-1" type="number" placeholder="50"></div>
+           <div class="field flex-1"><label class="mini">Disc 2 %</label><input id="disc-2" type="number" placeholder="10"></div>
         </div>
-        <div class="field">
-           <textarea id="txt-in" rows="4" placeholder="Type or paste text here..."></textarea>
-        </div>
-        <div class="text-stats" style="margin-bottom:10px;">
-           <div class="stat-box"><div id="txt-words" class="stat-val">0</div><div class="stat-lbl">Words</div></div>
-           <div class="stat-box"><div id="txt-chars" class="stat-val">0</div><div class="stat-lbl">Characters</div></div>
-        </div>
-        <div class="row" style="gap:5px;">
-           <button id="txt-upper" class="btn small flex-1" style="font-size:0.8rem;">UPPER</button>
-           <button id="txt-lower" class="btn small flex-1" style="font-size:0.8rem;">lower</button>
-           <button id="txt-clear" class="btn small flex-1" style="font-size:0.8rem;">Clear</button>
-        </div>
+        <button id="disc-btn" class="btn btn-accent btn-action">Calculate Sale Price</button>
+        <div id="disc-res" class="result-text"><button class="share-btn" id="share-disc">➦</button></div>
       </div>
 
-      <div id="password-panel" class="panel">
+      <div id="bill-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Password Generator</div>
-           <div class="card-sub">Create strong, secure passwords.</div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Bill Splitter</div></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Total Bill</label><input id="bill-amt" type="number" placeholder="2500"></div>
+           <div class="field flex-1"><label class="mini">Tip %</label><input id="bill-tip" type="number" placeholder="10"></div>
+        </div>
+        <div class="field"><label class="mini">People</label><input id="bill-ppl" type="number" placeholder="4"></div>
+        <button id="bill-btn" class="btn btn-accent btn-action">Split Bill</button>
+        <div id="bill-res" class="result-text"><button class="share-btn" id="share-bill">➦</button></div>
+      </div>
+
+      <div id="ci-panel" class="panel">
+        <div class="divider"></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Compound Interest</div></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Principal</label><input id="ci-p" type="number" placeholder="10000"></div>
+           <div class="field flex-1"><label class="mini">Rate %</label><input id="ci-r" type="number" placeholder="8"></div>
         </div>
         <div class="row">
-           <div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div>
-           <button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button>
+           <div class="field flex-1"><label class="mini">Years</label><input id="ci-t" type="number" placeholder="10"></div>
+           <div class="field flex-1"><label class="mini">Compounded</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12">Monthly</option></select></div>
         </div>
-        <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
-      </div>
-
-      <div id="base-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Number Base Converter</div>
-           <div class="card-sub">Decimal, Binary & Hexadecimal.</div>
-        </div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div>
-           <div class="field flex-1"><label class="mini">From Base</label>
-             <select id="base-from">
-               <option value="10">Decimal (10)</option>
-               <option value="2">Binary (1010)</option>
-               <option value="16">Hex (A)</option>
-             </select>
-           </div>
-        </div>
-        <button id="base-btn" class="btn btn-accent btn-action">Convert</button>
-        <div id="base-res" class="result-text"></div>
+        <button id="ci-btn" class="btn btn-accent btn-action">Calculate Amount</button>
+        <div id="ci-res" class="result-text"><button class="share-btn" id="share-ci">➦</button></div>
       </div>
 
       <div id="health-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title">Health Station</div>
-           <div class="card-sub">BMI, BMR, Water & Protein Analysis.</div>
-        </div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Health Station (BMI, BMR)</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Age</label><input id="h-age" type="number" placeholder="25"></div>
            <div class="field flex-1"><label class="mini">Gender</label><select id="h-gender"><option value="male">Male</option><option value="female">Female</option></select></div>
@@ -663,20 +582,12 @@
         <div class="field">
           <label class="mini">Activity Level</label>
           <select id="h-activity">
-            <option value="1.2">Sedentary (Little/No exercise)</option>
-            <option value="1.375">Light (Exercise 1-3 days/wk)</option>
-            <option value="1.55">Moderate (Exercise 3-5 days/wk)</option>
-            <option value="1.725">Active (Exercise 6-7 days/wk)</option>
-            <option value="1.9">Very Active (Physical job)</option>
+            <option value="1.2">Sedentary (Little/No exercise)</option><option value="1.375">Light</option><option value="1.55">Moderate</option><option value="1.725">Active</option><option value="1.9">Very Active</option>
           </select>
         </div>
         <button id="h-btn" class="btn btn-accent btn-action">Calculate Stats</button>
-        
         <div id="h-result" class="health-stats" style="display:none;">
-          <div class="stat-box">
-             <div class="info-icon" id="bmi-info">i</div>
-             <div id="res-bmi" class="stat-val">--</div><div class="stat-lbl">BMI Score</div>
-          </div>
+          <div class="stat-box"><div class="info-icon" id="bmi-info">i</div><div id="res-bmi" class="stat-val">--</div><div class="stat-lbl">BMI Score</div></div>
           <div class="stat-box"><div id="res-bmr" class="stat-val">--</div><div class="stat-lbl">BMR (Cal/Day)</div></div>
           <div class="stat-box"><div id="res-water" class="stat-val">--</div><div class="stat-lbl">Water (L)</div></div>
           <div class="stat-box"><div id="res-protein" class="stat-val">--</div><div class="stat-lbl">Protein (g)</div></div>
@@ -684,106 +595,92 @@
         <div id="h-msg" class="result-text" style="text-align:center;"></div>
       </div>
 
-      <div id="bill-panel" class="panel">
+      <div id="sleep-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Bill Splitter</div><div class="card-sub">Split bills & calculate tips.</div></div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Total Bill</label><input id="bill-amt" type="number" placeholder="2500"></div>
-           <div class="field flex-1"><label class="mini">Tip %</label><input id="bill-tip" type="number" placeholder="10"></div>
-        </div>
-        <div class="field"><label class="mini">Number of People</label><input id="bill-ppl" type="number" placeholder="4"></div>
-        <button id="bill-btn" class="btn btn-accent btn-action">Split Bill</button>
-        <div id="bill-res" class="result-text"></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Sleep Cycle</div><div class="card-sub">Find the best time to wake up.</div></div>
+        <div class="field"><label class="mini">I want to wake up at</label><input id="sleep-time" type="time"></div>
+        <button id="sleep-btn" class="btn btn-accent btn-action">Calculate Bedtime</button>
+        <div id="sleep-res" class="result-text"><button class="share-btn" id="share-sleep">➦</button></div>
       </div>
 
-      <div id="ci-panel" class="panel">
+      <div id="fuel-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Compound Interest</div><div class="card-sub">Calculate wealth growth.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Fuel Cost Calculator</div></div>
         <div class="row">
-           <div class="field flex-1"><label class="mini">Principal</label><input id="ci-p" type="number" placeholder="10000"></div>
-           <div class="field flex-1"><label class="mini">Rate %</label><input id="ci-r" type="number" placeholder="8"></div>
+           <div class="field flex-1"><label class="mini">Distance (km)</label><input id="fuel-dist" type="number" placeholder="300"></div>
+           <div class="field flex-1"><label class="mini">Mileage (km/l)</label><input id="fuel-mil" type="number" placeholder="15"></div>
         </div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Years</label><input id="ci-t" type="number" placeholder="10"></div>
-           <div class="field flex-1"><label class="mini">Compounded</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12">Monthly</option></select></div>
-        </div>
-        <button id="ci-btn" class="btn btn-accent btn-action">Calculate Amount</button>
-        <div id="ci-res" class="result-text"></div>
+        <div class="field"><label class="mini">Fuel Price</label><input id="fuel-price" type="number" placeholder="100"></div>
+        <button id="fuel-btn" class="btn btn-accent btn-action">Calculate Cost</button>
+        <div id="fuel-res" class="result-text"><button class="share-btn" id="share-fuel">➦</button></div>
       </div>
 
-      <div id="loan-panel" class="panel active">
+      <div id="eta-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">Monthly payments.</div></div>
-        <div class="field"><label class="mini">Loan Amount</label><input id="emi-principal" type="number" placeholder="100000"></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Trip ETA</div><div class="card-sub">When will I arrive?</div></div>
         <div class="row">
-          <div class="field flex-1"><label class="mini">Rate %</label><input id="emi-rate" type="number" step="0.1" placeholder="7.5"></div>
-          <div class="field" style="width:80px"><label class="mini">Tenure</label><input id="emi-time" type="number" placeholder="5"></div>
-          <div class="field" style="width:100px"><label class="mini">Period</label><select id="emi-unit"><option value="years">Years</option><option value="months">Months</option></select></div>
+           <div class="field flex-1"><label class="mini">Distance (km)</label><input id="eta-dist" type="number" placeholder="200"></div>
+           <div class="field flex-1"><label class="mini">Speed (km/h)</label><input id="eta-speed" type="number" placeholder="60"></div>
         </div>
-        <button id="emi-calc" class="btn btn-accent btn-action">Calculate EMI</button>
-        <div id="emi-result" class="result-text"></div>
+        <div class="field"><label class="mini">Start Time</label><input id="eta-start" type="time"></div>
+        <button id="eta-btn" class="btn btn-accent btn-action">Calculate Arrival</button>
+        <div id="eta-res" class="result-text"><button class="share-btn" id="share-eta">➦</button></div>
       </div>
 
-      <div id="gst-panel" class="panel">
+      <div id="zone-panel" class="panel">
         <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title" id="gst-title">GST / VAT</div>
-           <div class="card-sub">Add or Remove Tax.</div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Time Zone Converter</div><div class="card-sub">Check world time.</div></div>
+        <div class="field"><label class="mini">Select Region</label>
+          <select id="zone-sel" style="display:block !important">
+            <option value="America/New_York">🇺🇸 New York (EST)</option>
+            <option value="Europe/London">🇬🇧 London (GMT)</option>
+            <option value="Asia/Dubai">🇦🇪 Dubai (GST)</option>
+            <option value="Asia/Tokyo">🇯🇵 Tokyo (JST)</option>
+            <option value="Australia/Sydney">🇦🇺 Sydney (AEDT)</option>
+          </select>
         </div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Amount</label><input id="gst-amt" type="number" placeholder="1000"></div>
-           <div class="field flex-1"><label class="mini">Tax Rate %</label><input id="gst-rate" type="number" placeholder="18"></div>
-        </div>
-        <div class="row" style="margin-top:15px; gap:10px;">
-          <button id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add Tax (+)</button>
-          <button id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove Tax (-)</button>
-        </div>
-        <div id="gst-res" class="result-text"></div>
+        <button id="zone-btn" class="btn btn-accent btn-action">Get Time</button>
+        <div id="zone-res" class="result-text"></div>
       </div>
 
       <div id="unit-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div><div class="card-sub">Length, weight, temp & speed.</div></div>
+        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div></div>
         <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
-        <div class="row">
-          <div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div>
-          <button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button>
-          <div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div>
-        </div>
+        <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
         <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
         <button id="u-btn" class="btn btn-accent btn-action">Convert</button>
-        <div id="u-res" class="result-text"></div>
+        <div id="u-res" class="result-text"><button class="share-btn" id="share-unit">➦</button></div>
       </div>
 
-      <div id="invest-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px">
-           <div class="card-title" id="sip-title">SIP Calculator</div>
-           <div class="card-sub">Estimate returns.</div>
-        </div>
-        <div class="field"><label class="mini">Monthly Amount</label><input id="sip-amt" type="number" placeholder="5000"></div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
-           <div class="field flex-1"><label class="mini">Years</label><input id="sip-years" type="number" placeholder="10"></div>
-        </div>
-        <button id="sip-btn" class="btn btn-accent btn-action">Calculate Return</button>
-        <div id="sip-res" class="result-text"></div>
+      <div id="text-panel" class="panel">
+        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Text Analysis</div></div>
+        <div class="field"><textarea id="txt-in" rows="4" placeholder="Type or paste..."></textarea></div>
+        <div class="text-stats" style="margin-bottom:10px;"><div class="stat-box"><div id="txt-words" class="stat-val">0</div><div class="stat-lbl">Words</div></div><div class="stat-box"><div id="txt-chars" class="stat-val">0</div><div class="stat-lbl">Characters</div></div></div>
+        <div class="row" style="gap:5px;"><button id="txt-upper" class="btn small flex-1">UPPER</button><button id="txt-lower" class="btn small flex-1">lower</button><button id="txt-clear" class="btn small flex-1">Clear</button></div>
       </div>
-      
+
+      <div id="password-panel" class="panel">
+        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Password Generator</div></div>
+        <div class="row"><div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div><button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button></div>
+        <div id="pw-res" class="result-text" style="word-break:break-all;"><button class="share-btn" id="share-pw">➦</button></div>
+      </div>
+
+      <div id="base-panel" class="panel">
+        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Base Converter</div></div>
+        <div class="row"><div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div><div class="field flex-1"><label class="mini">From Base</label><select id="base-from"><option value="10">Decimal</option><option value="2">Binary</option><option value="16">Hex</option></select></div></div>
+        <button id="base-btn" class="btn btn-accent btn-action">Convert</button>
+        <div id="base-res" class="result-text"></div>
+      </div>
+
       <div id="time-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div><div class="card-sub">Count days between dates.</div></div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div>
-           <div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div>
-        </div>
+        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div></div>
+        <div class="row"><div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div><div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div></div>
         <button id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
         <div id="time-result" class="result-text"></div>
       </div>
 
       <div id="gpa-panel" class="panel">
-        <div class="divider"></div>
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Calculate the average of a list of numbers.</div></div>
+        <div class="divider"></div><div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div></div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
         <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
         <div id="gpa-res" class="result-text"></div>
@@ -806,22 +703,32 @@
   let history = []; 
   let globalSym = '₹'; 
 
-  /* --- 1. GLOBAL CURRENCY & THEME --- */
-  
-  // Currency Init
-  const savedCurr = localStorage.getItem('calc_currency');
-  if (savedCurr) {
-      setGlobalCurrency(savedCurr);
-  } else {
-      setTimeout(() => $('currency-modal').classList.add('show'), 500);
+  /* --- 1. SHARE FUNCTIONALITY (NEW) --- */
+  async function smartShare(title, text) {
+      const shareData = {
+          title: "Smart AI Calculator",
+          text: `📊 *${title}*\n${text}\n\n_Generated by Smart AI Calculator_`
+      };
+      
+      try {
+          if (navigator.share) {
+              await navigator.share(shareData);
+          } else {
+              // Fallback for Desktop: Copy to Clipboard
+              await navigator.clipboard.writeText(shareData.text);
+              alert("Result copied to clipboard!");
+          }
+      } catch (err) {
+          console.log("Share failed:", err);
+      }
   }
 
-  $('modal-save-btn').onclick = () => {
-      const selected = $('modal-currency-select').value;
-      setGlobalCurrency(selected);
-      $('currency-modal').classList.remove('show');
-  };
+  /* --- 2. GLOBAL CURRENCY & THEME --- */
+  const savedCurr = localStorage.getItem('calc_currency');
+  if (savedCurr) setGlobalCurrency(savedCurr);
+  else setTimeout(() => $('currency-modal').classList.add('show'), 500);
 
+  $('modal-save-btn').onclick = () => { setGlobalCurrency($('modal-currency-select').value); $('currency-modal').classList.remove('show'); };
   $('global-currency').onchange = (e) => setGlobalCurrency(e.target.value);
 
   function setGlobalCurrency(sym) {
@@ -830,66 +737,33 @@
       $('global-currency').value = sym;
       $('modal-currency-select').value = sym;
       
-      // Dynamic Names
-      const taxBtn = $('btn-tax');
-      const invBtn = $('btn-invest');
-      const gstTitle = $('gst-title');
-      const sipTitle = $('sip-title');
-
-      // Smart Tax Naming
-      if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) {
-          taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator";
-      } else if (['€', '£'].includes(sym)) {
-          taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator";
-      } else {
-          taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator";
-      }
-
-      // Smart Invest Naming
-      if (sym === '₹') {
-          invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator";
-      } else {
-          invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc";
-      }
+      const taxBtn = $('btn-tax'), invBtn = $('btn-invest'), gstTitle = $('gst-title'), sipTitle = $('sip-title');
       
-      // Refresh calculations if active
-      if($('emi-result').textContent) $('emi-calc').click();
-      if($('sip-res').textContent) $('sip-btn').click();
-      if($('fuel-res').textContent) $('fuel-btn').click();
-      if($('goal-res').textContent) $('goal-btn').click();
-      if($('bill-res').textContent) $('bill-btn').click();
-      if($('ci-res').textContent) $('ci-btn').click();
-      if($('gst-res').textContent) $('gst-add').click();
+      if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) { taxBtn.textContent="GST"; gstTitle.textContent="GST Calculator"; } 
+      else if (['€', '£'].includes(sym)) { taxBtn.textContent="VAT"; gstTitle.textContent="VAT Calculator"; } 
+      else { taxBtn.textContent="Tax"; gstTitle.textContent="Tax Calculator"; }
+
+      if (sym === '₹') { invBtn.textContent="SIP"; sipTitle.textContent="SIP Calculator"; } 
+      else { invBtn.textContent="Invest"; sipTitle.textContent="Investment Calc"; }
+      
+      // Refresh active calculation to show new symbol
+      document.querySelector('.panel.active button.btn-accent')?.click();
   }
 
-  // --- THEME ENGINE (v2.1 Polish) ---
   function updateThemeColors(themeName) {
     const root = document.documentElement; 
-    const isLight = document.body.dataset.theme === 'light';
-    
-    if (themeName === 'mono') {
-        // Classic Black/White Logic
-        const acc = isLight ? '#000000' : '#ffffff';
-        const txt = isLight ? '#ffffff' : '#000000';
-        root.style.setProperty('--accent-bg', acc);
-        root.style.setProperty('--accent', acc);
-        root.style.setProperty('--accent-text', txt);
-    } else {
-        // Color Themes
-        const themes = {
-            blue:   { bg: '#3b82f6', solid: '#3b82f6' },
-            red:    { bg: '#ef4444', solid: '#ef4444' },
-            green:  { bg: '#22c55e', solid: '#22c55e' },
-            orange: { bg: '#f97316', solid: '#f97316' },
-            sunset: { bg: 'linear-gradient(135deg, #f97316, #ef4444)', solid: '#ef4444' },
-            ocean:  { bg: 'linear-gradient(135deg, #06b6d4, #3b82f6)', solid: '#3b82f6' }
-        };
-        const t = themes[themeName] || themes.blue;
-        
-        root.style.setProperty('--accent-bg', t.bg); 
-        root.style.setProperty('--accent', t.solid); 
-        root.style.setProperty('--accent-text', '#ffffff'); 
-    }
+    const themes = {
+        blue:   { bg: '#3b82f6', solid: '#3b82f6' },
+        red:    { bg: '#ef4444', solid: '#ef4444' },
+        green:  { bg: '#22c55e', solid: '#22c55e' },
+        orange: { bg: '#f97316', solid: '#f97316' },
+        sunset: { bg: 'linear-gradient(135deg, #f97316, #ef4444)', solid: '#ef4444' },
+        ocean:  { bg: 'linear-gradient(135deg, #06b6d4, #3b82f6)', solid: '#3b82f6' }
+    };
+    const t = themes[themeName] || themes.blue;
+    root.style.setProperty('--accent-bg', themeName==='mono' ? (document.body.dataset.theme==='light'?'#000':'#fff') : t.bg);
+    root.style.setProperty('--accent', themeName==='mono' ? (document.body.dataset.theme==='light'?'#000':'#fff') : t.solid);
+    root.style.setProperty('--accent-text', themeName==='mono' ? (document.body.dataset.theme==='light'?'#fff':'#000') : '#fff');
   }
   
   $('toggle-theme').onclick = () => { 
@@ -898,26 +772,24 @@
   };
   $('theme-color').onchange = (e) => updateThemeColors(e.target.value);
 
-  /* --- 2. TABS & AUTO-SWITCH LOGIC --- */
-  
+  /* --- 3. TABS & NAVIGATION --- */
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.onclick = () => {
-      // 1. UI Switch
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
       btn.classList.add('active');
       const content = $(btn.dataset.tab);
       content.classList.add('active');
       
-      // 2. Auto-Click First Tool (Smart Switch)
+      // Auto-open first tool in tab
       const firstChip = content.querySelector('.chip-btn');
       if(firstChip) firstChip.click();
     };
   });
 
-  // Chip Switching
   document.querySelectorAll('.chip-btn').forEach(b => {
-      b.onclick = (e) => {
+      b.onclick = () => {
          document.querySelectorAll('.chip-btn').forEach(x=>x.classList.remove('active'));
          b.classList.add('active');
          document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); 
@@ -925,32 +797,7 @@
       }
   });
 
-  // Search Logic
-  $('tool-search').addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase();
-    const chips = document.querySelectorAll('.chip-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const tabBar = document.querySelector('.tab-bar');
-    
-    if (term.length > 0) {
-      tabContents.forEach(c => c.style.display = 'block');
-      tabBar.style.display = 'none';
-      chips.forEach(chip => {
-        const label = chip.textContent.toLowerCase();
-        if(label.includes(term) || chip.dataset.panel.includes(term)) chip.classList.remove('hidden');
-        else chip.classList.add('hidden');
-      });
-    } else {
-      tabContents.forEach(c => c.style.display = '');
-      tabBar.style.display = 'flex';
-      chips.forEach(c => c.classList.remove('hidden'));
-      const activeTabId = document.querySelector('.tab-btn.active').dataset.tab;
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      $(activeTabId).classList.add('active');
-    }
-  });
-
-  /* --- 3. CALCULATOR LOGIC (BUSINESS MATH) --- */
+  /* --- 4. CALCULATOR LOGIC --- */
   const updateHistory = (expression, result) => {
     history.push(`${expression} = ${result}`);
     if(history.length > 3) history.shift(); 
@@ -959,11 +806,8 @@
     tape.classList.add('show');
     $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
-    tape.querySelectorAll('.hist-item').forEach(item => {
-      item.onclick = () => { expr += item.textContent.split('=')[1].trim(); upd(); };
-    });
+    tape.querySelectorAll('.hist-item').forEach(item => { item.onclick = () => { expr += item.textContent.split('=')[1].trim(); upd(); }; });
   };
-
   const upd = () => $('calc-expression').textContent = expr;
   
   const k = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
@@ -976,169 +820,169 @@
   $('calc-equals').onclick = () => { 
     try { 
       if(!expr) return;
-      let s = expr;
-      
-      // BUSINESS LOGIC: 50-10% -> 45
-      s = s.replace(/(\d+(\.\d+)?)([\+\-])(\d+(\.\d+)?)%/g, (match, n1, _, op, n2) => {
-          const val1 = parseFloat(n1);
-          const val2 = parseFloat(n2);
-          return op === '+' ? val1 * (1 + val2/100) : val1 * (1 - val2/100);
-      });
-      // Handle solo percentages
-      s = s.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
-      // Standard Math Replacements
-      s = s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g, Math.PI).replace(/√\(/g, 'Math.sqrt(').replace(/\^/g, '**');
-      
+      let s = expr.replace(/(\d+(\.\d+)?)([\+\-])(\d+(\.\d+)?)%/g, (m,n1,_,op,n2) => {
+          const v1=parseFloat(n1), v2=parseFloat(n2); return op==='+'?v1*(1+v2/100):v1*(1-v2/100);
+      }).replace(/(\d+(\.\d+)?)%/g, '($1/100)').replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,Math.PI).replace(/√\(/g,'Math.sqrt(').replace(/\^/g,'**');
       const res = formatNum(eval(s));
       updateHistory(expr, res);
       $('calc-result').textContent = res; 
       expr = String(res); 
     } catch { $('calc-result').textContent="Err"; } 
   };
-  
-  $('calc-clear').onclick = () => { 
-    if(expr === '' && $('calc-result').textContent === '0') {
-        history = []; $('calc-history').innerHTML = ''; $('hist-lbl').style.display = 'none';
-    } else { expr=''; upd(); $('calc-result').textContent='0'; }
-  };
+  $('calc-clear').onclick = () => { if(expr===''&&$('calc-result').textContent==='0'){history=[];$('calc-history').innerHTML='';$('hist-lbl').style.display='none';}else{expr='';upd();$('calc-result').textContent='0';} };
   $('calc-back').onclick = () => { expr=expr.slice(0,-1); upd(); };
-  $('calc-copy').onclick = () => {
-    const res = $('calc-result').textContent;
-    navigator.clipboard.writeText(res).then(() => {
-      const b = $('calc-copy'); const old = b.textContent;
-      b.textContent = "Copied!"; b.style.color="var(--accent)";
-      setTimeout(() => { b.textContent = old; b.style.color=""; }, 1500);
-    });
-  };
-  $('sc-switch').onclick = function(){ this.classList.toggle('on'); $('sci-keys').style.display = this.classList.contains('on')?'grid':'none'; };
-  document.querySelectorAll('#sci-keys .btn:not(#deg-toggle)').forEach(b => {
-    b.onclick = () => {
-      const fn = b.dataset.fn;
-      if(fn === 'pi') expr += 'π'; else if(fn === 'pow') expr += '**'; else if(fn === 'sqrt') expr += '√('; else expr += `${fn}(`;
-      upd();
-    }
-  });
-  const degBtn = $('deg-toggle');
-  degBtn.onclick = () => { useDeg = !useDeg; degBtn.textContent = useDeg ? "DEG" : "RAD"; degBtn.classList.toggle('active-mode', useDeg); };
-  degBtn.classList.add('active-mode');
+  $('calc-copy').onclick = () => { navigator.clipboard.writeText($('calc-result').textContent); };
 
-  /* --- 4. TOOL LOGIC --- */
-  
-  // Health
-  $('h-btn').onclick = () => {
-    const age = parseFloat($('h-age').value), w = parseFloat($('h-weight').value), h = parseFloat($('h-height').value), act = parseFloat($('h-activity').value);
-    const gender = $('h-gender').value;
-    if(!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
-    
-    const bmi = (w / ((h/100)*(h/100))).toFixed(1);
-    let bmr = (10 * w) + (6.25 * h) - (5 * age);
-    bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
-    
-    $('h-result').style.display = 'grid';
-    $('res-bmi').textContent = bmi;
-    $('res-bmr').textContent = Math.round(bmr * act);
-    $('res-water').textContent = (w / 30).toFixed(1);
-    $('res-protein').textContent = Math.round(w * (0.8 + (act - 1.2)));
-    $('h-msg').textContent = `Status: ${bmi < 18.5 ? "Underweight" : bmi < 25 ? "Healthy" : bmi < 30 ? "Overweight" : "Obese"}`;
-  };
-  $('bmi-info').onclick = (e) => { e.stopPropagation(); alert("BMI Categories:\n< 18.5: Underweight\n18.5-24.9: Normal\n25-29.9: Overweight\n30+: Obese"); };
-
-  // Finance
-  $('fuel-btn').onclick = () => {
-    const d = parseFloat($('fuel-dist').value), m = parseFloat($('fuel-mil').value), p = parseFloat($('fuel-price').value);
-    if(!d || !m || !p) return;
-    $('fuel-res').innerHTML = `Fuel: ${formatNum(d/m)} L<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Cost: ${globalSym}${Math.round((d/m)*p)}</span>`;
-  };
-  $('goal-btn').onclick = () => {
-    const target = parseFloat($('goal-target').value), t = parseFloat($('goal-time').value), r = parseFloat($('goal-rate').value);
-    if(!target || !t || !r) return;
-    const i = r/1200, n = t*12, factor = ((Math.pow(1+i,n)-1)/i)*(1+i);
-    $('goal-res').innerHTML = `Goal: ${globalSym}${target}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">SIP: ${globalSym}${Math.round(target/factor)}/mo</span>`;
-  };
-  $('bill-btn').onclick = () => {
-    const amt = parseFloat($('bill-amt').value), tip = parseFloat($('bill-tip').value)||0, ppl = parseFloat($('bill-ppl').value)||1;
-    if(!amt) return;
-    const total = amt + (amt * tip / 100);
-    $('bill-res').innerHTML = `Total: ${globalSym}${formatNum(total)}<br><span style="font-size:1.1rem; font-weight:600; color:var(--accent)">Per Person: ${globalSym}${formatNum(total/ppl)}</span>`;
-  };
-  $('ci-btn').onclick = () => {
-    const p = parseFloat($('ci-p').value), r = parseFloat($('ci-r').value)/100, t = parseFloat($('ci-t').value), n = parseFloat($('ci-n').value);
-    if(!p) return;
-    const amt = p * Math.pow((1 + r/n), (n*t));
-    $('ci-res').innerHTML = `Interest: ${globalSym}${Math.round(amt-p)}<br><span style="font-size:1.1rem; font-weight:600">Total: ${globalSym}${Math.round(amt)}</span>`;
-  };
+  /* --- 5. FINANCE TOOLS --- */
   $('emi-calc').onclick = () => {
-    const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value)/1200, t = parseFloat($('emi-time').value), u = $('emi-unit').value;
+    const p=parseFloat($('emi-principal').value), r=parseFloat($('emi-rate').value)/1200, t=parseFloat($('emi-time').value), u=$('emi-unit').value;
     if(!p) return;
     const n = u==='years'?t*12:t;
     const emi = (p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-    $('emi-result').textContent = `EMI: ${globalSym}${Math.round(emi)}\nTotal: ${globalSym}${Math.round(emi*n)}`;
-    $('emi-result').style.whiteSpace = 'pre-wrap';
+    const msg = `EMI: ${globalSym}${Math.round(emi)}\nInterest: ${globalSym}${Math.round((emi*n)-p)}\nTotal: ${globalSym}${Math.round(emi*n)}`;
+    $('emi-result').textContent = msg; $('emi-result').style.whiteSpace = 'pre-wrap';
+    $('share-emi').onclick = () => smartShare("Loan EMI", msg);
   };
+
   $('sip-btn').onclick = () => {
-     const p = $('sip-amt').value, i = $('sip-rate').value/1200, n = $('sip-years').value*12;
-     const val = p * ((Math.pow(1+i, n) - 1) / i) * (1 + i);
-     $('sip-res').textContent = `Total Value: ${globalSym}${Math.round(val)}`;
+     const p=$('sip-amt').value, i=$('sip-rate').value/1200, n=$('sip-years').value*12;
+     const val = Math.round(p * ((Math.pow(1+i, n) - 1) / i) * (1 + i));
+     const msg = `Invested: ${globalSym}${p*n}\nValue: ${globalSym}${val}\nProfit: ${globalSym}${val-(p*n)}`;
+     $('sip-res').innerHTML = `Value: ${globalSym}${val}<button class="share-btn" id="share-sip">➦</button>`;
+     $('share-sip').onclick = () => smartShare("SIP Investment", msg);
   }
-  const calcGST = (mode) => {
-    const amt = parseFloat($('gst-amt').value), rate = parseFloat($('gst-rate').value);
-    if(!amt) return;
-    let net, gst, total;
-    if(mode==='add'){ gst=(amt*rate)/100; total=amt+gst; } else { net=(amt*100)/(100+rate); gst=amt-net; total=amt; }
-    $('gst-res').innerHTML=`Tax: ${formatNum(gst)} | <b style="color:var(--accent)">Total: ${globalSym}${formatNum(total)}</b>`;
-  };
+
   $('gst-add').onclick=()=>calcGST('add'); $('gst-rem').onclick=()=>calcGST('remove');
-
-  // Tools
-  const updateTextStats = () => {
-    const txt = $('txt-in').value;
-    $('txt-chars').textContent = txt.length;
-    $('txt-words').textContent = txt.trim().split(/\s+/).filter(w => w.length > 0).length;
-  };
-  $('txt-in').addEventListener('input', updateTextStats);
-  $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); updateTextStats(); };
-  $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); updateTextStats(); };
-  $('txt-clear').onclick = () => { $('txt-in').value = ''; updateTextStats(); };
-
-  $('pw-btn').onclick = () => { 
-      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-      let p = ""; for(let i=0;i<$('pw-len').value;i++) p+=chars.charAt(Math.floor(Math.random()*chars.length));
-      $('pw-res').textContent=p; 
+  const calcGST = (mode) => {
+    const amt=parseFloat($('gst-amt').value), rate=parseFloat($('gst-rate').value); if(!amt)return;
+    let net, gst, total; if(mode==='add'){gst=(amt*rate)/100; total=amt+gst;}else{net=(amt*100)/(100+rate); gst=amt-net; total=amt;}
+    const msg = `Net: ${formatNum(mode==='add'?amt:net)}\nTax: ${formatNum(gst)}\nTotal: ${formatNum(total)}`;
+    $('gst-res').innerHTML = `Tax: ${formatNum(gst)} | <b>Total: ${globalSym}${formatNum(total)}</b><button class="share-btn" id="share-gst">➦</button>`;
+    $('share-gst').onclick = () => smartShare("Tax Calculation", msg);
   };
 
-  $('base-btn').onclick = () => {
-    try {
-      const dec = parseInt($('base-num').value, parseInt($('base-from').value));
-      if(isNaN(dec)) throw new Error();
-      $('base-res').innerHTML = `DEC: ${dec}<br>BIN: ${dec.toString(2)}<br>HEX: ${dec.toString(16).toUpperCase()}`;
-    } catch { $('base-res').textContent = "Invalid"; }
+  $('goal-btn').onclick = () => {
+    const target=parseFloat($('goal-target').value), t=parseFloat($('goal-time').value), r=parseFloat($('goal-rate').value); if(!target)return;
+    const i=r/1200, n=t*12, factor=((Math.pow(1+i,n)-1)/i)*(1+i);
+    const res = Math.round(target/factor);
+    $('goal-res').innerHTML = `SIP Needed: ${globalSym}${res}/mo<button class="share-btn" id="share-goal">➦</button>`;
+    $('share-goal').onclick = () => smartShare("Goal Planner", `Target: ${globalSym}${target}\nTime: ${t} Years\nRequired SIP: ${globalSym}${res}/mo`);
   };
 
-  // Top Tools
+  // Discount Stacker (NEW)
+  $('disc-btn').onclick = () => {
+    const p=parseFloat($('disc-price').value), d1=parseFloat($('disc-1').value)||0, d2=parseFloat($('disc-2').value)||0; if(!p)return;
+    const p1 = p * (1 - d1/100);
+    const final = p1 * (1 - d2/100);
+    const saved = p - final;
+    const msg = `Original: ${globalSym}${p}\n- ${d1}% Off\n- ${d2}% Extra Off\n\nFinal Price: ${globalSym}${Math.round(final)}\nYou Save: ${globalSym}${Math.round(saved)}`;
+    $('disc-res').innerHTML = `Final: ${globalSym}${Math.round(final)} (Save ${Math.round(saved)})<button class="share-btn" id="share-disc">➦</button>`;
+    $('share-disc').onclick = () => smartShare("Discount Calculation", msg);
+  };
+
+  $('bill-btn').onclick = () => {
+    const amt=parseFloat($('bill-amt').value), tip=parseFloat($('bill-tip').value)||0, ppl=parseFloat($('bill-ppl').value)||1; if(!amt)return;
+    const total=amt+(amt*tip/100); const per=total/ppl;
+    $('bill-res').innerHTML = `Total: ${globalSym}${Math.round(total)} | Per: ${globalSym}${Math.round(per)}<button class="share-btn" id="share-bill">➦</button>`;
+    $('share-bill').onclick = () => smartShare("Bill Split", `Bill: ${globalSym}${amt}\nTip: ${tip}%\nTotal: ${globalSym}${total}\nPer Person: ${globalSym}${per}`);
+  };
+
+  $('ci-btn').onclick = () => {
+    const p=parseFloat($('ci-p').value), r=parseFloat($('ci-r').value)/100, t=parseFloat($('ci-t').value), n=parseFloat($('ci-n').value); if(!p)return;
+    const amt=Math.round(p*Math.pow((1+r/n),(n*t)));
+    $('ci-res').innerHTML = `Total: ${globalSym}${amt}<button class="share-btn" id="share-ci">➦</button>`;
+    $('share-ci').onclick = () => smartShare("Compound Interest", `Invested: ${globalSym}${p}\nRate: ${r*100}%\nTotal Value: ${globalSym}${amt}`);
+  };
+
+  /* --- 6. HEALTH TOOLS --- */
+  $('h-btn').onclick = () => {
+    const age=parseFloat($('h-age').value), w=parseFloat($('h-weight').value), h=parseFloat($('h-height').value), act=parseFloat($('h-activity').value), gender=$('h-gender').value;
+    if(!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
+    
+    const bmi=(w/((h/100)*(h/100))).toFixed(1);
+    let bmr=(10*w)+(6.25*h)-(5*age); bmr=(gender==='male'?bmr+5:bmr-161);
+    const tdee=Math.round(bmr*act);
+    
+    $('h-result').style.display='grid';
+    $('res-bmi').textContent=bmi; $('res-bmr').textContent=tdee; 
+    $('res-water').textContent=(w/30).toFixed(1); $('res-protein').textContent=Math.round(w*(0.8+(act-1.2)));
+    $('h-msg').textContent = `Status: ${bmi<18.5?"Underweight":bmi<25?"Healthy":bmi<30?"Overweight":"Obese"}`;
+  };
+  $('bmi-info').onclick = (e) => { e.stopPropagation(); alert("BMI Categories:\n< 18.5: Underweight\n18.5-24.9: Normal\n25-29.9: Overweight\n30+: Obese"); };
+
+  // Sleep Cycle (NEW)
+  $('sleep-btn').onclick = () => {
+      const timeStr = $('sleep-time').value;
+      if(!timeStr) return;
+      
+      const d = new Date();
+      const [h, m] = timeStr.split(':');
+      d.setHours(h); d.setMinutes(m);
+      
+      // Calculate 5 and 6 cycles back (90 mins each)
+      // 5 cycles = 7.5 hours, 6 cycles = 9 hours. Plus 15 mins to fall asleep.
+      const d1 = new Date(d.getTime() - (9 * 60 * 60 * 1000) - (15 * 60 * 1000));
+      const d2 = new Date(d.getTime() - (7.5 * 60 * 60 * 1000) - (15 * 60 * 1000));
+      
+      const format = (date) => date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const msg = `To wake up at ${timeStr}, fall asleep at:\n\n😴 ${format(d1)} (9h sleep)\n😄 ${format(d2)} (7.5h sleep)`;
+      $('sleep-res').innerHTML = `${format(d2)} or ${format(d1)}<button class="share-btn" id="share-sleep">➦</button>`;
+      $('share-sleep').onclick = () => smartShare("Sleep Cycle", msg);
+  };
+
+  /* --- 7. TRAVEL TOOLS --- */
+  $('fuel-btn').onclick = () => {
+    const d=parseFloat($('fuel-dist').value), m=parseFloat($('fuel-mil').value), p=parseFloat($('fuel-price').value); if(!d)return;
+    const cost = Math.round((d/m)*p);
+    $('fuel-res').innerHTML = `Cost: ${globalSym}${cost}<button class="share-btn" id="share-fuel">➦</button>`;
+    $('share-fuel').onclick = () => smartShare("Fuel Cost", `Trip: ${d}km\nMileage: ${m}\nTotal Cost: ${globalSym}${cost}`);
+  };
+
+  // Trip ETA (NEW)
+  $('eta-btn').onclick = () => {
+      const d=parseFloat($('eta-dist').value), s=parseFloat($('eta-speed').value), start=$('eta-start').value;
+      if(!d||!s||!start) return;
+      const hours = d/s;
+      const now = new Date();
+      const [h,m] = start.split(':');
+      now.setHours(h); now.setMinutes(m);
+      now.setMinutes(now.getMinutes() + (hours*60));
+      
+      const arr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      $('eta-res').innerHTML = `Arrival: ${arr}<button class="share-btn" id="share-eta">➦</button>`;
+      $('share-eta').onclick = () => smartShare("Trip ETA", `Distance: ${d}km\nSpeed: ${s}km/h\nStart: ${start}\n\n📍 Arrival: ${arr}`);
+  };
+
+  // Time Zone (NEW)
+  $('zone-btn').onclick = () => {
+      const tz = $('zone-sel').value;
+      const time = new Date().toLocaleTimeString('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: true });
+      $('zone-res').textContent = `Current Time: ${time}`;
+  };
+
+  /* --- 8. OTHER TOOLS & INIT --- */
   $('age-btn').onclick = () => {
     const dVal=$('dob-input').value; if(!dVal)return;
     const d=new Date(dVal), t=new Date(); let y=t.getFullYear()-d.getFullYear(), m=t.getMonth()-d.getMonth(), days=t.getDate()-d.getDate();
     if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
-    $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
+    const msg = `${y} Years, ${m} Months, ${days} Days`;
+    $('age-result').innerHTML = `${msg}<button class="share-btn" id="share-age">➦</button>`;
+    $('share-age').onclick = () => smartShare("Age Calculator", `DOB: ${dVal}\nAge: ${msg}`);
   };
+
   $('cur-btn').onclick = async () => {
     const a=$('cur-amt').value||1, f=$('cur-from').value, t=$('cur-to').value;
     $('cur-res').textContent="Loading..."; $('cur-source').style.display='none';
     try{ const r=await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); const d=await r.json();
-    $('cur-res').textContent=`${a} ${f} = ${d.rates[t]} ${t}`; $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display='block'; }catch{ $('cur-res').textContent="Err"; }
+    const res = `${a} ${f} = ${d.rates[t]} ${t}`;
+    $('cur-res').innerHTML=`${res}<button class="share-btn" id="share-cur">➦</button>`; 
+    $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display='block'; 
+    $('share-cur').onclick = () => smartShare("Currency Converter", res);
+    }catch{ $('cur-res').textContent="Err"; }
   };
   $('cur-swap').onclick = () => { const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
-  $('qr-btn').onclick = () => {
-    const txt = $('qr-text').value; if(!txt) return;
-    $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
-    $('qr-image').src = url;
-  }
-  $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
-  $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
 
-  // Converter Logic
+  // Converters
   const uData = {
     length: { opts: ['m','cm','ft','in'], fn: (v,f,t) => { let m=v; if(f==='cm')m=v/100; if(f==='ft')m=v/3.2808; if(f==='in')m=v/39.37; if(t==='m')return m; if(t==='cm')return m*100; if(t==='ft')return m*3.2808; if(t==='in')return m*39.37; } },
     weight: { opts: ['kg','lb'], fn: (v,f,t) => f===t?v : (f==='kg'?v*2.2046:v/2.2046) },
@@ -1157,10 +1001,30 @@
     initCustomDropdowns(panel);
   }
   $('u-type').onchange = renderUnits;
-  $('u-btn').onclick = () => { const v=parseFloat($('u-val').value); if(!isNaN(v)) $('u-res').textContent = `${formatNum(uData[$('u-type').value].fn(v,$('u-from').value,$('u-to').value))} ${$('u-to').value}`; };
+  $('u-btn').onclick = () => { 
+      const v=parseFloat($('u-val').value); 
+      if(!isNaN(v)) {
+          const res = `${formatNum(uData[$('u-type').value].fn(v,$('u-from').value,$('u-to').value))} ${$('u-to').value}`;
+          $('u-res').innerHTML = `${res}<button class="share-btn" id="share-unit">➦</button>`;
+          $('share-unit').onclick = () => smartShare("Unit Converter", `${v} ${$('u-from').value} = ${res}`);
+      }
+  };
   $('u-swap').onclick = () => { const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); if($('u-val').value) $('u-btn').click(); };
 
-  // Init
+  // Init Helpers
+  $('time-diff').onclick = () => { const d1=new Date($('time-start').value), d2=new Date($('time-end').value); $('time-result').textContent = Math.ceil(Math.abs(d2-d1)/(8.64e7)) + " days"; };
+  $('pw-btn').onclick = () => { const chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"; let p=""; for(let i=0;i<$('pw-len').value;i++) p+=chars.charAt(Math.floor(Math.random()*chars.length)); $('pw-res').textContent=p; };
+  $('base-btn').onclick = () => { try { const dec=parseInt($('base-num').value,parseInt($('base-from').value)); if(isNaN(dec)) throw new Error(); $('base-res').innerHTML=`DEC: ${dec}<br>BIN: ${dec.toString(2)}<br>HEX: ${dec.toString(16).toUpperCase()}`; } catch { $('base-res').textContent="Invalid"; } };
+  $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent="Avg: "+(n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
+  $('qr-btn').onclick = () => {
+    const txt = $('qr-text').value; if(!txt) return;
+    $('qr-container').classList.add('show'); $('qr-image').style.display='none'; $('qr-loading').style.display='block';
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
+    $('qr-image').onload = () => { $('qr-loading').style.display='none'; $('qr-image').style.display='block'; fetch(url).then(r=>r.blob()).then(b=>{$('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block";});};
+    $('qr-image').src = url;
+  }
+
+  // System Init
   function initCustomDropdowns(scope=document){
     scope.querySelectorAll('select:not([data-customized])').forEach(s => {
       s.setAttribute('data-customized','true');
@@ -1179,6 +1043,10 @@
   }
   document.addEventListener('click',()=>document.querySelectorAll('.custom-dropdown').forEach(d=>d.classList.remove('active')));
   updateThemeColors('mono'); initCustomDropdowns(); renderUnits();
+  
+  // FIX: Force reset tabs on load (Open Loan Panel)
+  document.querySelector('[data-tab="tab-finance"]').click();
+  
 </script>
 </body>
 </html>
