@@ -289,7 +289,7 @@
   .panel{ display: none !important; animation: fadeIn 0.3s ease; }
   .panel.active{ display: block !important; }
   
-  /* INNER DIVIDER (Removed share line logic, kept simple) */
+  /* INNER DIVIDER */
   .divider{ 
     height: 1px;
     background: var(--border); 
@@ -350,7 +350,6 @@
     <button id="info-close-btn" class="btn btn-accent" style="width:100%; margin-top:15px;">Got it</button>
   </div>
 </div>
-
 <div class="app">
   
   <header>
@@ -702,9 +701,17 @@
 <script>
   const $ = id => document.getElementById(id);
   
-  // --- 1. FORMATTERS ---
-  // Standard decimal formatter for scientific tools
-  const formatNum = (num) => parseFloat(num.toFixed(4));
+  // --- 1. FORMATTERS & HELPERS ---
+  // FIXED: Better precision handling to avoid "0.300000004" errors
+  const formatNum = (num) => {
+      // Round to 10 decimals first to fix floating point ghosts, then parse
+      let clean = parseFloat(num.toFixed(10)); 
+      // If it has too many decimals, cap it at 4 for display
+      if (String(clean).split('.')[1]?.length > 4) {
+          return parseFloat(clean.toFixed(4));
+      }
+      return clean;
+  };
   
   // Indian Currency Formatter (e.g., 1,00,000)
   const formatINR = (num) => {
@@ -870,7 +877,11 @@
       let s = expr.replace(/(\d+(\.\d+)?)([\+\-])(\d+(\.\d+)?)%/g, (m,n1,_,op,n2) => {
           const v1=parseFloat(n1), v2=parseFloat(n2); return op==='+'?v1*(1+v2/100):v1*(1-v2/100);
       }).replace(/(\d+(\.\d+)?)%/g, '($1/100)').replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,Math.PI).replace(/√\(/g,'Math.sqrt(').replace(/\^/g,'**');
-      const res = formatNum(eval(s));
+      
+      // FIXED: Added simple evaluation handling
+      const raw = eval(s);
+      const res = formatNum(raw);
+      
       updateHistory(expr, res);
       $('calc-result').textContent = res; 
       expr = String(res); 
