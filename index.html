@@ -1058,11 +1058,11 @@
       if (mode === 'wake') {
           const d1 = new Date(d.getTime() - (9 * 3600000) - 900000);
           const d2 = new Date(d.getTime() - (7.5 * 3600000) - 900000);
-          html = `To wake up at <b>${format(d)}</b>:<br><br><div style="margin-bottom:8px">😴 <b>${format(d1)}</b><br><small style="color:var(--muted)">Best (9h)</small></div><div>😄 <b>${format(d2)}</b><br><small style="color:var(--muted)">Good (7.5h)</small></div>`;
+          html = `To wake up at <b>${format(d)}</b>:<br><br><div style="margin-bottom:8px">😴 <b>${format(d1)}</b><br><small style="color:var(--muted)">Best (9 Hours / 6 Cycles)</small></div><div>😄 <b>${format(d2)}</b><br><small style="color:var(--muted)">Good (7.5 Hours / 5 Cycles)</small></div>`;
       } else {
           const d1 = new Date(d.getTime() + 900000 + (7.5 * 3600000));
           const d2 = new Date(d.getTime() + 900000 + (9 * 3600000));
-          html = `If you sleep at <b>${format(d)}</b>:<br><br><div style="margin-bottom:8px">😄 <b>${format(d1)}</b><br><small style="color:var(--muted)">Wake up (7.5h)</small></div><div>😴 <b>${format(d2)}</b><br><small style="color:var(--muted)">Wake up (9h)</small></div>`;
+          html = `If you sleep at <b>${format(d)}</b>:<br><br><div style="margin-bottom:8px">😄 <b>${format(d1)}</b><br><small style="color:var(--muted)">Wake up (7.5 Hours)</small></div><div>😴 <b>${format(d2)}</b><br><small style="color:var(--muted)">Wake up (9 Hours)</small></div>`;
       }
       $('sleep-res').innerHTML = html;
   };
@@ -1070,80 +1070,96 @@
   // Finance - EMI
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value), t = parseFloat($('emi-time').value), u = $('emi-unit').value;
-    if (!p || !r || !t) { $('emi-result').textContent = "Please fill all fields."; return; }
+    if (!p || !r || !t) { $('emi-result').textContent = "Please fill loan amount, rate and tenure."; return; }
     const monthlyRate = r / 1200;
     const n = u === 'years' ? t * 12 : t;
+    if (monthlyRate <= 0 || n <= 0) { $('emi-result').textContent = "Rate and tenure must be greater than 0."; return; }
     const emi = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
     const total = emi * n;
-    $('emi-result').innerHTML = `EMI: <b>${globalSym}${formatINR(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatINR(Math.round(total - p))}</span>`;
+    $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym}${formatINR(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatINR(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym}${formatINR(Math.round(total))}</span>`;
   };
 
   // Finance - GST
   const calcGST = (mode) => {
     const amt = parseFloat($('gst-amt').value), rate = parseFloat($('gst-rate').value);
-    if (!amt || !rate) return;
+    if (!amt || !rate) { $('gst-res').textContent = "Please enter amount and tax rate."; return; }
     let net, gst, total; 
     if (mode === 'add') { gst = (amt * rate) / 100; total = amt + gst; net = amt; } 
     else { net = amt / (1 + rate/100); gst = amt - net; total = amt; }
-    $('gst-res').innerHTML = `<div style="display:flex; justify-content:space-between"><span>Net:</span><span>${globalSym}${formatINR(parseFloat(net.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between"><span>Tax:</span><span>${globalSym}${formatINR(parseFloat(gst.toFixed(1)))}</span></div><div style="border-top:1px solid var(--border); margin-top:5px; padding-top:5px; font-weight:bold; color:var(--accent); display:flex; justify-content:space-between"><span>Total:</span><span>${globalSym}${formatINR(parseFloat(total.toFixed(1)))}</span></div>`;
+    $('gst-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Net Price:</span><span>${globalSym}${formatINR(parseFloat(net.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Tax (${rate}%):</span><span>${globalSym}${formatINR(parseFloat(gst.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); margin-top:5px; border-top:1px solid var(--border); padding-top:5px;"><span>Total:</span><span>${globalSym}${formatINR(parseFloat(total.toFixed(1)))}</span></div>`;
   };
   $('gst-add').onclick = () => calcGST('add'); $('gst-rem').onclick = () => calcGST('remove');
 
   // Finance - SIP
   $('sip-btn').onclick = () => {
      const p = parseFloat($('sip-amt').value), r = parseFloat($('sip-rate').value), y = parseFloat($('sip-years').value);
-     if (!p || !r || !y) return;
+     if (!p || !r || !y) { $('sip-res').textContent = "Please fill monthly amount, rate and years."; return; }
      const i = r / 1200, n = y * 12;
+     if (i <= 0 || n <= 0) { $('sip-res').textContent = "Rate and years must be greater than 0."; return; }
      const val = Math.round(p * ((Math.pow(1 + i, n) - 1) / i) * (1 + i));
-     $('sip-res').innerHTML = `Total Value: <b>${globalSym}${formatINR(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Inv: ${globalSym}${formatINR(p * n)} | Profit: ${globalSym}${formatINR(val - (p * n))}</span>`;
+     $('sip-res').innerHTML = `Total Value: <b>${globalSym}${formatINR(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Invested: ${globalSym}${formatINR(p * n)} | Profit: ${globalSym}${formatINR(val - (p * n))}</span>`;
   };
 
   // Other Finance
   $('goal-btn').onclick = () => {
     const target = parseFloat($('goal-target').value), t = parseFloat($('goal-time').value), r = parseFloat($('goal-rate').value);
-    if(target && t && r) {
-        const i = r/1200, n = t*12;
-        const res = Math.round(target / (((Math.pow(1+i,n)-1)/i)*(1+i)));
-        $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatINR(res)}/mo</b>`;
-    }
+    if (!target || !t || !r) { $('goal-res').textContent = "Please fill target amount, years and expected rate."; return; }
+    if (t <= 0 || r <= 0) { $('goal-res').textContent = "Rate and years must be greater than 0."; return; }
+    const i = r/1200, n = t*12;
+    const res = Math.round(target / (((Math.pow(1+i,n)-1)/i)*(1+i)));
+    $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatINR(res)}/mo</b>`;
   };
+  
   $('disc-btn').onclick = () => {
     const p = parseFloat($('disc-price').value), d1 = parseFloat($('disc-1').value)||0, d2 = parseFloat($('disc-2').value)||0;
-    if(p) { const f = (p*(1-d1/100))*(1-d2/100); $('disc-res').innerHTML = `Final: <b>${globalSym}${formatINR(Math.round(f))}</b> <span style="font-size:0.8rem">(-${globalSym}${Math.round(p-f)})</span>`; }
+    if (!p) { $('disc-res').textContent = "Please enter the original price."; return; }
+    const final = (p*(1-d1/100))*(1-d2/100); 
+    $('disc-res').innerHTML = `Final Price: <b>${globalSym}${formatINR(Math.round(final))}</b><br><span style="font-size:0.8rem; color:var(--accent)">You Save: ${globalSym}${formatINR(Math.round(p - final))}</span>`;
   };
+  
   $('bill-btn').onclick = () => {
-    const a = parseFloat($('bill-amt').value), t = parseFloat($('bill-tip').value)||0, p = parseFloat($('bill-ppl').value)||1;
-    if(a) { const tot = a + (a*t/100); $('bill-res').innerHTML = `Total: <b>${globalSym}${formatINR(Math.round(tot))}</b><br>Per Person: <b>${globalSym}${formatINR(Math.round(tot/p))}</b>`; }
+    const amt = parseFloat($('bill-amt').value), tip = parseFloat($('bill-tip').value)||0, ppl = parseFloat($('bill-ppl').value)||1;
+    if (!amt) { $('bill-res').textContent = "Please enter the bill amount."; return; }
+    if (ppl <= 0) { $('bill-res').textContent = "Number of people must be at least 1."; return; }
+    const total = amt + (amt*tip/100); 
+    $('bill-res').innerHTML = `Total: <b>${globalSym}${formatINR(Math.round(total))}</b><br>Per Person: <b>${globalSym}${formatINR(Math.round(total/ppl))}</b>`;
   };
+  
   $('ci-btn').onclick = () => {
     const p = parseFloat($('ci-p').value), r = parseFloat($('ci-r').value), t = parseFloat($('ci-t').value), n = parseFloat($('ci-n').value);
-    if(p && r && t) { const amt = Math.round(p * Math.pow((1 + (r/100)/n),(n*t))); $('ci-res').innerHTML = `Amount: <b>${globalSym}${formatINR(amt)}</b><br><span style="font-size:0.8rem">Interest: ${globalSym}${formatINR(amt-p)}</span>`; }
+    if (!p || !r || !t || !n) { $('ci-res').textContent = "Please fill all compound interest fields."; return; }
+    const amt = Math.round(p * Math.pow((1 + (r/100)/n),(n*t))); 
+    $('ci-res').innerHTML = `Total Amount: <b>${globalSym}${formatINR(amt)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Interest Earned: ${globalSym}${formatINR(amt-p)}</span>`;
   };
 
   // Utility Tools
   $('fuel-btn').onclick = () => {
     const d = parseFloat($('fuel-dist').value), m = parseFloat($('fuel-mil').value), p = parseFloat($('fuel-price').value);
-    if(d && m && p) $('fuel-res').innerHTML = `Cost: <b>${globalSym}${formatINR(Math.round((d/m)*p))}</b><br>Fuel: <b>${formatNum(d/m)} L</b>`;
+    if (!d || !m || !p) { $('fuel-res').textContent = "Please fill distance, mileage and fuel price."; return; }
+    const cost = Math.round((d/m)*p);
+    $('fuel-res').innerHTML = `Total Cost: <b>${globalSym}${formatINR(cost)}</b><br>Fuel Needed: <b>${formatNum(d/m)} L</b>`;
   };
+  
   $('eta-btn').onclick = () => {
       const d = parseFloat($('eta-dist').value), s = parseFloat($('eta-speed').value), start = $('eta-start').value;
-      if(d && s && start) {
-        const now = new Date(); const [h, m] = start.split(':'); now.setHours(h); now.setMinutes(m);
-        now.setMinutes(now.getMinutes() + ((d/s)*60));
-        $('eta-res').innerHTML = `Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
-      }
+      if (!d || !s || !start) { $('eta-res').textContent = "Please fill distance, speed and start time."; return; }
+      const now = new Date(); const [h, m] = start.split(':'); now.setHours(h); now.setMinutes(m);
+      now.setMinutes(now.getMinutes() + ((d/s)*60));
+      $('eta-res').innerHTML = `Estimated Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
   };
+  
   $('age-btn').onclick = () => {
     const dVal = $('dob-input').value; if(!dVal) return;
     const d = new Date(dVal), t = new Date();
-    if(d>t) return $('age-result').textContent = "Future date!";
+    if(isNaN(d.getTime())) { $('age-result').textContent = "Invalid date."; return; }
+    if(d>t) return $('age-result').textContent = "Date is in the future!";
     let y = t.getFullYear()-d.getFullYear(), m = t.getMonth()-d.getMonth(), days = t.getDate()-d.getDate();
     if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); }
     if(m<0){ y--; m+=12; }
     $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
   };
   
-  // APIs
+  // APIs & Logic
   $('cur-btn').onclick = async () => {
     const a = $('cur-amt').value||1, f = $('cur-from').value, t = $('cur-to').value;
     $('cur-res').textContent = "Loading..."; $('cur-source').style.display = 'none';
@@ -1151,15 +1167,15 @@
       const r = await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); 
       const d = await r.json();
       $('cur-res').innerHTML = `${a} ${f} = <b>${d.rates[t]} ${t}</b>`;
-      $('cur-date').textContent = d.date; $('cur-source').style.display = 'block'; 
-    } catch { $('cur-res').textContent = "Network Error"; }
+      $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display = 'block'; 
+    } catch { $('cur-res').textContent = "Err"; }
   };
   $('cur-swap').onclick = () => { 
     const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; 
     f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); 
   };
   $('zone-btn').onclick = () => {
-      $('zone-res').textContent = `Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`;
+      $('zone-res').textContent = `Current Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`;
   };
   $('qr-btn').onclick = () => { 
     const txt = $('qr-text').value; if (!txt) return; 
@@ -1177,11 +1193,16 @@
       const v = parseFloat($('u-val').value); if(isNaN(v)) return;
       const type = $('u-type').value, f = $('u-from').value, t = $('u-to').value;
       const converted = uData[type].fn(v, f, t);
-      $('u-res').textContent = `${formatNum(converted)} ${t}`;
+      if (typeof converted === 'number' && !isNaN(converted)) {
+          $('u-res').textContent = `${formatNum(converted)} ${t}`;
+      } else { $('u-res').textContent = "Conversion not available."; }
   };
   $('time-diff').onclick = () => { 
-    const d1 = new Date($('time-start').value), d2 = new Date($('time-end').value);
-    if(!isNaN(d1)&&!isNaN(d2)) $('time-result').textContent = `${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`;
+    const startVal = $('time-start').value, endVal = $('time-end').value;
+    if (!startVal || !endVal) { $('time-result').textContent = "Please select both dates."; return; }
+    const d1 = new Date(startVal), d2 = new Date(endVal);
+    if(isNaN(d1.getTime())||isNaN(d2.getTime())) { $('time-result').textContent = "Invalid date(s)."; return; }
+    $('time-result').textContent = `${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`;
   };
   $('pw-btn').onclick = () => { 
       const c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()"; 
