@@ -70,7 +70,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding-bottom: 50px;
+    padding-bottom: 20px; /* Reduced from 50px to remove extra space */
   }
 
   /* HEADER */
@@ -393,7 +393,7 @@
       </div>
       <div id="calc-grid" class="calc-grid"></div>
       <div class="calc-grid" style="margin-top:10px">
-        <button id="calc-clear" class="btn small" style="color:#ef4444">AC</button><button id="calc-back" class="btn small">⌫</button><button id="calc-copy" class="btn small">Copy</button><button id="calc-equals" class="btn btn-accent">=</button>
+        <button id="calc-clear" class="btn small" style="color:#ef4444" data-key="Escape">AC</button><button id="calc-back" class="btn small" data-key="Backspace">⌫</button><button id="calc-copy" class="btn small">Copy</button><button id="calc-equals" class="btn btn-accent" data-key="Enter">=</button>
       </div>
       <div id="sci-keys" class="calc-grid" style="margin-top:10px; display:none;">
         <button class="btn small" id="deg-toggle" style="font-size:0.8rem">DEG</button>
@@ -463,7 +463,7 @@
           <button class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> 
           <button class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button>
           <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
-          <button class="chip-btn" data-panel="discount-panel">Discount</button>
+          <button class="chip-btn" data-panel="discount-panel">Percentage</button>
           <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
           <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
         </div>
@@ -489,7 +489,6 @@
           <button class="chip-btn" data-panel="unit-panel">Converters</button>
           <button class="chip-btn" data-panel="time-panel">Day Counter</button>
           <button class="chip-btn" data-panel="text-panel">Text Tools</button>
-          <button class="chip-btn" data-panel="password-panel">Password</button>
           <button class="chip-btn" data-panel="base-panel">Base Converter</button>
           <button class="chip-btn" data-panel="gpa-panel">GPA</button>
         </div>
@@ -545,14 +544,11 @@
       </div>
 
       <div id="discount-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Discount Stacker</div><div class="card-sub">Sale price calculator.</div></div>
-        <div class="field"><label class="mini">Original Price</label><input id="disc-price" type="number" placeholder="2000"></div>
-        <div class="row">
-           <div class="field flex-1"><label class="mini">Disc 1 %</label><input id="disc-1" type="number" placeholder="50"></div>
-           <div class="field flex-1"><label class="mini">Disc 2 %</label><input id="disc-2" type="number" placeholder="10"></div>
-        </div>
-        <button id="disc-btn" class="btn btn-accent btn-action">Calculate Sale Price</button>
-        <div id="disc-res" class="result-text"></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Percentage Calculator</div><div class="card-sub">Calculate % Value & Off.</div></div>
+        <div class="field"><label class="mini">Total Amount</label><input id="perc-total" type="number" placeholder="2000"></div>
+        <div class="field"><label class="mini">Percentage %</label><input id="perc-rate" type="number" placeholder="50"></div>
+        <button id="perc-btn" class="btn btn-accent btn-action">Calculate</button>
+        <div id="perc-res" class="result-text"></div>
       </div>
 
       <div id="bill-panel" class="panel">
@@ -674,12 +670,6 @@
         <div class="field"><textarea id="txt-in" rows="4" placeholder="Type or paste..."></textarea></div>
         <div class="text-stats" style="margin-bottom:10px;"><div class="stat-box"><div id="txt-words" class="stat-val">0</div><div class="stat-lbl">Words</div></div><div class="stat-box"><div id="txt-chars" class="stat-val">0</div><div class="stat-lbl">Characters</div></div></div>
         <div class="row" style="gap:5px;"><button id="txt-upper" class="btn small flex-1">UPPER</button><button id="txt-lower" class="btn small flex-1">lower</button><button id="txt-clear" class="btn small flex-1">Clear</button></div>
-      </div>
-
-      <div id="password-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Password Generator</div></div>
-        <div class="row"><div class="field flex-1"><label class="mini">Length</label><input id="pw-len" type="number" value="12"></div><button id="pw-btn" class="btn btn-accent flex-1" style="margin-top:19px">Generate</button></div>
-        <div id="pw-res" class="result-text" style="word-break:break-all;"></div>
       </div>
 
       <div id="base-panel" class="panel">
@@ -864,7 +854,30 @@
       $(activeTabId).classList.add('active');
     }
   });
-  /* --- 4. CALCULATOR ENGINE (FIXED) --- */
+  /* --- 4. CALCULATOR ENGINE (WITH KEYBOARD SUPPORT) --- */
+  
+  // Keyboard Support
+  document.addEventListener('keydown', (e) => {
+    const key = e.key;
+    
+    // Numbers & Operators
+    if ("0123456789.+-*/%()".includes(key)) {
+      e.preventDefault();
+      // Find button by text content
+      const btn = Array.from(document.querySelectorAll('.btn')).find(b => b.textContent === key || b.textContent === {'*':'×', '/':'÷', '-': '−'}[key]);
+      if (btn) btn.click();
+      else {
+          // Fallback for direct input if button not found easily
+          expr += key; 
+          upd();
+      }
+    }
+    // Action Keys
+    else if (key === 'Enter') { e.preventDefault(); $('calc-equals').click(); }
+    else if (key === 'Backspace') { e.preventDefault(); $('calc-back').click(); }
+    else if (key === 'Escape') { e.preventDefault(); $('calc-clear').click(); }
+  });
+
   const updateHistory = (expression, result) => {
     history.push(`${expression} = ${result}`);
     if (history.length > 3) history.shift(); 
@@ -882,7 +895,6 @@
   };
 
   const upd = () => {
-      // visual cleanup for display
       let displayExpr = expr
           .replace(/\*/g, '×')
           .replace(/\//g, '÷')
@@ -918,7 +930,6 @@
     $('sci-keys').style.display = this.classList.contains('on') ? 'grid' : 'none'; 
   };
 
-  // Handle Scientific Buttons
   document.querySelectorAll('#sci-keys .btn:not(#deg-toggle)').forEach(b => {
     b.onclick = () => { 
       const fn = b.dataset.fn; 
@@ -934,7 +945,6 @@
   });
 
   $('calc-back').onclick = () => { 
-      // Intelligent delete
       if(expr.endsWith('Math.PI')) expr = expr.slice(0, -7);
       else if(expr.endsWith('Math.E')) expr = expr.slice(0, -6);
       else expr = expr.slice(0,-1); 
@@ -953,91 +963,54 @@
     } 
   };
 
-  // --- THE FIX: Robust Calculation Logic ---
   $('calc-equals').onclick = () => { 
     try { 
       if (!expr) return;
-      
       let s = expr;
-
-      // 1. Auto-Complete Brackets (Fix for "sin(90" error)
       const openCount = (s.match(/\(/g) || []).length;
       const closeCount = (s.match(/\)/g) || []).length;
-      if (openCount > closeCount) {
-          s += ')'.repeat(openCount - closeCount);
-      }
+      if (openCount > closeCount) s += ')'.repeat(openCount - closeCount);
 
-      // 2. Percentages (50 + 10% -> 55)
       s = s.replace(/(\d+(\.\d+)?)([\+\-])(\d+(\.\d+)?)%/g, (m,n1,_,op,n2) => {
           const v1 = parseFloat(n1), v2 = parseFloat(n2); 
           return op === '+' ? v1 * (1 + v2/100) : v1 * (1 - v2/100);
       }).replace(/(\d+(\.\d+)?)%/g, '($1/100)');
       
-      // 3. Symbols & Roots
-      s = s
-        .replace(/×/g,'*')
-        .replace(/÷/g,'/')
-        .replace(/−/g,'-')
-        .replace(/√\(/g,'Math.sqrt(')
-        .replace(/\^/g,'**');
+      s = s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/√\(/g,'Math.sqrt(').replace(/\^/g,'**');
 
-      // 4. Trig Functions (Degrees vs Radians handling)
-      // This new method injects the conversion factor *inside* the function call
-      // which allows for nested math like sin(90+10) or sin(45)
       if (useDeg) {
           const toRad = "(Math.PI/180)*";
           s = s.replace(/sin\(/g, `Math.sin(${toRad}`)
                .replace(/cos\(/g, `Math.cos(${toRad}`)
                .replace(/tan\(/g, `Math.tan(${toRad}`);
       } else {
-          s = s.replace(/sin\(/g, 'Math.sin(')
-               .replace(/cos\(/g, 'Math.cos(')
-               .replace(/tan\(/g, 'Math.tan(');
+          s = s.replace(/sin\(/g, 'Math.sin(').replace(/cos\(/g, 'Math.cos(').replace(/tan\(/g, 'Math.tan(');
       }
-      
-      // 5. Logs
-      s = s.replace(/log\(/g, 'Math.log10(')
-           .replace(/ln\(/g, 'Math.log(');
+      s = s.replace(/log\(/g, 'Math.log10(').replace(/ln\(/g, 'Math.log(');
 
       const raw = eval(s);
-      const res = formatNum(raw); // Clean floating point
+      const res = formatNum(raw);
       
-      // If result is valid
       if (!isNaN(res) && isFinite(res)) {
-          updateHistory(expr, res); // Save original expr to history
+          updateHistory(expr, res); 
           $('calc-result').textContent = res; 
           expr = String(res); 
-      } else {
-          $('calc-result').textContent = "Err"; 
-      }
-    } catch (e) { 
-        console.error(e);
-        $('calc-result').textContent = "Err"; 
-    } 
+      } else { $('calc-result').textContent = "Err"; }
+    } catch (e) { console.error(e); $('calc-result').textContent = "Err"; } 
   };
 
   /* --- 5. TOOLS LOGIC --- */
   
   // Health
   $('h-btn').onclick = () => {
-    const age = parseFloat($('h-age').value), 
-          w   = parseFloat($('h-weight').value), 
-          h   = parseFloat($('h-height').value), 
-          act = parseFloat($('h-activity').value), 
-          gender = $('h-gender').value;
-
+    const age = parseFloat($('h-age').value), w = parseFloat($('h-weight').value), h = parseFloat($('h-height').value), act = parseFloat($('h-activity').value), gender = $('h-gender').value;
     if (!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
-    
     const bmi = (w/((h/100)*(h/100))).toFixed(1);
     let bmr = (10*w) + (6.25*h) - (5*age); 
     bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
     const tdee = Math.round(bmr * act);
-    
     $('h-result').style.display = 'grid';
-    $('res-bmi').textContent = bmi; 
-    $('res-bmr').textContent = tdee; 
-    $('res-water').textContent = (w/30).toFixed(1); 
-    $('res-protein').textContent = Math.round(w * (0.8 + (act - 1.2)));
+    $('res-bmi').textContent = bmi; $('res-bmr').textContent = tdee; $('res-water').textContent = (w/30).toFixed(1); $('res-protein').textContent = Math.round(w * (0.8 + (act - 1.2)));
     $('h-msg').textContent = `Status: ${ bmi < 18.5 ? "Underweight" : bmi < 25 ? "Healthy" : bmi < 30 ? "Overweight" : "Obese" }`;
   };
   $('bmi-info').onclick = (e) => { 
@@ -1047,12 +1020,9 @@
 
   // Sleep
   $('sleep-btn').onclick = () => {
-      const timeStr = $('sleep-time').value; 
-      const mode    = $('sleep-mode').value;
+      const timeStr = $('sleep-time').value, mode = $('sleep-mode').value;
       if (!timeStr) return;
-      const d = new Date(); 
-      const [h, m] = timeStr.split(':');
-      d.setHours(h); d.setMinutes(m);
+      const d = new Date(); const [h, m] = timeStr.split(':'); d.setHours(h); d.setMinutes(m);
       const format = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit', hour12: true });
       let html = "";
       if (mode === 'wake') {
@@ -1071,8 +1041,7 @@
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value), t = parseFloat($('emi-time').value), u = $('emi-unit').value;
     if (!p || !r || !t) { $('emi-result').textContent = "Please fill loan amount, rate and tenure."; return; }
-    const monthlyRate = r / 1200;
-    const n = u === 'years' ? t * 12 : t;
+    const monthlyRate = r / 1200, n = u === 'years' ? t * 12 : t;
     if (monthlyRate <= 0 || n <= 0) { $('emi-result').textContent = "Rate and tenure must be greater than 0."; return; }
     const emi = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
     const total = emi * n;
@@ -1100,7 +1069,7 @@
      $('sip-res').innerHTML = `Total Value: <b>${globalSym}${formatINR(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Invested: ${globalSym}${formatINR(p * n)} | Profit: ${globalSym}${formatINR(val - (p * n))}</span>`;
   };
 
-  // Other Finance
+  // Finance - Goal
   $('goal-btn').onclick = () => {
     const target = parseFloat($('goal-target').value), t = parseFloat($('goal-time').value), r = parseFloat($('goal-rate').value);
     if (!target || !t || !r) { $('goal-res').textContent = "Please fill target amount, years and expected rate."; return; }
@@ -1110,13 +1079,29 @@
     $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatINR(res)}/mo</b>`;
   };
   
-  $('disc-btn').onclick = () => {
-    const p = parseFloat($('disc-price').value), d1 = parseFloat($('disc-1').value)||0, d2 = parseFloat($('disc-2').value)||0;
-    if (!p) { $('disc-res').textContent = "Please enter the original price."; return; }
-    const final = (p*(1-d1/100))*(1-d2/100); 
-    $('disc-res').innerHTML = `Final Price: <b>${globalSym}${formatINR(Math.round(final))}</b><br><span style="font-size:0.8rem; color:var(--accent)">You Save: ${globalSym}${formatINR(Math.round(p - final))}</span>`;
+  // Finance - Percentage Calculator (NEW LOGIC)
+  $('perc-btn').onclick = () => {
+    const total = parseFloat($('perc-total').value);
+    const rate = parseFloat($('perc-rate').value);
+    
+    if (!total || !rate) {
+      $('perc-res').textContent = "Please enter total amount and percentage.";
+      return;
+    }
+
+    const value = (total * rate) / 100;
+    const off = total - value;
+
+    $('perc-res').innerHTML = `
+      <div style="display:flex; justify-content:space-between; margin-bottom:5px">
+         <span>${rate}% Value:</span> <b>${globalSym}${formatINR(parseFloat(value.toFixed(2)))}</b>
+      </div>
+      <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px">
+         <span style="color:var(--accent)">Result after deduction:</span> <b>${globalSym}${formatINR(parseFloat(off.toFixed(2)))}</b>
+      </div>`;
   };
   
+  // Finance - Bill
   $('bill-btn').onclick = () => {
     const amt = parseFloat($('bill-amt').value), tip = parseFloat($('bill-tip').value)||0, ppl = parseFloat($('bill-ppl').value)||1;
     if (!amt) { $('bill-res').textContent = "Please enter the bill amount."; return; }
@@ -1125,6 +1110,7 @@
     $('bill-res').innerHTML = `Total: <b>${globalSym}${formatINR(Math.round(total))}</b><br>Per Person: <b>${globalSym}${formatINR(Math.round(total/ppl))}</b>`;
   };
   
+  // Finance - CI
   $('ci-btn').onclick = () => {
     const p = parseFloat($('ci-p').value), r = parseFloat($('ci-r').value), t = parseFloat($('ci-t').value), n = parseFloat($('ci-n').value);
     if (!p || !r || !t || !n) { $('ci-res').textContent = "Please fill all compound interest fields."; return; }
@@ -1188,7 +1174,7 @@
     $('qr-image').src = url; 
   };
 
-  // Converters & Gen
+  // Converters
   $('u-btn').onclick = () => { 
       const v = parseFloat($('u-val').value); if(isNaN(v)) return;
       const type = $('u-type').value, f = $('u-from').value, t = $('u-to').value;
@@ -1203,11 +1189,6 @@
     const d1 = new Date(startVal), d2 = new Date(endVal);
     if(isNaN(d1.getTime())||isNaN(d2.getTime())) { $('time-result').textContent = "Invalid date(s)."; return; }
     $('time-result').textContent = `${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`;
-  };
-  $('pw-btn').onclick = () => { 
-      const c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()"; 
-      let o = ""; for(let i=0;i<($('pw-len').value||12);i++) o+=c.charAt(Math.floor(Math.random()*c.length));
-      $('pw-res').textContent = o; 
   };
   $('base-btn').onclick = () => { 
     try { 
