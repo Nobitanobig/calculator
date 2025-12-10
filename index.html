@@ -51,7 +51,6 @@
     font-family:"Poppins",system-ui,-apple-system,sans-serif;
   }
   
-  /* Fix for scrolling issues on mobile */
   html { overflow-y: scroll; scroll-behavior: smooth; } 
   
   body{
@@ -70,7 +69,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding-bottom: 20px; /* Reduced from 50px to remove extra space */
+    padding-bottom: 20px; 
   }
 
   /* HEADER */
@@ -87,7 +86,7 @@
   
   .theme-block{ display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
   
-  .pill, .dropdown-trigger {
+  .pill {
     height: 32px;
     display: flex; align-items: center; justify-content: center;
     background: var(--btn-bg);
@@ -156,37 +155,32 @@
   }
   input:focus, textarea:focus { border-color: var(--accent); }
 
-  /* DROPDOWNS */
-  select { display: none !important; } 
-  
-  .custom-dropdown { position: relative; width: 100%; font-size: 0.9rem; user-select: none; }
-  .dropdown-trigger {
-    justify-content: space-between; width: 100%; padding-right: 30px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 60px;
+  /* --- NEW NATIVE SELECT STYLING --- */
+  select {
+    appearance: none; -webkit-appearance: none;
+    width: 100%; height: 100%;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: 1px solid var(--border);
+    padding: 0 30px 0 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 14px;
+    transition: 0.2s;
+    outline: none;
+    min-width: 80px;
+    height: 38px; /* Slightly taller for easy tapping */
   }
-  .card-header .custom-dropdown { width: auto; min-width: 90px; }
-  
-  .dropdown-trigger::after {
-    content: ''; position: absolute; right: 12px; top: 50%; width: 8px; height: 8px;
-    border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
-    transform: translateY(-70%) rotate(45deg); transition: 0.2s;
-  }
-  .custom-dropdown.active .dropdown-trigger::after { transform: translateY(-30%) rotate(-135deg); border-color: var(--accent); }
-  .dropdown-menu {
-    position: absolute; top: calc(100% + 6px); left: 0; width: 100%; min-width: 100px;
-    background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none;
-    max-height: 250px; overflow-y: auto; flex-direction: column; padding: 6px;
-    animation: fadeIn 0.15s ease-out;
-  }
-  .card-header .dropdown-menu { left: auto; right: 0; }
-  .custom-dropdown.active .dropdown-menu { display: flex; }
-  .dropdown-item {
-    padding: 10px 12px; cursor: pointer; border-radius: 8px; color: var(--text);
-    transition: background 0.1s; display: flex; align-items: center; justify-content: space-between;
-  }
-  .dropdown-item:hover { background: var(--btn-bg); }
-  .dropdown-item.selected { color: var(--accent); font-weight: 600; background: rgba(128,128,128,0.1); }
+  select:focus { border-color: var(--accent); background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); }
+
+  /* Adjustments for selects inside headers/rows */
+  .card-header select { height: 32px; font-size: 0.75rem; width: auto; }
+  .theme-block select { height: 32px; font-size: 0.75rem; }
   
   /* MODALS */
   .modal-overlay {
@@ -201,7 +195,7 @@
     padding: 24px; border-radius: 24px; border: 1px solid var(--border);
     text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
   }
-  .modal-card .custom-dropdown { margin-bottom: 20px; text-align: left; }
+  .modal-card select { margin-bottom: 20px; text-align: left; }
   .info-list { text-align: left; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.6; }
   
   /* TABS */
@@ -209,7 +203,7 @@
     display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; 
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
-    -ms-overflow-style: none; scrollbar-width: none; /* Hide scrollbar */
+    -ms-overflow-style: none; scrollbar-width: none; 
   }
   .tab-bar::-webkit-scrollbar { display: none; }
   
@@ -241,7 +235,7 @@
     background: var(--input-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px; 
     text-align: right; position: relative; 
     min-height: 120px; display: flex; flex-direction: column; justify-content: flex-end;
-    overflow: hidden; /* Prevent overflow */
+    overflow: hidden; 
   }
   
   .history-label {
@@ -709,7 +703,7 @@
   let history = []; 
   let globalSym = '₹'; 
 
-  // Helper: Fix floating point errors (e.g., 0.1 + 0.2 = 0.3)
+  // Helper: Fix floating point errors
   const formatNum = (num) => {
       let clean = parseFloat(num.toFixed(10)); 
       if (String(clean).split('.')[1]?.length > 4) {
@@ -760,7 +754,6 @@
         invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; 
       }
       
-      // Refresh active panel if needed
       const activeBtn = document.querySelector('.panel.active .btn-accent');
       if (activeBtn) activeBtn.click();
   }
@@ -848,25 +841,23 @@
       tabContents.forEach(c => c.style.display = '');
       tabBar.style.display = 'flex';
       chips.forEach(c => c.classList.remove('hidden'));
-      // Restore active tab
       const activeTabId = document.querySelector('.tab-btn.active').dataset.tab;
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       $(activeTabId).classList.add('active');
     }
   });
-    /* --- 4. CALCULATOR ENGINE (WITH KEYBOARD FIX) --- */
+  /* --- 4. CALCULATOR ENGINE (WITH KEYBOARD FIX) --- */
   
-  // Keyboard Support (Fixed to allow input fields)
+  // Keyboard Support
   document.addEventListener('keydown', (e) => {
     // FIX: If user is typing in an input box, ignore calculator shortcuts
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
     const key = e.key;
     
     // Numbers & Operators
     if ("0123456789.+-*/%()".includes(key)) {
       e.preventDefault();
-      // Find button by text content
       const btn = Array.from(document.querySelectorAll('.btn')).find(b => b.textContent === key || b.textContent === {'*':'×', '/':'÷', '-': '−'}[key]);
       if (btn) btn.click();
       else {
@@ -874,7 +865,6 @@
           upd();
       }
     }
-    // Action Keys
     else if (key === 'Enter') { e.preventDefault(); $('calc-equals').click(); }
     else if (key === 'Backspace') { e.preventDefault(); $('calc-back').click(); }
     else if (key === 'Escape') { e.preventDefault(); $('calc-clear').click(); }
@@ -1176,7 +1166,7 @@
     $('qr-image').src = url; 
   };
 
-  // Converters
+  // Converters & Gen
   $('u-btn').onclick = () => { 
       const v = parseFloat($('u-val').value); if(isNaN(v)) return;
       const type = $('u-type').value, f = $('u-from').value, t = $('u-to').value;
@@ -1215,7 +1205,7 @@
   $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); txtStats(); }; 
   $('txt-clear').onclick = () => { $('txt-in').value = ''; txtStats(); };
 
-  /* --- 6. INITIALIZATION & DROPDOWNS --- */
+  /* --- 6. INITIALIZATION --- */
   
   const uData = {
     length: { opts:['m','cm','ft','in'], fn:(v,f,t) => { let m=v; if(f=='cm')m=v/100; if(f=='ft')m=v/3.2808; if(f=='in')m=v/39.37; if(t=='m')return m; if(t=='cm')return m*100; if(t=='ft')return m*3.2808; if(t=='in')return m*39.37; } },
@@ -1224,51 +1214,19 @@
     speed:{ opts:['kmph','mph'], fn:(v,f,t) => f===t?v:(f==='kmph'?v*0.6213:v/0.6213) }
   };
 
-  function initCustomDropdowns(scope = document){
-    scope.querySelectorAll('select:not([data-customized])').forEach(s => {
-      s.setAttribute('data-customized','true');
-      const w = document.createElement('div'); w.className = 'custom-dropdown';
-      const t = document.createElement('div'); t.className = 'dropdown-trigger'; 
-      t.textContent = s.options[s.selectedIndex]?.text || '';
-      s.addEventListener('change', () => { t.textContent = s.options[s.selectedIndex]?.text || ''; });
-      const m = document.createElement('div'); m.className = 'dropdown-menu';
-      Array.from(s.options).forEach(o => {
-        const i = document.createElement('div'); i.className = 'dropdown-item'; 
-        if(o.selected) i.classList.add('selected'); 
-        i.textContent = o.text;
-        i.onclick = (e) => {
-          e.stopPropagation(); w.classList.remove('active'); 
-          m.querySelectorAll('.selected').forEach(x => x.classList.remove('selected')); 
-          i.classList.add('selected'); s.value = o.value; s.dispatchEvent(new Event('change'));
-        };
-        m.appendChild(i);
-      });
-      t.onclick = (e) => {
-        e.stopPropagation(); 
-        document.querySelectorAll('.custom-dropdown').forEach(d => { if(d!==w)d.classList.remove('active'); }); 
-        w.classList.toggle('active');
-      };
-      w.appendChild(t); w.appendChild(m); s.parentNode.insertBefore(w, s.nextSibling);
-    });
-  }
-
+  // Simple Native Select Population (No divs!)
   function renderUnits(){ 
     const t = $('u-type').value, d = uData[t], f = $('u-from'), to = $('u-to');
     f.innerHTML = ''; to.innerHTML = ''; 
-    [f,to].forEach(e => { e.removeAttribute('data-customized'); if(e.nextSibling?.classList?.contains('custom-dropdown')) e.nextSibling.remove(); });
     d.opts.forEach(o => { f.add(new Option(o,o)); to.add(new Option(o,o)); }); 
     if(to.options.length>1) to.selectedIndex = 1; 
-    initCustomDropdowns($('unit-panel')); 
   }
 
   $('u-type').onchange = renderUnits; 
   $('u-swap').onclick = () => { const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
-  
-  document.addEventListener('click', () => document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('active')));
 
   // STARTUP
   updateThemeColors('mono'); 
-  initCustomDropdowns(); 
   renderUnits();
   document.querySelector('[data-tab="tab-finance"]').click();
 </script>
