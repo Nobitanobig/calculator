@@ -267,7 +267,7 @@
   .btn-accent{ background: var(--accent-bg); color: var(--accent-text); padding: 8px 0; font-size: 1rem; }
   .small{ font-size: 0.9rem; padding: 10px; }
   .btn.active-mode { border: 1px solid var(--accent); color: var(--accent); }
-  
+
   .btn-action { margin-top: 15px; margin-bottom: 5px; width: 100%; }
 
   .row{ display: flex; gap: 10px; align-items: center; width: 100%; }
@@ -326,6 +326,11 @@
   footer{ text-align: center; padding: 20px 0; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 20px; }
   .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
   @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.3); } 60% { transform: scale(1); } 100% { transform: scale(1); } }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
 </head>
 <body data-theme="dark">
@@ -380,6 +385,10 @@
         <div id="calc-expression" class="calc-expression"></div>
         <div id="calc-result" class="calc-result">0</div>
       </div>
+
+      <!-- NEW: Parentheses row -->
+      <div id="calc-parens" class="calc-grid" style="margin-bottom:10px;grid-template-columns:repeat(2,1fr);"></div>
+
       <div id="calc-grid" class="calc-grid"></div>
       <div class="calc-grid" style="margin-top:10px">
         <button id="calc-clear" class="btn small">AC</button><button id="calc-back" class="btn small">⌫</button><button id="calc-copy" class="btn small">Copy</button><button id="calc-equals" class="btn btn-accent">=</button>
@@ -703,9 +712,11 @@
   
   // --- 1. FORMATTERS & HELPERS ---
   
-  // Helper to handle Floating Point Errors (e.g. 0.1 + 0.2 = 0.3 instead of 0.300000004)
+  // Helper to handle Floating Point Errors
   const formatNum = (num) => {
+      if (!isFinite(num)) return num;
       let clean = parseFloat(num.toFixed(10)); 
+      if (Math.abs(clean) < 1e-12) clean = 0; // avoid -0 and tiny noise
       if (String(clean).split('.')[1]?.length > 4) {
           return parseFloat(clean.toFixed(4));
       }
@@ -715,6 +726,8 @@
   const formatINR = (num) => {
       return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 1 }).format(num);
   };
+
+  const safeEval = (s) => Function('"use strict";return (' + s + ')')();
   
   // --- 2. GLOBAL VARIABLES ---
   let expr = ''; 
@@ -889,6 +902,18 @@
     $('calc-grid').appendChild(b); 
   });
 
+  // NEW: parentheses buttons
+  ['(', ')'].forEach(sym => {
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = sym;
+    b.onclick = () => {
+      expr += sym;
+      upd();
+    };
+    $('calc-parens').appendChild(b);
+  });
+
   // Scientific toggle
   const degBtn = $('deg-toggle');
   degBtn.onclick = () => { 
@@ -966,7 +991,15 @@
       s = s.replace(/log\(/g, 'Math.log10(')
            .replace(/ln\(/g, 'Math.log(');
 
-      const raw = eval(s);
+      // 5. Auto-close missing right parentheses
+      const open = (s.match(/\(/g) || []).length;
+      const close = (s.match(/\)/g) || []).length;
+      for (let i = 0; i < open - close; i++) {
+        s += ')';
+      }
+
+      const raw = safeEval(s);
+      if (!isFinite(raw)) throw new Error('Bad result');
       const res = formatNum(raw);
       updateHistory(expr, res);
       $('calc-result').textContent = res; 
@@ -976,6 +1009,49 @@
         $('calc-result').textContent = "Err"; 
     } 
   };
+
+  /* --- Keyboard support for calculator --- */
+  document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return; // don't hijack typing
+
+    const key = e.key;
+
+    // Digits
+    if (key >= '0' && key <= '9') {
+      expr += key;
+      upd();
+      return;
+    }
+
+    // Operators and punctuation
+    if (['+','-','*','/','.','%','(',')'].includes(key)) {
+      expr += key;
+      upd();
+      return;
+    }
+
+    // Enter or = : equals
+    if (key === 'Enter' || key === '=') {
+      e.preventDefault();
+      $('calc-equals').onclick();
+      return;
+    }
+
+    // Backspace: delete
+    if (key === 'Backspace') {
+      e.preventDefault();
+      $('calc-back').onclick();
+      return;
+    }
+
+    // Escape or C: clear
+    if (key === 'Escape' || key === 'c' || key === 'C') {
+      e.preventDefault();
+      $('calc-clear').onclick();
+      return;
+    }
+  });
 
   /* --- 6. HEALTH & SLEEP --- */
   $('h-btn').onclick = () => {
@@ -1285,7 +1361,7 @@
         minute: '2-digit', 
         hour12: true 
       });
-      $('zone-res').textContent = `Current Time: ${time}`;
+      $('zone-res').innerHTML = `Current Time: <b>${time}</b>`;
   };
 
   // Age Calculator with future-date check
@@ -1368,7 +1444,7 @@
       }
   };
   
-  // Day Counter: no more NaN days
+  // Day Counter
   $('time-diff').onclick = () => { 
     const startVal = $('time-start').value;
     const endVal   = $('time-end').value;
@@ -1390,7 +1466,7 @@
     $('time-result').textContent = `${days} days`;
   };
   
-  // Password Generator (safer length handling)
+  // Password Generator
   $('pw-btn').onclick = () => { 
       const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()"; 
       let out = ""; 
@@ -1482,7 +1558,7 @@
           if (d !== w) d.classList.remove('active');
         }); 
         w.classList.toggle('active');
-      };
+      });
       w.appendChild(t); 
       w.appendChild(m); 
       s.parentNode.insertBefore(w, s.nextSibling);
