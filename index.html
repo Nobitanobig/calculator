@@ -854,10 +854,13 @@
       $(activeTabId).classList.add('active');
     }
   });
-  /* --- 4. CALCULATOR ENGINE (WITH KEYBOARD SUPPORT) --- */
+    /* --- 4. CALCULATOR ENGINE (WITH KEYBOARD FIX) --- */
   
-  // Keyboard Support
+  // Keyboard Support (Fixed to allow input fields)
   document.addEventListener('keydown', (e) => {
+    // FIX: If user is typing in an input box, ignore calculator shortcuts
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
     const key = e.key;
     
     // Numbers & Operators
@@ -867,7 +870,6 @@
       const btn = Array.from(document.querySelectorAll('.btn')).find(b => b.textContent === key || b.textContent === {'*':'×', '/':'÷', '-': '−'}[key]);
       if (btn) btn.click();
       else {
-          // Fallback for direct input if button not found easily
           expr += key; 
           upd();
       }
@@ -1079,7 +1081,7 @@
     $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatINR(res)}/mo</b>`;
   };
   
-  // Finance - Percentage Calculator (NEW LOGIC)
+  // Finance - Percentage Calculator
   $('perc-btn').onclick = () => {
     const total = parseFloat($('perc-total').value);
     const rate = parseFloat($('perc-rate').value);
