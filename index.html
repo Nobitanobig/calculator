@@ -101,7 +101,7 @@
     border: 1px solid var(--border);
     padding: 0 12px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.75rem; /* RESTORED */
     cursor: pointer;
     font-weight: 500;
     transition: 0.2s;
@@ -135,9 +135,9 @@
   }
   .search-input {
     width: 100%; background: var(--input-bg); border: 1px solid var(--border);
-    padding: 11px 12px 11px 40px; /* Adjusted padding for font size */
+    padding: 12px 12px 12px 40px; /* RESTORED */
     border-radius: 14px; color: var(--text);
-    font-size: 16px; /* iOS Zoom Fix */
+    font-size: 0.9rem; /* RESTORED */
     outline: none; transition: 0.2s;
   }
   .search-input:focus { border-color: var(--accent); }
@@ -156,9 +156,9 @@
     background: var(--input-bg);
     color: var(--text);
     border: 1px solid var(--border);
-    padding: 11px 16px; /* Adjusted padding for font size */
+    padding: 12px 16px; /* RESTORED */
     border-radius: 14px;
-    font-size: 16px; /* iOS Zoom Fix */
+    font-size: 0.95rem; /* RESTORED */
     outline: none;
     appearance: none; 
     transition: border 0.2s;
@@ -174,7 +174,7 @@
     border: 1px solid var(--border);
     padding: 0 30px 0 12px;
     border-radius: 20px;
-    font-size: 16px; /* iOS Zoom Fix */
+    font-size: 0.8rem; /* RESTORED */
     font-family: inherit;
     cursor: pointer;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -188,9 +188,9 @@
   }
   select:focus { border-color: var(--accent); background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); }
   
-  /* Select overrides for small headers - font size kept slightly smaller where space is tight */
-  .card-header select { height: 32px; font-size: 14px; width: auto; }
-  .theme-block select { height: 32px; font-size: 14px; }
+  /* Select overrides for small headers */
+  .card-header select { height: 32px; font-size: 0.75rem; width: auto; }
+  .theme-block select { height: 32px; font-size: 0.75rem; }
   
   /* MODALS */
   .modal-overlay {
@@ -1304,11 +1304,17 @@
     else { expr = ''; upd(); $('calc-result').textContent = '0'; } 
   };
 
-  // 4. THE NEW MATH ENGINE (Replaces Eval)
+  // 4. THE NEW MATH ENGINE (Replaces Eval + Auto-Bracket Fix)
   $('calc-equals').onclick = () => { 
     try { 
       if (!expr) return;
       
+      // AUTO-BALANCE BRACKETS: Fixes 'sin(90' error
+      let s = expr;
+      const openCount = (s.match(/\(/g) || []).length; 
+      const closeCount = (s.match(/\)/g) || []).length;
+      if (openCount > closeCount) s += ')'.repeat(openCount - closeCount);
+
       // Configure Math.js Scope for Deg/Rad
       let scope = {};
       if(useDeg) {
@@ -1319,13 +1325,13 @@
       }
       
       // Evaluate using Math.js
-      const result = math.evaluate(expr, scope);
+      const result = math.evaluate(s, scope);
       
       // Formatting
       const formatted = math.format(result, {precision: 10}); // Handles 0.1+0.2 = 0.3
       
       if (formatted !== 'undefined' && formatted !== 'null') { 
-          updateHistory(expr, formatted); 
+          updateHistory(s, formatted); 
           $('calc-result').textContent = formatted; 
           expr = String(formatted); 
       } else { 
@@ -1338,7 +1344,7 @@
   };
 
   // ==========================================
-  //  REGION 8: TOOLS LOGIC (With Explanations)
+  //  REGION 8: TOOLS LOGIC (Clean & Standard)
   // ==========================================
 
   // 1. FD/RD Calculator
@@ -1446,7 +1452,7 @@
       showInfoModal("BMI Categories", "• <b>< 18.5:</b> Underweight<br>• <b>18.5 - 24.9:</b> Normal<br>• <b>25 - 29.9:</b> Overweight<br>• <b>30+:</b> Obese");
   };
 
-  // 6. EMI Calculator (With Explanation)
+  // 6. EMI Calculator (Reverted to Original Style)
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value), t = parseFloat($('emi-time').value), u = $('emi-unit').value;
     if (!p || !r || !t) { $('emi-result').textContent = "Please fill fields."; return; }
@@ -1454,18 +1460,10 @@
     const emi = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
     const total = emi * n;
     
-    $('emi-result').innerHTML = `
-        <div style="text-align:center; margin-bottom:10px;">Monthly EMI: <b style="font-size:1.2rem; color:var(--accent)">${globalSym}${formatINR(Math.round(emi))}</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--muted)"><span>Total Interest:</span><span>${globalSym}${formatINR(Math.round(total - p))}</span></div>
-        <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--muted)"><span>Total Amount:</span><span>${globalSym}${formatINR(Math.round(total))}</span></div>
-        <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border); font-size:0.75rem; color:var(--muted);">
-            <b>How it's calculated:</b><br>
-            Standard EMI reducing balance method.
-        </div>
-    `;
+    $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym}${formatINR(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatINR(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym}${formatINR(Math.round(total))}</span>`;
   };
 
-  // 7. GST Calculator (With Explanation)
+  // 7. GST Calculator (Reverted to Original Style)
   const calcGST = (mode) => {
     const amt = parseFloat($('gst-amt').value), rate = parseFloat($('gst-rate').value);
     if (!amt || !rate) { $('gst-res').textContent = "Please fill fields."; return; }
@@ -1473,30 +1471,17 @@
     if (mode === 'add') { gst = (amt * rate) / 100; total = amt + gst; net = amt; } 
     else { net = amt / (1 + rate/100); gst = amt - net; total = amt; }
     
-    $('gst-res').innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Base Price:</span><span>${globalSym}${formatINR(parseFloat(net.toFixed(1)))}</span></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Tax (${rate}%):</span><span>${globalSym}${formatINR(parseFloat(gst.toFixed(1)))}</span></div>
-        <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); margin-top:5px; border-top:1px solid var(--border); padding-top:5px;"><span>Total:</span><span>${globalSym}${formatINR(parseFloat(total.toFixed(1)))}</span></div>
-        <div style="margin-top:8px; font-size:0.75rem; color:var(--muted);">
-           ${mode==='add' ? 'Tax added to amount.' : 'Tax removed from amount.'}
-        </div>
-    `;
+    $('gst-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Net Price:</span><span>${globalSym}${formatINR(parseFloat(net.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Tax (${rate}%):</span><span>${globalSym}${formatINR(parseFloat(gst.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); margin-top:5px; border-top:1px solid var(--border); padding-top:5px;"><span>Total:</span><span>${globalSym}${formatINR(parseFloat(total.toFixed(1)))}</span></div>`;
   };
   $('gst-add').onclick = () => calcGST('add'); $('gst-rem').onclick = () => calcGST('remove');
 
-  // 8. SIP Calculator (With Explanation)
+  // 8. SIP Calculator (Reverted to Original Style)
   $('sip-btn').onclick = () => {
      const p = parseFloat($('sip-amt').value), r = parseFloat($('sip-rate').value), y = parseFloat($('sip-years').value);
      if (!p || !r || !y) { $('sip-res').textContent = "Please fill fields."; return; }
      const i = r / 1200, n = y * 12;
      const val = Math.round(p * ((Math.pow(1 + i, n) - 1) / i) * (1 + i));
-     const invested = p * n;
-     
-     $('sip-res').innerHTML = `
-        <div style="text-align:center; font-size:1.1rem; margin-bottom:10px;">Total Value: <b style="color:var(--accent)">${globalSym}${formatINR(val)}</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--muted); margin-bottom:5px;"><span>Invested:</span><span>${globalSym}${formatINR(invested)}</span></div>
-        <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--muted);"><span>Pure Profit:</span><span>${globalSym}${formatINR(val - invested)}</span></div>
-     `;
+     $('sip-res').innerHTML = `Total Value: <b>${globalSym}${formatINR(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Invested: ${globalSym}${formatINR(p * n)} | Profit: ${globalSym}${formatINR(val - (p * n))}</span>`;
   };
 
   // 9. Goal Planner
