@@ -69,7 +69,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding-bottom: 20px; 
+    padding-bottom: 20px; /* Reduced footer space */
   }
 
   /* HEADER */
@@ -180,6 +180,23 @@
   .card-header select { height: 32px; font-size: 0.75rem; width: auto; }
   .theme-block select { height: 32px; font-size: 0.75rem; }
   
+  /* SWITCHES (Scientific, Clock, FD/RD) */
+  .sc-switch{
+    position: relative; width: 60px; height: 28px; background: var(--input-bg);
+    border-radius: 20px; cursor: pointer; border: 1px solid var(--border);
+    display: flex; align-items: center; padding: 2px;
+  }
+  .sc-knob{
+    width: 22px; height: 22px; background: var(--text); border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .sc-switch.on .sc-knob{ transform: translateX(30px); background: var(--accent); }
+  .sc-label{ position: absolute; right: 8px; font-size: 0.65rem; font-weight: 600; color: var(--muted); pointer-events: none; }
+  
+  /* Specific Switch Styles */
+  #clock-switch .sc-label { right: auto; left: 8px; font-size: 0.8rem; }
+  #clock-switch.on .sc-label { color: var(--accent); }
+
   /* MODALS */
   .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -216,7 +233,7 @@
   .tab-content { display: none; animation: fadeIn 0.2s ease; }
   .tab-content.active { display: block; }
 
-  /* CLOCK & STOPWATCH STYLES (NEW) */
+  /* CLOCK Styles */
   .clock-display {
     font-size: 2.5rem; font-weight: 600; text-align: center;
     font-variant-numeric: tabular-nums; letter-spacing: 1px;
@@ -240,25 +257,12 @@
   .timer-input-group label { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
 
   /* CALCULATOR UI */
-  .sc-switch{
-    position: relative; width: 60px; height: 28px; background: var(--input-bg);
-    border-radius: 20px; cursor: pointer; border: 1px solid var(--border);
-    display: flex; align-items: center; padding: 2px;
-  }
-  .sc-knob{
-    width: 22px; height: 22px; background: var(--text); border-radius: 50%;
-    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
-  .sc-switch.on .sc-knob{ transform: translateX(30px); background: var(--accent); }
-  .sc-label{ position: absolute; right: 8px; font-size: 0.65rem; font-weight: 600; color: var(--muted); pointer-events: none; }
-
   .calc-display{
     background: var(--input-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px; 
     text-align: right; position: relative; 
     min-height: 120px; display: flex; flex-direction: column; justify-content: flex-end;
     overflow: hidden; 
   }
-  
   .history-label {
     position: absolute; top: 12px; left: 16px;
     font-size: 0.65rem; font-weight: 700; color: var(--accent); 
@@ -274,11 +278,9 @@
   .calc-history.show { opacity: 1; }
   .hist-item { font-size: 0.8rem; color: var(--muted); cursor: pointer; white-space: nowrap; }
   .hist-item:hover { color: var(--accent); }
-
   .calc-expression{ font-size: 0.9rem; color: var(--muted); min-height: 20px; word-break: break-all; margin-top: 35px;}
   .calc-result{ font-size: 2.2rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow-x: auto; }
   .calc-result::-webkit-scrollbar { height:0px; }
-  
   .calc-grid{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 
   .btn{
@@ -291,7 +293,6 @@
   .btn-accent{ background: var(--accent-bg); color: var(--accent-text); padding: 8px 0; font-size: 1rem; }
   .small{ font-size: 0.9rem; padding: 10px; }
   .btn.active-mode { border: 1px solid var(--accent); color: var(--accent); }
-  
   .btn-action { margin-top: 15px; margin-bottom: 5px; width: 100%; }
 
   .row{ display: flex; gap: 10px; align-items: center; width: 100%; }
@@ -314,13 +315,9 @@
   .panel.active{ display: block !important; }
   @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
 
-  /* INNER DIVIDER */
+  /* DIVIDER */
   .divider{ 
-    height: 1px;
-    background: var(--border); 
-    margin: 16px 0 20px 0; 
-    width: 100%;
-    opacity: 0.5;
+    height: 1px; background: var(--border); margin: 16px 0 20px 0; width: 100%; opacity: 0.5;
   }
 
   .health-stats, .text-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
@@ -347,6 +344,10 @@
   .qr-img { border-radius: 8px; border: 4px solid #fff; max-width: 180px; }
   .loading-txt { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; }
   .link-btn { text-decoration: none; font-size: 0.75rem; color: var(--muted); border-bottom: 1px dotted var(--muted); cursor: pointer; }
+
+  /* Radio Group */
+  .radio-group { display: flex; gap: 15px; margin-top: 5px; }
+  .radio-label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer; color: var(--text); }
 
   footer{ text-align: center; padding: 20px 0; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 20px; }
   .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
@@ -475,10 +476,13 @@
 
       <div id="tab-finance" class="tab-content active">
         <div class="chips">
-          <button class="chip-btn active" data-panel="loan-panel">Loan</button>
-          <button class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> 
-          <button class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button>
+          <button class="chip-btn active" data-panel="loan-panel">Loan/EMI</button>
+          <button class="chip-btn" id="btn-tax" data-panel="gst-panel">GST</button> 
+          <button class="chip-btn" id="btn-invest" data-panel="invest-panel">SIP/Invest</button>
           <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
+          <button class="chip-btn" data-panel="fd-panel">FD/RD</button>
+          <button class="chip-btn" data-panel="tax-panel">Income Tax</button>
+          <button class="chip-btn" data-panel="inflation-panel">Inflation</button>
           <button class="chip-btn" data-panel="discount-panel">Percentage</button>
           <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
           <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
@@ -490,14 +494,15 @@
           <button class="chip-btn" data-panel="clock-panel">Live Clock</button>
           <button class="chip-btn" data-panel="stopwatch-panel">Stopwatch</button>
           <button class="chip-btn" data-panel="timer-panel">Timer</button>
-          <button class="chip-btn" data-panel="zone-panel">World Time</button>
+          <button class="chip-btn" data-panel="zone-panel">World Clock</button>
         </div>
       </div>
 
       <div id="tab-health" class="tab-content">
         <div class="chips">
           <button class="chip-btn" data-panel="health-panel">Health Station</button>
-          <button class="chip-btn" data-panel="sleep-panel">Sleep Cycle</button>
+          <button class="chip-btn" data-panel="calory-panel">Calory Calc</button>
+          <button class="chip-btn" data-panel="fat-panel">Body Fat %</button>
         </div>
       </div>
 
@@ -505,6 +510,7 @@
         <div class="chips">
           <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
           <button class="chip-btn" data-panel="eta-panel">Trip ETA</button>
+          <button class="chip-btn" data-panel="budget-panel">Travel Budget</button>
         </div>
       </div>
 
@@ -524,7 +530,9 @@
          <div class="title-group" style="margin-bottom:10px; text-align:center;"><div class="card-title">Live Clock</div></div>
          <div id="clock-display" class="clock-display">--:--:--</div>
          <div id="clock-date" class="clock-date">-- -- --</div>
-         <button id="clock-mute" class="btn small" style="margin:0 auto; display:block; width:auto; padding:5px 15px; font-size:0.8rem;">🔊 Sound On</button>
+         <div style="display:flex; justify-content:center; margin-top:10px;">
+            <div id="clock-switch" class="sc-switch on"><span class="sc-label">🔊</span><div class="sc-knob"></div></div>
+         </div>
       </div>
 
       <div id="stopwatch-panel" class="panel">
@@ -552,7 +560,7 @@
       </div>
 
       <div id="zone-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">World Time</div><div class="card-sub">Check time across the globe.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">World Clock</div><div class="card-sub">See the current time across regions.</div></div>
         <div class="field"><label class="mini">Select Region</label>
           <select id="zone-sel">
             <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
@@ -570,7 +578,7 @@
       </div>
 
       <div id="loan-panel" class="panel active">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">Monthly payments.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">See how much you’ll pay every month.</div></div>
         <div class="field"><label class="mini">Loan Amount</label><input id="emi-principal" type="number" placeholder="100000"></div>
         <div class="row">
           <div class="field flex-1"><label class="mini">Rate %</label><input id="emi-rate" type="number" step="0.1" placeholder="7.5"></div>
@@ -582,7 +590,7 @@
       </div>
 
       <div id="gst-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="gst-title">GST / VAT</div><div class="card-sub">Add or Remove Tax.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="gst-title">GST / VAT</div><div class="card-sub">Add or remove Tax from any amount.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Amount</label><input id="gst-amt" type="number" placeholder="1000"></div>
            <div class="field flex-1"><label class="mini">Tax Rate %</label><input id="gst-rate" type="number" placeholder="18"></div>
@@ -595,7 +603,7 @@
       </div>
 
       <div id="invest-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="sip-title">SIP Calculator</div><div class="card-sub">Estimate returns.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="sip-title">SIP Calculator</div><div class="card-sub">See how your monthly investment grows over time.</div></div>
         <div class="field"><label class="mini">Monthly Amount</label><input id="sip-amt" type="number" placeholder="5000"></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
@@ -606,7 +614,7 @@
       </div>
 
       <div id="goal-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Goal Planner</div><div class="card-sub">Target investment.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Goal Planner</div><div class="card-sub">Find how much you must invest each month to reach your goal.</div></div>
         <div class="field"><label class="mini">Target Amount</label><input id="goal-target" type="number" placeholder="10000000"></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Years</label><input id="goal-time" type="number" placeholder="10"></div>
@@ -616,8 +624,47 @@
         <div id="goal-res" class="result-text"></div>
       </div>
 
+      <div id="fd-panel" class="panel">
+        <div class="card-header">
+           <div class="title-group"><div class="card-title" id="fd-title">Fixed Deposit</div><div class="card-sub">Calculate maturity amount.</div></div>
+           <div id="fd-switch" class="sc-switch"><span class="sc-label">RD</span><div class="sc-knob"></div></div>
+        </div>
+        <div class="field"><label class="mini">Investment Amount</label><input id="fd-amt" type="number" placeholder="100000"></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Rate %</label><input id="fd-rate" type="number" placeholder="6.5"></div>
+           <div class="field flex-1"><label class="mini">Time (Years)</label><input id="fd-time" type="number" placeholder="5"></div>
+        </div>
+        <button id="fd-btn" class="btn btn-accent btn-action">Calculate Maturity</button>
+        <div id="fd-res" class="result-text"></div>
+      </div>
+
+      <div id="tax-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Income Tax (India)</div><div class="card-sub">Calculate tax liability.</div></div>
+        <div class="field"><label class="mini">Annual Income</label><input id="tax-income" type="number" placeholder="1200000"></div>
+        <div class="field">
+           <label class="mini">Regime</label>
+           <div class="radio-group">
+             <label class="radio-label"><input type="radio" name="regime" value="new" checked> New Regime (Default)</label>
+             <label class="radio-label"><input type="radio" name="regime" value="old"> Old Regime</label>
+           </div>
+        </div>
+        <button id="tax-btn" class="btn btn-accent btn-action">Calculate Tax</button>
+        <div id="tax-res" class="result-text"></div>
+      </div>
+
+      <div id="inflation-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Inflation Calculator</div><div class="card-sub">Future value of money.</div></div>
+        <div class="field"><label class="mini">Current Expense</label><input id="inf-amt" type="number" placeholder="50000"></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Inflation %</label><input id="inf-rate" type="number" placeholder="6"></div>
+           <div class="field flex-1"><label class="mini">Years</label><input id="inf-time" type="number" placeholder="10"></div>
+        </div>
+        <button id="inf-btn" class="btn btn-accent btn-action">Calculate Future Cost</button>
+        <div id="inf-res" class="result-text"></div>
+      </div>
+
       <div id="discount-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Percentage Calculator</div><div class="card-sub">Calculate % Value & Off.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Percentage Calculator</div><div class="card-sub">Get the % value or price after discount.</div></div>
         <div class="field"><label class="mini">Total Amount</label><input id="perc-total" type="number" placeholder="2000"></div>
         <div class="field"><label class="mini">Percentage %</label><input id="perc-rate" type="number" placeholder="50"></div>
         <button id="perc-btn" class="btn btn-accent btn-action">Calculate</button>
@@ -625,7 +672,7 @@
       </div>
 
       <div id="bill-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Bill Splitter</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Bill Splitter</div><div class="card-sub">See how much each person needs to pay.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Total Bill</label><input id="bill-amt" type="number" placeholder="2500"></div>
            <div class="field flex-1"><label class="mini">Tip %</label><input id="bill-tip" type="number" placeholder="10"></div>
@@ -636,7 +683,7 @@
       </div>
 
       <div id="ci-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Compound Interest</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Compound Interest</div><div class="card-sub">See how your money grows over time.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Principal</label><input id="ci-p" type="number" placeholder="10000"></div>
            <div class="field flex-1"><label class="mini">Rate %</label><input id="ci-r" type="number" placeholder="8"></div>
@@ -650,7 +697,7 @@
       </div>
 
       <div id="health-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Health Station (BMI/BMR)</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Health Station (BMI/BMR)</div><div class="card-sub">Know what your body needs to stay healthy each day.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Age</label><input id="h-age" type="number" placeholder="25"></div>
            <div class="field flex-1"><label class="mini">Gender</label><select id="h-gender"><option value="male">Male</option><option value="female">Female</option></select></div>
@@ -675,22 +722,44 @@
         <div id="h-msg" class="result-text" style="text-align:center;"></div>
       </div>
 
-      <div id="sleep-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Sleep Cycle</div><div class="card-sub">Sleep in 90-min cycles for best rest.</div></div>
+      <div id="calory-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Calory Calculator</div><div class="card-sub">Daily energy needs.</div></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Age</label><input id="cal-age" type="number" placeholder="25"></div>
+           <div class="field flex-1"><label class="mini">Gender</label><select id="cal-gender"><option value="male">Male</option><option value="female">Female</option></select></div>
+        </div>
+        <div class="row">
+          <div class="field flex-1"><label class="mini">Weight (kg)</label><input id="cal-weight" type="number" placeholder="70"></div>
+          <div class="field flex-1"><label class="mini">Height (cm)</label><input id="cal-height" type="number" placeholder="170"></div>
+        </div>
         <div class="field">
-          <label class="mini">Mode</label>
-          <select id="sleep-mode">
-            <option value="wake">I want to wake up at...</option>
-            <option value="sleep">I plan to sleep at...</option>
+          <label class="mini">Activity</label>
+          <select id="cal-activity">
+            <option value="1.2">Sedentary</option><option value="1.375">Light Exercise</option>
+            <option value="1.55">Moderate Exercise</option><option value="1.725">Heavy Exercise</option>
           </select>
         </div>
-        <div class="field"><label class="mini">Time</label><input id="sleep-time" type="time"></div>
-        <button id="sleep-btn" class="btn btn-accent btn-action">Calculate Times</button>
-        <div id="sleep-res" class="result-text"></div>
+        <button id="cal-btn" class="btn btn-accent btn-action">Calculate Calories</button>
+        <div id="cal-res" class="result-text"></div>
+      </div>
+
+      <div id="fat-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Body Fat %</div><div class="card-sub">US Navy Method.</div></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Gender</label><select id="fat-gender"><option value="male">Male</option><option value="female">Female</option></select></div>
+           <div class="field flex-1"><label class="mini">Height (cm)</label><input id="fat-height" type="number" placeholder="175"></div>
+        </div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Waist (cm)</label><input id="fat-waist" type="number" placeholder="85"></div>
+           <div class="field flex-1"><label class="mini">Neck (cm)</label><input id="fat-neck" type="number" placeholder="38"></div>
+        </div>
+        <div class="field" id="fat-hip-group" style="display:none;"><label class="mini">Hip (cm)</label><input id="fat-hip" type="number" placeholder="95"></div>
+        <button id="fat-btn" class="btn btn-accent btn-action">Calculate Body Fat</button>
+        <div id="fat-res" class="result-text"></div>
       </div>
 
       <div id="fuel-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Fuel Cost Calculator</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Fuel Cost Calculator</div><div class="card-sub">See how much fuel you’ll need and what it will cost.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Distance (km)</label><input id="fuel-dist" type="number" placeholder="300"></div>
            <div class="field flex-1"><label class="mini">Mileage (km/l)</label><input id="fuel-mil" type="number" placeholder="15"></div>
@@ -701,7 +770,7 @@
       </div>
 
       <div id="eta-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Trip ETA</div><div class="card-sub">When will I arrive?</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Trip ETA</div><div class="card-sub">Find out when you’ll reach your destination.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Distance (km)</label><input id="eta-dist" type="number" placeholder="200"></div>
            <div class="field flex-1"><label class="mini">Speed (km/h)</label><input id="eta-speed" type="number" placeholder="60"></div>
@@ -709,6 +778,15 @@
         <div class="field"><label class="mini">Start Time</label><input id="eta-start" type="time"></div>
         <button id="eta-btn" class="btn btn-accent btn-action">Calculate Arrival</button>
         <div id="eta-res" class="result-text"></div>
+      </div>
+
+      <div id="budget-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Travel Budget</div><div class="card-sub">Estimate trip cost.</div></div>
+        <div class="row"><div class="field flex-1"><label class="mini">Transport</label><input id="tb-trans" type="number" placeholder="5000"></div><div class="field flex-1"><label class="mini">Accommodation</label><input id="tb-stay" type="number" placeholder="8000"></div></div>
+        <div class="row"><div class="field flex-1"><label class="mini">Food</label><input id="tb-food" type="number" placeholder="4000"></div><div class="field flex-1"><label class="mini">Activities</label><input id="tb-act" type="number" placeholder="3000"></div></div>
+        <div class="field"><label class="mini">Shopping / Misc</label><input id="tb-misc" type="number" placeholder="2000"></div>
+        <button id="tb-btn" class="btn btn-accent btn-action">Calculate Total</button>
+        <div id="tb-res" class="result-text"></div>
       </div>
 
       <div id="unit-panel" class="panel">
@@ -721,28 +799,28 @@
       </div>
 
       <div id="text-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Text Analysis</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Text Analysis</div><div class="card-sub">Analyze and format your text instantly.</div></div>
         <div class="field"><textarea id="txt-in" rows="4" placeholder="Type or paste..."></textarea></div>
         <div class="text-stats" style="margin-bottom:10px;"><div class="stat-box"><div id="txt-words" class="stat-val">0</div><div class="stat-lbl">Words</div></div><div class="stat-box"><div id="txt-chars" class="stat-val">0</div><div class="stat-lbl">Characters</div></div></div>
         <div class="row" style="gap:5px;"><button id="txt-upper" class="btn small flex-1">UPPER</button><button id="txt-lower" class="btn small flex-1">lower</button><button id="txt-clear" class="btn small flex-1">Clear</button></div>
       </div>
 
       <div id="base-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Base Converter</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Base Converter</div><div class="card-sub">Convert numbers between different numeral systems.</div></div>
         <div class="row"><div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div><div class="field flex-1"><label class="mini">From Base</label><select id="base-from"><option value="10">Decimal</option><option value="2">Binary</option><option value="16">Hex</option></select></div></div>
         <button id="base-btn" class="btn btn-accent btn-action">Convert</button>
         <div id="base-res" class="result-text"></div>
       </div>
 
       <div id="time-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div><div class="card-sub">Find the number of days between two dates.</div></div>
         <div class="row"><div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div><div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div></div>
         <button id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
         <div id="time-result" class="result-text"></div>
       </div>
 
       <div id="gpa-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Find the average of any set of numbers.</div></div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
         <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
         <div id="gpa-res" class="result-text"></div>
@@ -758,47 +836,35 @@
 <script>
   const $ = id => document.getElementById(id);
   
-  // --- 1. GLOBAL VARIABLES & HELPERS ---
+  // --- 1. GLOBAL VARIABLES ---
   let expr = ''; 
   let useDeg = true; 
   let history = []; 
   let globalSym = '₹'; 
 
-  // Clock & Timer Variables
+  // Clock Variables
   let clockInterval;
   let swInterval, swTime = 0, swRunning = false;
   let timerInterval, timerTime = 0, timerRunning = false;
+  let isClockSoundOn = true; // Default sound ON
 
-  // Helper: Fix floating point errors
-  const formatNum = (num) => {
-      let clean = parseFloat(num.toFixed(10)); 
-      if (String(clean).split('.')[1]?.length > 4) {
-          return parseFloat(clean.toFixed(4));
-      }
-      return clean;
-  };
-  
-  const formatINR = (num) => {
-      return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 1 }).format(num);
-  };
+  // Feature Flags
+  let isRD = false; // False = FD, True = RD
 
-  // Helper: Pad numbers for clock (0 -> 00)
+  // Helpers
+  const formatNum = (n) => parseFloat(n.toFixed(10));
+  const formatINR = (n) => new Intl.NumberFormat('en-IN', { maximumFractionDigits: 1 }).format(n);
   const pad = (n) => n.toString().padStart(2, '0');
 
-  /* --- 2. THEME & CURRENCY SETUP --- */
+  // --- 2. SETUP & THEME ---
   const savedCurr = localStorage.getItem('calc_currency');
-  if (savedCurr) {
-      setGlobalCurrency(savedCurr);
-  } else {
-      setTimeout(() => $('currency-modal').classList.add('show'), 500);
-  }
+  if (savedCurr) setGlobalCurrency(savedCurr); 
+  else setTimeout(() => $('currency-modal').classList.add('show'), 500);
 
   $('modal-save-btn').onclick = () => {
-      const selected = $('modal-currency-select').value;
-      setGlobalCurrency(selected);
+      setGlobalCurrency($('modal-currency-select').value);
       $('currency-modal').classList.remove('show');
   };
-
   $('global-currency').onchange = (e) => setGlobalCurrency(e.target.value);
 
   function setGlobalCurrency(sym) {
@@ -807,24 +873,14 @@
       $('global-currency').value = sym;
       $('modal-currency-select').value = sym;
       
+      // Update dynamic titles
       const taxBtn = $('btn-tax'), invBtn = $('btn-invest'), gstTitle = $('gst-title'), sipTitle = $('sip-title');
+      if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) { taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator"; }
+      else if (['€', '£'].includes(sym)) { taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator"; }
+      else { taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator"; }
 
-      if (['₹', 'A$', 'C$', 'NZ$'].includes(sym)) { 
-        taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator"; 
-      } else if (['€', '£'].includes(sym)) { 
-        taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator"; 
-      } else { 
-        taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator"; 
-      }
-
-      if (sym === '₹') { 
-        invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator"; 
-      } else { 
-        invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; 
-      }
-      
-      const activeBtn = document.querySelector('.panel.active .btn-accent');
-      if (activeBtn) activeBtn.click();
+      if (sym === '₹') { invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator"; }
+      else { invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; }
   }
 
   function updateThemeColors(themeName) {
@@ -837,14 +893,11 @@
         sunset: { bg: 'linear-gradient(135deg, #f97316, #ef4444)', solid: '#ef4444' },
         ocean:  { bg: 'linear-gradient(135deg, #06b6d4, #3b82f6)', solid: '#3b82f6' }
     };
-    
     if (themeName === 'mono') {
        const isLight = document.body.dataset.theme === 'light';
-       const acc = isLight ? '#000000' : '#ffffff';
-       const txt = isLight ? '#ffffff' : '#000000';
-       root.style.setProperty('--accent-bg', acc);
-       root.style.setProperty('--accent', acc);
-       root.style.setProperty('--accent-text', txt);
+       root.style.setProperty('--accent-bg', isLight ? '#000000' : '#ffffff');
+       root.style.setProperty('--accent', isLight ? '#000000' : '#ffffff');
+       root.style.setProperty('--accent-text', isLight ? '#ffffff' : '#000000');
     } else {
        const t = themes[themeName] || themes.blue;
        root.style.setProperty('--accent-bg', t.bg);
@@ -859,26 +912,14 @@
   };
   $('theme-color').onchange = (e) => updateThemeColors(e.target.value);
 
-  /* --- 3. UI NAVIGATION & TABS --- */
-  function showInfoModal(title, content) {
-      $('info-title').textContent = title;
-      $('info-content').innerHTML = content;
-      $('info-modal').classList.add('show');
-  }
-  $('info-close-btn').onclick = () => $('info-modal').classList.remove('show');
-  $('info-modal').onclick = (e) => { 
-    if (e.target === $('info-modal')) $('info-modal').classList.remove('show'); 
-  };
-
+  // --- 3. NAVIGATION ---
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
-      const content = $(btn.dataset.tab);
-      content.classList.add('active');
-      const firstChip = content.querySelector('.chip-btn');
-      if (firstChip) firstChip.click();
+      $(btn.dataset.tab).classList.add('active');
+      $(btn.dataset.tab).querySelector('.chip-btn').click();
     };
   });
 
@@ -888,55 +929,64 @@
          b.classList.add('active');
          document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); 
          $(b.dataset.panel).classList.add('active');
-         
-         // Start/Stop Clock based on visibility
+         // Clock Logic
          if (b.dataset.panel === 'clock-panel') startLiveClock();
          else stopLiveClock();
       }
   });
 
-  // Search Functionality
+  // Search
   $('tool-search').addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
-    const chips = document.querySelectorAll('.chip-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const tabBar = document.querySelector('.tab-bar');
-    
     if (term.length > 0) {
-      tabContents.forEach(c => c.style.display = 'block');
-      tabBar.style.display = 'none';
-      chips.forEach(chip => {
-        const label = chip.textContent.toLowerCase();
-        if (label.includes(term) || chip.dataset.panel.includes(term)) chip.classList.remove('hidden');
-        else chip.classList.add('hidden');
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'block');
+      document.querySelector('.tab-bar').style.display = 'none';
+      document.querySelectorAll('.chip-btn').forEach(chip => {
+        chip.classList.toggle('hidden', !chip.textContent.toLowerCase().includes(term));
       });
     } else {
-      tabContents.forEach(c => c.style.display = '');
-      tabBar.style.display = 'flex';
-      chips.forEach(c => c.classList.remove('hidden'));
-      const activeTabId = document.querySelector('.tab-btn.active').dataset.tab;
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      $(activeTabId).classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = '');
+      document.querySelector('.tab-bar').style.display = 'flex';
+      document.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('hidden'));
+      document.querySelector('.tab-btn.active').click();
     }
   });
-  /* --- 4. CALCULATOR ENGINE (WITH KEYBOARD FIX) --- */
-  
-  // Keyboard Support
-  document.addEventListener('keydown', (e) => {
-    // FIX: If user is typing in an input box, ignore calculator shortcuts
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
+  // --- 4. UI SWITCH LOGIC ---
+  
+  // FD/RD Switch
+  $('fd-switch').onclick = function() {
+      this.classList.toggle('on');
+      isRD = !isRD;
+      $('fd-title').textContent = isRD ? "Recurring Deposit" : "Fixed Deposit";
+      // Change input label
+      document.querySelector('#fd-panel label').textContent = isRD ? "Monthly Deposit" : "Investment Amount";
+      // Clear result
+      $('fd-res').textContent = "";
+  };
+
+  // Clock Sound Switch
+  $('clock-switch').onclick = function() {
+      this.classList.toggle('on');
+      isClockSoundOn = !isClockSoundOn;
+      this.querySelector('.sc-label').textContent = isClockSoundOn ? "🔊" : "🔇";
+  };
+
+  // Body Fat Gender Toggle (Show/Hide Hip Input)
+  $('fat-gender').onchange = (e) => {
+      $('fat-hip-group').style.display = e.target.value === 'female' ? 'flex' : 'none';
+  };
+  /* --- 4. CALCULATOR ENGINE --- */
+  
+  // Keyboard Support (Fixed)
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
     const key = e.key;
-    
-    // Numbers & Operators
     if ("0123456789.+-*/%()".includes(key)) {
       e.preventDefault();
       const btn = Array.from(document.querySelectorAll('.btn')).find(b => b.textContent === key || b.textContent === {'*':'×', '/':'÷', '-': '−'}[key]);
       if (btn) btn.click();
-      else {
-          expr += key; 
-          upd();
-      }
+      else { expr += key; upd(); }
     }
     else if (key === 'Enter') { e.preventDefault(); $('calc-equals').click(); }
     else if (key === 'Backspace') { e.preventDefault(); $('calc-back').click(); }
@@ -952,80 +1002,46 @@
     $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
     tape.querySelectorAll('.hist-item').forEach(item => { 
-      item.onclick = () => { 
-        expr += item.textContent.split('=')[1].trim(); 
-        upd(); 
-      }; 
+      item.onclick = () => { expr += item.textContent.split('=')[1].trim(); upd(); }; 
     });
   };
 
   const upd = () => {
-      let displayExpr = expr
-          .replace(/\*/g, '×')
-          .replace(/\//g, '÷')
-          .replace(/Math.PI/g, 'π')
-          .replace(/Math.E/g, 'e');
+      let displayExpr = expr.replace(/\*/g, '×').replace(/\//g, '÷').replace(/Math.PI/g, 'π').replace(/Math.E/g, 'e');
       $('calc-expression').textContent = displayExpr;
   };
   
-  // Standard Keys
   const k = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
   k.forEach(x => { 
-    let b = document.createElement('button'); 
-    b.className = 'btn'; 
-    b.textContent = x; 
-    b.onclick = () => {
-      expr += {'÷':'/','×':'*','−':'-'}[x] || x; 
-      upd();
-    }; 
+    let b = document.createElement('button'); b.className = 'btn'; b.textContent = x; 
+    b.onclick = () => { expr += {'÷':'/','×':'*','−':'-'}[x] || x; upd(); }; 
     $('calc-grid').appendChild(b); 
   });
 
-  // Scientific Keys Logic
   const degBtn = $('deg-toggle');
-  degBtn.onclick = () => { 
-    useDeg = !useDeg; 
-    degBtn.textContent = useDeg ? "DEG" : "RAD"; 
-    degBtn.classList.toggle('active-mode', useDeg); 
-  };
+  degBtn.onclick = () => { useDeg = !useDeg; degBtn.textContent = useDeg ? "DEG" : "RAD"; degBtn.classList.toggle('active-mode', useDeg); };
   degBtn.classList.add('active-mode');
 
-  $('sc-switch').onclick = function() { 
-    this.classList.toggle('on'); 
-    $('sci-keys').style.display = this.classList.contains('on') ? 'grid' : 'none'; 
-  };
+  $('sc-switch').onclick = function() { this.classList.toggle('on'); $('sci-keys').style.display = this.classList.contains('on') ? 'grid' : 'none'; };
 
   document.querySelectorAll('#sci-keys .btn:not(#deg-toggle)').forEach(b => {
     b.onclick = () => { 
       const fn = b.dataset.fn; 
-      if (fn === 'pi') expr += 'Math.PI'; 
-      else if (fn === 'e') expr += 'Math.E';
-      else if (fn === 'pow') expr += '**'; 
-      else if (fn === 'inv') expr += '1/'; 
-      else if (fn === 'sqrt') expr += '√('; 
-      else if (fn === '(' || fn === ')') expr += fn;
+      if (fn === 'pi') expr += 'Math.PI'; else if (fn === 'e') expr += 'Math.E'; else if (fn === 'pow') expr += '**'; 
+      else if (fn === 'inv') expr += '1/'; else if (fn === 'sqrt') expr += '√('; else if (fn === '(' || fn === ')') expr += fn;
       else expr += `${fn}(`; 
       upd(); 
     };
   });
 
   $('calc-back').onclick = () => { 
-      if(expr.endsWith('Math.PI')) expr = expr.slice(0, -7);
-      else if(expr.endsWith('Math.E')) expr = expr.slice(0, -6);
-      else expr = expr.slice(0,-1); 
+      if(expr.endsWith('Math.PI')) expr = expr.slice(0, -7); else if(expr.endsWith('Math.E')) expr = expr.slice(0, -6); else expr = expr.slice(0,-1); 
       upd(); 
   };
   $('calc-copy').onclick = () => { navigator.clipboard.writeText($('calc-result').textContent); };
   $('calc-clear').onclick = () => { 
-    if (expr === '' && $('calc-result').textContent === '0') {
-      history = [];
-      $('calc-history').innerHTML = '';
-      $('hist-lbl').style.display = 'none';
-    } else {
-      expr = '';
-      upd();
-      $('calc-result').textContent = '0';
-    } 
+    if (expr === '' && $('calc-result').textContent === '0') { history = []; $('calc-history').innerHTML = ''; $('hist-lbl').style.display = 'none'; } 
+    else { expr = ''; upd(); $('calc-result').textContent = '0'; } 
   };
 
   $('calc-equals').onclick = () => { 
@@ -1037,343 +1053,248 @@
       if (openCount > closeCount) s += ')'.repeat(openCount - closeCount);
 
       s = s.replace(/(\d+(\.\d+)?)([\+\-])(\d+(\.\d+)?)%/g, (m,n1,_,op,n2) => {
-          const v1 = parseFloat(n1), v2 = parseFloat(n2); 
-          return op === '+' ? v1 * (1 + v2/100) : v1 * (1 - v2/100);
+          const v1 = parseFloat(n1), v2 = parseFloat(n2); return op === '+' ? v1 * (1 + v2/100) : v1 * (1 - v2/100);
       }).replace(/(\d+(\.\d+)?)%/g, '($1/100)');
       
       s = s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/√\(/g,'Math.sqrt(').replace(/\^/g,'**');
 
       if (useDeg) {
           const toRad = "(Math.PI/180)*";
-          s = s.replace(/sin\(/g, `Math.sin(${toRad}`)
-               .replace(/cos\(/g, `Math.cos(${toRad}`)
-               .replace(/tan\(/g, `Math.tan(${toRad}`);
+          s = s.replace(/sin\(/g, `Math.sin(${toRad}`).replace(/cos\(/g, `Math.cos(${toRad}`).replace(/tan\(/g, `Math.tan(${toRad}`);
       } else {
           s = s.replace(/sin\(/g, 'Math.sin(').replace(/cos\(/g, 'Math.cos(').replace(/tan\(/g, 'Math.tan(');
       }
       s = s.replace(/log\(/g, 'Math.log10(').replace(/ln\(/g, 'Math.log(');
 
-      const raw = eval(s);
-      const res = formatNum(raw);
-      
-      if (!isNaN(res) && isFinite(res)) {
-          updateHistory(expr, res); 
-          $('calc-result').textContent = res; 
-          expr = String(res); 
-      } else { $('calc-result').textContent = "Err"; }
+      const raw = eval(s); const res = formatNum(raw);
+      if (!isNaN(res) && isFinite(res)) { updateHistory(expr, res); $('calc-result').textContent = res; expr = String(res); } 
+      else { $('calc-result').textContent = "Err"; }
     } catch (e) { console.error(e); $('calc-result').textContent = "Err"; } 
   };
 
-  /* --- 5. CLOCK, AUDIO & STOPWATCH --- */
-  
-  // Audio Engine (Generates a 'Tick' sound)
+  /* --- 5. CLOCK ENGINE --- */
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  let soundEnabled = true;
-
   const playTick = () => {
-      if (!soundEnabled || audioCtx.state === 'suspended') {
-          // Attempt resume on interaction, but respect mute
+      if (!isClockSoundOn || audioCtx.state === 'suspended') {
           if(audioCtx.state === 'suspended') audioCtx.resume();
-          if(!soundEnabled) return;
+          if(!isClockSoundOn) return;
       }
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      
-      osc.type = 'sine'; // Soft tick
-      osc.frequency.setValueAtTime(800, audioCtx.currentTime); // High pitch start
-      osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05); // Rapid drop
-      
-      gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // Quiet volume
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-      
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.05);
+      const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+      osc.type = 'sine'; osc.frequency.setValueAtTime(1000, audioCtx.currentTime); 
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.05);
   };
 
-  $('clock-mute').onclick = function() {
-      soundEnabled = !soundEnabled;
-      this.textContent = soundEnabled ? "🔊 Sound On" : "🔇 Sound Off";
-      this.style.opacity = soundEnabled ? "1" : "0.5";
-  };
-
-  // Live Clock
   const startLiveClock = () => {
       clearInterval(clockInterval);
       const update = () => {
           const now = new Date();
           $('clock-display').textContent = now.toLocaleTimeString('en-US', {hour12: true});
           $('clock-date').textContent = now.toLocaleDateString(undefined, {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-          playTick(); // Tick!
+          playTick();
       };
-      update();
-      clockInterval = setInterval(update, 1000);
+      update(); clockInterval = setInterval(update, 1000);
   };
   const stopLiveClock = () => clearInterval(clockInterval);
 
   // Stopwatch
   const formatTime = (ms) => {
-      const min = Math.floor(ms / 60000);
-      const sec = Math.floor((ms % 60000) / 1000);
-      const cent = Math.floor((ms % 1000) / 10);
+      const min = Math.floor(ms / 60000); const sec = Math.floor((ms % 60000) / 1000); const cent = Math.floor((ms % 1000) / 10);
       return `${pad(min)}:${pad(sec)}.${pad(cent)}`;
   };
-
   $('sw-start').onclick = function() {
-      if (swRunning) { // Stop
-          clearInterval(swInterval);
-          this.textContent = "Start";
-          this.style.backgroundColor = "var(--accent-bg)";
-          $('sw-lap').textContent = "Reset";
-          swRunning = false;
-      } else { // Start
+      if (swRunning) { 
+          clearInterval(swInterval); this.textContent = "Start"; this.style.backgroundColor = "var(--accent-bg)"; $('sw-lap').textContent = "Reset"; swRunning = false;
+      } else { 
           const startTime = Date.now() - swTime;
-          swInterval = setInterval(() => {
-              swTime = Date.now() - startTime;
-              $('sw-display').textContent = formatTime(swTime);
-          }, 10);
-          this.textContent = "Stop";
-          this.style.backgroundColor = "#ef4444";
-          $('sw-lap').textContent = "Lap";
-          $('sw-lap').disabled = false;
-          swRunning = true;
+          swInterval = setInterval(() => { swTime = Date.now() - startTime; $('sw-display').textContent = formatTime(swTime); }, 10);
+          this.textContent = "Stop"; this.style.backgroundColor = "#ef4444"; $('sw-lap').textContent = "Lap"; $('sw-lap').disabled = false; swRunning = true;
       }
   };
-
   $('sw-lap').onclick = function() {
-      if (swRunning) { // Lap
-          const lapItem = document.createElement('div');
-          lapItem.className = 'lap-item';
-          lapItem.innerHTML = `<span>Lap ${$('sw-laps').children.length + 1}</span><span>${formatTime(swTime)}</span>`;
-          $('sw-laps').prepend(lapItem);
-          $('sw-laps').style.display = 'block';
-      } else { // Reset
-          swTime = 0;
-          $('sw-display').textContent = "00:00.00";
-          $('sw-laps').innerHTML = '';
-          this.disabled = true;
-          this.textContent = "Lap";
-          $('sw-start').textContent = "Start"; 
-          $('sw-start').style.backgroundColor = "var(--accent-bg)";
+      if (swRunning) { 
+          const lap = document.createElement('div'); lap.className = 'lap-item';
+          lap.innerHTML = `<span>Lap ${$('sw-laps').children.length + 1}</span><span>${formatTime(swTime)}</span>`;
+          $('sw-laps').prepend(lap); $('sw-laps').style.display = 'block';
+      } else { 
+          swTime = 0; $('sw-display').textContent = "00:00.00"; $('sw-laps').innerHTML = '';
+          this.disabled = true; this.textContent = "Lap"; $('sw-start').textContent = "Start"; $('sw-start').style.backgroundColor = "var(--accent-bg)";
       }
   };
 
   // Timer
   $('t-start').onclick = function() {
-      if (timerRunning) { // Stop
-          clearInterval(timerInterval);
-          this.textContent = "Start";
-          this.style.backgroundColor = "var(--accent-bg)";
-          timerRunning = false;
-      } else { // Start
+      if (timerRunning) { 
+          clearInterval(timerInterval); this.textContent = "Start"; this.style.backgroundColor = "var(--accent-bg)"; timerRunning = false;
+      } else { 
           if (timerTime <= 0) {
-              const h = parseInt($('t-h').value) || 0;
-              const m = parseInt($('t-m').value) || 0;
-              const s = parseInt($('t-s').value) || 0;
-              timerTime = (h * 3600) + (m * 60) + s;
-              if (timerTime <= 0) return;
-              $('timer-inputs').style.display = 'none';
-              $('t-display').style.display = 'block';
+              const h = parseInt($('t-h').value)||0, m = parseInt($('t-m').value)||0, s = parseInt($('t-s').value)||0;
+              timerTime = (h*3600) + (m*60) + s; if (timerTime <= 0) return;
+              $('timer-inputs').style.display = 'none'; $('t-display').style.display = 'block';
           }
-          
           timerInterval = setInterval(() => {
               timerTime--;
               if (timerTime < 0) {
-                  clearInterval(timerInterval);
-                  $('t-display').textContent = "Time's Up!";
-                  this.textContent = "Start";
-                  this.style.backgroundColor = "var(--accent-bg)";
-                  timerRunning = false;
+                  clearInterval(timerInterval); $('t-display').textContent = "Time's Up!";
+                  this.textContent = "Start"; this.style.backgroundColor = "var(--accent-bg)"; timerRunning = false;
               } else {
-                  const h = Math.floor(timerTime / 3600);
-                  const m = Math.floor((timerTime % 3600) / 60);
-                  const s = timerTime % 60;
-                  $('t-display').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+                  $('t-display').textContent = `${pad(Math.floor(timerTime/3600))}:${pad(Math.floor((timerTime%3600)/60))}:${pad(timerTime%60)}`;
               }
           }, 1000);
-          
-          this.textContent = "Stop";
-          this.style.backgroundColor = "#ef4444";
-          timerRunning = true;
+          this.textContent = "Stop"; this.style.backgroundColor = "#ef4444"; timerRunning = true;
       }
   };
-
   $('t-reset').onclick = () => {
-      clearInterval(timerInterval);
-      timerRunning = false;
-      timerTime = 0;
-      $('t-start').textContent = "Start";
-      $('t-start').style.backgroundColor = "var(--accent-bg)";
-      $('t-display').textContent = "00:00:00";
-      $('t-display').style.display = 'none';
-      $('timer-inputs').style.display = 'flex';
+      clearInterval(timerInterval); timerRunning = false; timerTime = 0;
+      $('t-start').textContent = "Start"; $('t-start').style.backgroundColor = "var(--accent-bg)";
+      $('t-display').textContent = "00:00:00"; $('t-display').style.display = 'none'; $('timer-inputs').style.display = 'flex';
   };
 
   /* --- 6. TOOLS LOGIC --- */
   
+  // FD/RD Calculator
+  $('fd-btn').onclick = () => {
+      const p = parseFloat($('fd-amt').value), r = parseFloat($('fd-rate').value), t = parseFloat($('fd-time').value);
+      if (!p || !r || !t) { $('fd-res').textContent = "Please fill all fields."; return; }
+      let mat = 0, inv = 0;
+      if (isRD) { // RD Calculation
+          const months = t * 12; const i = r / 1200;
+          mat = p * ((Math.pow(1 + i, months) - 1) / i) * (1 + i);
+          inv = p * months;
+      } else { // FD Calculation (Quarterly Compounding)
+          mat = p * Math.pow((1 + (r/100)/4), 4*t);
+          inv = p;
+      }
+      $('fd-res').innerHTML = `Maturity: <b>${globalSym}${formatINR(Math.round(mat))}</b><br><span style="font-size:0.8rem">Invested: ${globalSym}${formatINR(Math.round(inv))} | Profit: ${globalSym}${formatINR(Math.round(mat-inv))}</span>`;
+  };
+
+  // Income Tax (Simple Slabs)
+  $('tax-btn').onclick = () => {
+      const income = parseFloat($('tax-income').value);
+      if (!income) { $('tax-res').textContent = "Please enter income."; return; }
+      const isNew = document.querySelector('input[name="regime"]:checked').value === 'new';
+      let tax = 0;
+      if (isNew) { // New Regime FY 23-24
+          if (income <= 300000) tax = 0;
+          else if (income <= 600000) tax = (income - 300000) * 0.05;
+          else if (income <= 900000) tax = 15000 + (income - 600000) * 0.10;
+          else if (income <= 1200000) tax = 45000 + (income - 900000) * 0.15;
+          else if (income <= 1500000) tax = 90000 + (income - 1200000) * 0.20;
+          else tax = 150000 + (income - 1500000) * 0.30;
+          if (income <= 700000) tax = 0; // Rebate
+      } else { // Old Regime (Approx)
+          if (income <= 250000) tax = 0;
+          else if (income <= 500000) tax = (income - 250000) * 0.05;
+          else if (income <= 1000000) tax = 12500 + (income - 500000) * 0.20;
+          else tax = 112500 + (income - 1000000) * 0.30;
+          if (income <= 500000) tax = 0; // Rebate
+      }
+      $('tax-res').innerHTML = `Tax Liability: <b>${globalSym}${formatINR(Math.round(tax))}</b><br><span style="font-size:0.8rem; color:var(--muted)">Disclaimer: Estimated. Consult CA.</span>`;
+  };
+
+  // Inflation
+  $('inf-btn').onclick = () => {
+      const p = parseFloat($('inf-amt').value), r = parseFloat($('inf-rate').value), t = parseFloat($('inf-time').value);
+      if (p && r && t) {
+          const future = p * Math.pow((1 + r/100), t);
+          $('inf-res').innerHTML = `Future Value: <b>${globalSym}${formatINR(Math.round(future))}</b>`;
+      }
+  };
+
   // Health
   $('h-btn').onclick = () => {
     const age = parseFloat($('h-age').value), w = parseFloat($('h-weight').value), h = parseFloat($('h-height').value), act = parseFloat($('h-activity').value), gender = $('h-gender').value;
     if (!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
     const bmi = (w/((h/100)*(h/100))).toFixed(1);
-    let bmr = (10*w) + (6.25*h) - (5*age); 
-    bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
-    const tdee = Math.round(bmr * act);
+    let bmr = (10*w) + (6.25*h) - (5*age); bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
     $('h-result').style.display = 'grid';
-    $('res-bmi').textContent = bmi; $('res-bmr').textContent = tdee; $('res-water').textContent = (w/30).toFixed(1); $('res-protein').textContent = Math.round(w * (0.8 + (act - 1.2)));
+    $('res-bmi').textContent = bmi; $('res-bmr').textContent = Math.round(bmr * act); 
+    $('res-water').textContent = (w/30).toFixed(1); $('res-protein').textContent = Math.round(w * (0.8 + (act - 1.2)));
     $('h-msg').textContent = `Status: ${ bmi < 18.5 ? "Underweight" : bmi < 25 ? "Healthy" : bmi < 30 ? "Overweight" : "Obese" }`;
   };
-  $('bmi-info').onclick = (e) => { 
-      e.stopPropagation(); 
-      showInfoModal("BMI Categories", "• <b>< 18.5:</b> Underweight<br>• <b>18.5 - 24.9:</b> Normal<br>• <b>25 - 29.9:</b> Overweight<br>• <b>30+:</b> Obese");
+  
+  // Calories (Dedicated)
+  $('cal-btn').onclick = () => {
+      const age = parseFloat($('cal-age').value), w = parseFloat($('cal-weight').value), h = parseFloat($('cal-height').value), act = parseFloat($('cal-activity').value), gender = $('cal-gender').value;
+      if (!age || !w || !h) { $('cal-res').textContent = "Please fill all fields"; return; }
+      let bmr = (10*w) + (6.25*h) - (5*age) + (gender === 'male' ? 5 : -161);
+      const tdee = Math.round(bmr * act);
+      $('cal-res').innerHTML = `Maintain Weight: <b>${tdee} kcal</b><br><span style="font-size:0.8rem">Lose 0.5kg/week: ${tdee - 500} kcal</span>`;
   };
 
-  // Sleep
-  $('sleep-btn').onclick = () => {
-      const timeStr = $('sleep-time').value, mode = $('sleep-mode').value;
-      if (!timeStr) return;
-      const d = new Date(); const [h, m] = timeStr.split(':'); d.setHours(h); d.setMinutes(m);
-      const format = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit', hour12: true });
-      let html = "";
-      if (mode === 'wake') {
-          const d1 = new Date(d.getTime() - (9 * 3600000) - 900000);
-          const d2 = new Date(d.getTime() - (7.5 * 3600000) - 900000);
-          html = `To wake up at <b>${format(d)}</b>:<br><br><div style="margin-bottom:8px">😴 <b>${format(d1)}</b><br><small style="color:var(--muted)">Best (9 Hours / 6 Cycles)</small></div><div>😄 <b>${format(d2)}</b><br><small style="color:var(--muted)">Good (7.5 Hours / 5 Cycles)</small></div>`;
+  // Body Fat (US Navy)
+  $('fat-btn').onclick = () => {
+      const gender = $('fat-gender').value;
+      const h = parseFloat($('fat-height').value), waist = parseFloat($('fat-waist').value), neck = parseFloat($('fat-neck').value), hip = parseFloat($('fat-hip').value);
+      if(!h || !waist || !neck) { $('fat-res').textContent = "Please fill all fields"; return; }
+      let bf = 0;
+      if (gender === 'male') {
+          bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(h)) - 450;
       } else {
-          const d1 = new Date(d.getTime() + 900000 + (7.5 * 3600000));
-          const d2 = new Date(d.getTime() + 900000 + (9 * 3600000));
-          html = `If you sleep at <b>${format(d)}</b>:<br><br><div style="margin-bottom:8px">😄 <b>${format(d1)}</b><br><small style="color:var(--muted)">Wake up (7.5 Hours)</small></div><div>😴 <b>${format(d2)}</b><br><small style="color:var(--muted)">Wake up (9 Hours)</small></div>`;
+          if (!hip) { $('fat-res').textContent = "Hip size required for females."; return; }
+          bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(h)) - 450;
       }
-      $('sleep-res').innerHTML = html;
+      $('fat-res').innerHTML = `Body Fat: <b>${bf.toFixed(1)}%</b>`;
   };
 
-  // Finance - EMI
+  // Travel Budget
+  $('tb-btn').onclick = () => {
+      const trans = parseFloat($('tb-trans').value)||0, stay = parseFloat($('tb-stay').value)||0, food = parseFloat($('tb-food').value)||0, act = parseFloat($('tb-act').value)||0, misc = parseFloat($('tb-misc').value)||0;
+      const total = trans + stay + food + act + misc;
+      $('tb-res').innerHTML = `Total Trip Cost: <b>${globalSym}${formatINR(total)}</b>`;
+  };
+
+  // Standard Finance Tools
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value), t = parseFloat($('emi-time').value), u = $('emi-unit').value;
     if (!p || !r || !t) { $('emi-result').textContent = "Please fill loan amount, rate and tenure."; return; }
     const monthlyRate = r / 1200, n = u === 'years' ? t * 12 : t;
-    if (monthlyRate <= 0 || n <= 0) { $('emi-result').textContent = "Rate and tenure must be greater than 0."; return; }
     const emi = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
     const total = emi * n;
-    $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym}${formatINR(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatINR(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym}${formatINR(Math.round(total))}</span>`;
-  };
-
-  // Finance - GST
-  const calcGST = (mode) => {
-    const amt = parseFloat($('gst-amt').value), rate = parseFloat($('gst-rate').value);
-    if (!amt || !rate) { $('gst-res').textContent = "Please enter amount and tax rate."; return; }
-    let net, gst, total; 
-    if (mode === 'add') { gst = (amt * rate) / 100; total = amt + gst; net = amt; } 
-    else { net = amt / (1 + rate/100); gst = amt - net; total = amt; }
-    $('gst-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Net Price:</span><span>${globalSym}${formatINR(parseFloat(net.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Tax (${rate}%):</span><span>${globalSym}${formatINR(parseFloat(gst.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); margin-top:5px; border-top:1px solid var(--border); padding-top:5px;"><span>Total:</span><span>${globalSym}${formatINR(parseFloat(total.toFixed(1)))}</span></div>`;
+    $('emi-result').innerHTML = `EMI: <b>${globalSym}${formatINR(Math.round(emi))}</b><br><span style="font-size:0.8rem">Total Interest: ${globalSym}${formatINR(Math.round(total - p))}</span>`;
   };
   $('gst-add').onclick = () => calcGST('add'); $('gst-rem').onclick = () => calcGST('remove');
-
-  // Finance - SIP
+  const calcGST = (m) => {
+      const a = parseFloat($('gst-amt').value), r = parseFloat($('gst-rate').value); if(!a||!r)return;
+      const n = m=='add' ? a : a/(1+r/100), g = m=='add' ? (a*r/100) : a-n, t = m=='add' ? a+g : a;
+      $('gst-res').innerHTML = `Net: ${globalSym}${formatINR(parseFloat(n.toFixed(2)))} | Tax: ${globalSym}${formatINR(parseFloat(g.toFixed(2)))}<br><b>Total: ${globalSym}${formatINR(parseFloat(t.toFixed(2)))}</b>`;
+  };
   $('sip-btn').onclick = () => {
      const p = parseFloat($('sip-amt').value), r = parseFloat($('sip-rate').value), y = parseFloat($('sip-years').value);
-     if (!p || !r || !y) { $('sip-res').textContent = "Please fill monthly amount, rate and years."; return; }
-     const i = r / 1200, n = y * 12;
-     if (i <= 0 || n <= 0) { $('sip-res').textContent = "Rate and years must be greater than 0."; return; }
-     const val = Math.round(p * ((Math.pow(1 + i, n) - 1) / i) * (1 + i));
-     $('sip-res').innerHTML = `Total Value: <b>${globalSym}${formatINR(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Invested: ${globalSym}${formatINR(p * n)} | Profit: ${globalSym}${formatINR(val - (p * n))}</span>`;
+     const i=r/1200, n=y*12, v = p * ((Math.pow(1+i,n)-1)/i)*(1+i);
+     $('sip-res').innerHTML = `Total: <b>${globalSym}${formatINR(Math.round(v))}</b> <span style="font-size:0.8rem">(Profit: ${globalSym}${formatINR(Math.round(v - p*n))})</span>`;
   };
-
-  // Finance - Goal
   $('goal-btn').onclick = () => {
-    const target = parseFloat($('goal-target').value), t = parseFloat($('goal-time').value), r = parseFloat($('goal-rate').value);
-    if (!target || !t || !r) { $('goal-res').textContent = "Please fill target amount, years and expected rate."; return; }
-    if (t <= 0 || r <= 0) { $('goal-res').textContent = "Rate and years must be greater than 0."; return; }
-    const i = r/1200, n = t*12;
-    const res = Math.round(target / (((Math.pow(1+i,n)-1)/i)*(1+i)));
-    $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatINR(res)}/mo</b>`;
+    const tg = parseFloat($('goal-target').value), t = parseFloat($('goal-time').value), r = parseFloat($('goal-rate').value);
+    const i=r/1200, n=t*12, res = tg / (((Math.pow(1+i,n)-1)/i)*(1+i));
+    $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatINR(Math.round(res))}/mo</b>`;
   };
-  
-  // Finance - Percentage Calculator
   $('perc-btn').onclick = () => {
-    const total = parseFloat($('perc-total').value);
-    const rate = parseFloat($('perc-rate').value);
-    
-    if (!total || !rate) {
-      $('perc-res').textContent = "Please enter total amount and percentage.";
-      return;
-    }
-
-    const value = (total * rate) / 100;
-    const off = total - value;
-
-    $('perc-res').innerHTML = `
-      <div style="display:flex; justify-content:space-between; margin-bottom:5px">
-         <span>${rate}% Value:</span> <b>${globalSym}${formatINR(parseFloat(value.toFixed(2)))}</b>
-      </div>
-      <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px">
-         <span style="color:var(--accent)">Result after deduction:</span> <b>${globalSym}${formatINR(parseFloat(off.toFixed(2)))}</b>
-      </div>`;
+    const t = parseFloat($('perc-total').value), r = parseFloat($('perc-rate').value);
+    if(t && r) $('perc-res').innerHTML = `${r}% Value: <b>${globalSym}${formatINR((t*r/100).toFixed(2))}</b><br>After Off: <b>${globalSym}${formatINR((t - t*r/100).toFixed(2))}</b>`;
   };
-  
-  // Finance - Bill
   $('bill-btn').onclick = () => {
-    const amt = parseFloat($('bill-amt').value), tip = parseFloat($('bill-tip').value)||0, ppl = parseFloat($('bill-ppl').value)||1;
-    if (!amt) { $('bill-res').textContent = "Please enter the bill amount."; return; }
-    if (ppl <= 0) { $('bill-res').textContent = "Number of people must be at least 1."; return; }
-    const total = amt + (amt*tip/100); 
-    $('bill-res').innerHTML = `Total: <b>${globalSym}${formatINR(Math.round(total))}</b><br>Per Person: <b>${globalSym}${formatINR(Math.round(total/ppl))}</b>`;
+    const a = parseFloat($('bill-amt').value), t = parseFloat($('bill-tip').value)||0, p = parseFloat($('bill-ppl').value)||1;
+    const tot = a + (a*t/100); $('bill-res').innerHTML = `Total: <b>${globalSym}${formatINR(Math.round(tot))}</b><br>Per Person: <b>${globalSym}${formatINR(Math.round(tot/p))}</b>`;
   };
-  
-  // Finance - CI
   $('ci-btn').onclick = () => {
-    const p = parseFloat($('ci-p').value), r = parseFloat($('ci-r').value), t = parseFloat($('ci-t').value), n = parseFloat($('ci-n').value);
-    if (!p || !r || !t || !n) { $('ci-res').textContent = "Please fill all compound interest fields."; return; }
-    const amt = Math.round(p * Math.pow((1 + (r/100)/n),(n*t))); 
-    $('ci-res').innerHTML = `Total Amount: <b>${globalSym}${formatINR(amt)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Interest Earned: ${globalSym}${formatINR(amt-p)}</span>`;
+    const p=parseFloat($('ci-p').value), r=parseFloat($('ci-r').value), t=parseFloat($('ci-t').value), n=parseFloat($('ci-n').value);
+    const amt = p * Math.pow((1+(r/100)/n),(n*t)); $('ci-res').innerHTML = `Amount: <b>${globalSym}${formatINR(Math.round(amt))}</b><br><span style="font-size:0.8rem">Interest: ${globalSym}${formatINR(Math.round(amt-p))}</span>`;
   };
 
-  // Utility Tools
+  // Utilities
   $('fuel-btn').onclick = () => {
-    const d = parseFloat($('fuel-dist').value), m = parseFloat($('fuel-mil').value), p = parseFloat($('fuel-price').value);
-    if (!d || !m || !p) { $('fuel-res').textContent = "Please fill distance, mileage and fuel price."; return; }
-    const cost = Math.round((d/m)*p);
-    $('fuel-res').innerHTML = `Total Cost: <b>${globalSym}${formatINR(cost)}</b><br>Fuel Needed: <b>${formatNum(d/m)} L</b>`;
+    const d=parseFloat($('fuel-dist').value), m=parseFloat($('fuel-mil').value), p=parseFloat($('fuel-price').value);
+    $('fuel-res').innerHTML = `Cost: <b>${globalSym}${formatINR(Math.round((d/m)*p))}</b> | Fuel: <b>${(d/m).toFixed(1)} L</b>`;
   };
-  
   $('eta-btn').onclick = () => {
-      const d = parseFloat($('eta-dist').value), s = parseFloat($('eta-speed').value), start = $('eta-start').value;
-      if (!d || !s || !start) { $('eta-res').textContent = "Please fill distance, speed and start time."; return; }
-      const now = new Date(); const [h, m] = start.split(':'); now.setHours(h); now.setMinutes(m);
-      now.setMinutes(now.getMinutes() + ((d/s)*60));
-      $('eta-res').innerHTML = `Estimated Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
+      const d=parseFloat($('eta-dist').value), s=parseFloat($('eta-speed').value), start=$('eta-start').value;
+      if(d && s && start) {
+        const now=new Date(); const [h,m]=start.split(':'); now.setHours(h); now.setMinutes(m); now.setMinutes(now.getMinutes() + ((d/s)*60));
+        $('eta-res').innerHTML = `Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</b>`;
+      }
   };
-  
-  $('age-btn').onclick = () => {
-    const dVal = $('dob-input').value; if(!dVal) return;
-    const d = new Date(dVal), t = new Date();
-    if(isNaN(d.getTime())) { $('age-result').textContent = "Invalid date."; return; }
-    if(d>t) return $('age-result').textContent = "Date is in the future!";
-    let y = t.getFullYear()-d.getFullYear(), m = t.getMonth()-d.getMonth(), days = t.getDate()-d.getDate();
-    if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); }
-    if(m<0){ y--; m+=12; }
-    $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
-  };
-  
-  // APIs & Logic
-  $('cur-btn').onclick = async () => {
-    const a = $('cur-amt').value||1, f = $('cur-from').value, t = $('cur-to').value;
-    $('cur-res').textContent = "Loading..."; $('cur-source').style.display = 'none';
-    try { 
-      const r = await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); 
-      const d = await r.json();
-      $('cur-res').innerHTML = `${a} ${f} = <b>${d.rates[t]} ${t}</b>`;
-      $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display = 'block'; 
-    } catch { $('cur-res').textContent = "Err"; }
-  };
-  $('cur-swap').onclick = () => { 
-    const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; 
-    f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); 
-  };
-  $('zone-btn').onclick = () => {
-      $('zone-res').textContent = `Current Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`;
-  };
+  $('zone-btn').onclick = () => $('zone-res').textContent = `Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`;
   $('qr-btn').onclick = () => { 
     const txt = $('qr-text').value; if (!txt) return; 
     $('qr-container').classList.add('show'); $('qr-image').style.display = 'none'; $('qr-loading').style.display = 'block'; 
@@ -1384,69 +1305,29 @@
     }; 
     $('qr-image').src = url; 
   };
-
-  // Converters & Gen
   $('u-btn').onclick = () => { 
-      const v = parseFloat($('u-val').value); if(isNaN(v)) return;
-      const type = $('u-type').value, f = $('u-from').value, t = $('u-to').value;
-      const converted = uData[type].fn(v, f, t);
-      if (typeof converted === 'number' && !isNaN(converted)) {
-          $('u-res').textContent = `${formatNum(converted)} ${t}`;
-      } else { $('u-res').textContent = "Conversion not available."; }
+      const v=parseFloat($('u-val').value), type=$('u-type').value, f=$('u-from').value, t=$('u-to').value;
+      if(!isNaN(v)) $('u-res').textContent = `${formatNum(uData[type].fn(v, f, t))} ${t}`;
   };
   $('time-diff').onclick = () => { 
-    const startVal = $('time-start').value, endVal = $('time-end').value;
-    if (!startVal || !endVal) { $('time-result').textContent = "Please select both dates."; return; }
-    const d1 = new Date(startVal), d2 = new Date(endVal);
-    if(isNaN(d1.getTime())||isNaN(d2.getTime())) { $('time-result').textContent = "Invalid date(s)."; return; }
-    $('time-result').textContent = `${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`;
+    const d1=new Date($('time-start').value), d2=new Date($('time-end').value);
+    if(!isNaN(d1)&&!isNaN(d2)) $('time-result').textContent = `${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`;
   };
   $('base-btn').onclick = () => { 
-    try { 
-      const d = parseInt($('base-num').value, parseInt($('base-from').value)); 
-      if(isNaN(d)) throw Error;
-      $('base-res').innerHTML = `DEC: ${d}<br>BIN: ${d.toString(2)}<br>HEX: ${d.toString(16).toUpperCase()}`; 
-    } catch { $('base-res').textContent = "Invalid"; } 
+    try { const d = parseInt($('base-num').value, parseInt($('base-from').value)); $('base-res').innerHTML = `DEC: ${d}<br>BIN: ${d.toString(2)}<br>HEX: ${d.toString(16).toUpperCase()}`; } catch { $('base-res').textContent = "Invalid"; } 
   };
   $('gpa-btn').onclick = () => { 
     const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); 
     $('gpa-res').textContent = "Avg: " + (n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); 
   };
   
-  // Text Tools
   const txtStats = () => { 
-    const v = $('txt-in').value; 
-    $('txt-chars').textContent = v.length; 
-    $('txt-words').textContent = v.trim().split(/\s+/).filter(w=>w.length>0).length; 
+    const v = $('txt-in').value; $('txt-chars').textContent = v.length; $('txt-words').textContent = v.trim().split(/\s+/).filter(w=>w.length>0).length; 
   };
-  $('txt-in').oninput = txtStats; 
-  $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); txtStats(); }; 
-  $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); txtStats(); }; 
-  $('txt-clear').onclick = () => { $('txt-in').value = ''; txtStats(); };
+  $('txt-in').oninput = txtStats; $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); txtStats(); }; $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); txtStats(); }; $('txt-clear').onclick = () => { $('txt-in').value = ''; txtStats(); };
 
-  /* --- 6. INITIALIZATION --- */
-  
-  const uData = {
-    length: { opts:['m','cm','ft','in'], fn:(v,f,t) => { let m=v; if(f=='cm')m=v/100; if(f=='ft')m=v/3.2808; if(f=='in')m=v/39.37; if(t=='m')return m; if(t=='cm')return m*100; if(t=='ft')return m*3.2808; if(t=='in')return m*39.37; } },
-    weight:{ opts:['kg','lb'], fn:(v,f,t) => f===t?v:(f==='kg'?v*2.2046:v/2.2046) },
-    temp:{ opts:['C','F'], fn:(v,f,t) => f===t?v:(f==='C'?(v*1.8+32):(v-32)/1.8) },
-    speed:{ opts:['kmph','mph'], fn:(v,f,t) => f===t?v:(f==='kmph'?v*0.6213:v/0.6213) }
-  };
-
-  // Simple Native Select Population
-  function renderUnits(){ 
-    const t = $('u-type').value, d = uData[t], f = $('u-from'), to = $('u-to');
-    f.innerHTML = ''; to.innerHTML = ''; 
-    d.opts.forEach(o => { f.add(new Option(o,o)); to.add(new Option(o,o)); }); 
-    if(to.options.length>1) to.selectedIndex = 1; 
-  }
-
-  $('u-type').onchange = renderUnits; 
-  $('u-swap').onclick = () => { const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
-
-  // STARTUP
-  updateThemeColors('mono'); 
-  renderUnits();
+  // Init
+  updateThemeColors('mono'); renderUnits();
   document.querySelector('[data-tab="tab-finance"]').click();
 </script>
 </body>
