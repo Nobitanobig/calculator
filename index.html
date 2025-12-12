@@ -155,7 +155,7 @@
   }
   input:focus, textarea:focus { border-color: var(--accent); }
 
-  /* --- NEW NATIVE SELECT STYLING --- */
+  /* NATIVE SELECT STYLING */
   select {
     appearance: none; -webkit-appearance: none;
     width: 100%; height: 100%;
@@ -174,11 +174,9 @@
     transition: 0.2s;
     outline: none;
     min-width: 80px;
-    height: 38px; /* Slightly taller for easy tapping */
+    height: 38px;
   }
   select:focus { border-color: var(--accent); background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); }
-
-  /* Adjustments for selects inside headers/rows */
   .card-header select { height: 32px; font-size: 0.75rem; width: auto; }
   .theme-block select { height: 32px; font-size: 0.75rem; }
   
@@ -217,6 +215,29 @@
   
   .tab-content { display: none; animation: fadeIn 0.2s ease; }
   .tab-content.active { display: block; }
+
+  /* CLOCK & STOPWATCH STYLES (NEW) */
+  .clock-display {
+    font-size: 2.5rem; font-weight: 600; text-align: center;
+    font-variant-numeric: tabular-nums; letter-spacing: 1px;
+    margin: 10px 0;
+  }
+  .clock-date {
+    text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 10px;
+  }
+  .stopwatch-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .lap-list {
+    max-height: 150px; overflow-y: auto; margin-top: 15px; 
+    border-top: 1px solid var(--border); padding-top: 10px;
+  }
+  .lap-item {
+    display: flex; justify-content: space-between; padding: 6px 0;
+    font-size: 0.85rem; color: var(--muted); border-bottom: 1px solid rgba(128,128,128,0.1);
+  }
+  .timer-inputs { display: flex; gap: 10px; justify-content: center; margin-bottom: 15px; }
+  .timer-input-group { display: flex; flex-direction: column; align-items: center; width: 60px; }
+  .timer-input-group input { text-align: center; padding: 8px; font-size: 1.1rem; }
+  .timer-input-group label { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
 
   /* CALCULATOR UI */
   .sc-switch{
@@ -446,6 +467,7 @@
 
       <div class="tab-bar">
         <button class="tab-btn active" data-tab="tab-finance">Finance</button>
+        <button class="tab-btn" data-tab="tab-clock">Clock</button>
         <button class="tab-btn" data-tab="tab-health">Health</button>
         <button class="tab-btn" data-tab="tab-travel">Travel</button>
         <button class="tab-btn" data-tab="tab-tools">Tools</button>
@@ -463,6 +485,15 @@
         </div>
       </div>
 
+      <div id="tab-clock" class="tab-content">
+        <div class="chips">
+          <button class="chip-btn" data-panel="clock-panel">Live Clock</button>
+          <button class="chip-btn" data-panel="stopwatch-panel">Stopwatch</button>
+          <button class="chip-btn" data-panel="timer-panel">Timer</button>
+          <button class="chip-btn" data-panel="zone-panel">World Time</button>
+        </div>
+      </div>
+
       <div id="tab-health" class="tab-content">
         <div class="chips">
           <button class="chip-btn" data-panel="health-panel">Health Station</button>
@@ -474,7 +505,6 @@
         <div class="chips">
           <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
           <button class="chip-btn" data-panel="eta-panel">Trip ETA</button>
-          <button class="chip-btn" data-panel="zone-panel">Time Zone</button>
         </div>
       </div>
 
@@ -489,6 +519,55 @@
       </div>
 
       <div class="divider"></div>
+
+      <div id="clock-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px; text-align:center;"><div class="card-title">Live Clock</div></div>
+         <div id="clock-display" class="clock-display">--:--:--</div>
+         <div id="clock-date" class="clock-date">-- -- --</div>
+         <button id="clock-mute" class="btn small" style="margin:0 auto; display:block; width:auto; padding:5px 15px; font-size:0.8rem;">🔊 Sound On</button>
+      </div>
+
+      <div id="stopwatch-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Stopwatch</div></div>
+         <div id="sw-display" class="clock-display">00:00.00</div>
+         <div class="stopwatch-controls">
+           <button id="sw-start" class="btn btn-accent">Start</button>
+           <button id="sw-lap" class="btn" disabled>Lap</button>
+         </div>
+         <div id="sw-laps" class="lap-list" style="display:none;"></div>
+      </div>
+
+      <div id="timer-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Timer</div></div>
+         <div class="timer-inputs" id="timer-inputs">
+            <div class="timer-input-group"><input type="number" id="t-h" placeholder="00" min="0"><label>Hr</label></div>
+            <div class="timer-input-group"><input type="number" id="t-m" placeholder="00" min="0" max="59"><label>Min</label></div>
+            <div class="timer-input-group"><input type="number" id="t-s" placeholder="00" min="0" max="59"><label>Sec</label></div>
+         </div>
+         <div id="t-display" class="clock-display" style="display:none;">00:00:00</div>
+         <div class="stopwatch-controls">
+           <button id="t-start" class="btn btn-accent">Start</button>
+           <button id="t-reset" class="btn">Reset</button>
+         </div>
+      </div>
+
+      <div id="zone-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">World Time</div><div class="card-sub">Check time across the globe.</div></div>
+        <div class="field"><label class="mini">Select Region</label>
+          <select id="zone-sel">
+            <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
+            <option value="America/New_York">🇺🇸 New York (EST)</option>
+            <option value="Europe/London">🇬🇧 London (GMT)</option>
+            <option value="Asia/Dubai">🇦🇪 Dubai (GST)</option>
+            <option value="Asia/Tokyo">🇯🇵 Tokyo (JST)</option>
+            <option value="Australia/Sydney">🇦🇺 Sydney (AEDT)</option>
+            <option value="America/Los_Angeles">🇺🇸 Los Angeles (PST)</option>
+            <option value="Europe/Paris">🇫🇷 Paris (CET)</option>
+          </select>
+        </div>
+        <button id="zone-btn" class="btn btn-accent btn-action">Get Time</button>
+        <div id="zone-res" class="result-text"></div>
+      </div>
 
       <div id="loan-panel" class="panel active">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">Monthly payments.</div></div>
@@ -632,24 +711,6 @@
         <div id="eta-res" class="result-text"></div>
       </div>
 
-      <div id="zone-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Time Zone Converter</div><div class="card-sub">Check world time.</div></div>
-        <div class="field"><label class="mini">Select Region</label>
-          <select id="zone-sel">
-            <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
-            <option value="America/New_York">🇺🇸 New York (EST)</option>
-            <option value="Europe/London">🇬🇧 London (GMT)</option>
-            <option value="Asia/Dubai">🇦🇪 Dubai (GST)</option>
-            <option value="Asia/Tokyo">🇯🇵 Tokyo (JST)</option>
-            <option value="Australia/Sydney">🇦🇺 Sydney (AEDT)</option>
-            <option value="America/Los_Angeles">🇺🇸 Los Angeles (PST)</option>
-            <option value="Europe/Paris">🇫🇷 Paris (CET)</option>
-          </select>
-        </div>
-        <button id="zone-btn" class="btn btn-accent btn-action">Get Time</button>
-        <div id="zone-res" class="result-text"></div>
-      </div>
-
       <div id="unit-panel" class="panel">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div></div>
         <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
@@ -699,9 +760,14 @@
   
   // --- 1. GLOBAL VARIABLES & HELPERS ---
   let expr = ''; 
-  let useDeg = true; // Default to Degrees
+  let useDeg = true; 
   let history = []; 
   let globalSym = '₹'; 
+
+  // Clock & Timer Variables
+  let clockInterval;
+  let swInterval, swTime = 0, swRunning = false;
+  let timerInterval, timerTime = 0, timerRunning = false;
 
   // Helper: Fix floating point errors
   const formatNum = (num) => {
@@ -715,6 +781,9 @@
   const formatINR = (num) => {
       return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 1 }).format(num);
   };
+
+  // Helper: Pad numbers for clock (0 -> 00)
+  const pad = (n) => n.toString().padStart(2, '0');
 
   /* --- 2. THEME & CURRENCY SETUP --- */
   const savedCurr = localStorage.getItem('calc_currency');
@@ -819,6 +888,10 @@
          b.classList.add('active');
          document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); 
          $(b.dataset.panel).classList.add('active');
+         
+         // Start/Stop Clock based on visibility
+         if (b.dataset.panel === 'clock-panel') startLiveClock();
+         else stopLiveClock();
       }
   });
 
@@ -991,7 +1064,153 @@
     } catch (e) { console.error(e); $('calc-result').textContent = "Err"; } 
   };
 
-  /* --- 5. TOOLS LOGIC --- */
+  /* --- 5. CLOCK, AUDIO & STOPWATCH --- */
+  
+  // Audio Engine (Generates a 'Tick' sound)
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  let soundEnabled = true;
+
+  const playTick = () => {
+      if (!soundEnabled || audioCtx.state === 'suspended') {
+          // Attempt resume on interaction, but respect mute
+          if(audioCtx.state === 'suspended') audioCtx.resume();
+          if(!soundEnabled) return;
+      }
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = 'sine'; // Soft tick
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime); // High pitch start
+      osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05); // Rapid drop
+      
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // Quiet volume
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.05);
+  };
+
+  $('clock-mute').onclick = function() {
+      soundEnabled = !soundEnabled;
+      this.textContent = soundEnabled ? "🔊 Sound On" : "🔇 Sound Off";
+      this.style.opacity = soundEnabled ? "1" : "0.5";
+  };
+
+  // Live Clock
+  const startLiveClock = () => {
+      clearInterval(clockInterval);
+      const update = () => {
+          const now = new Date();
+          $('clock-display').textContent = now.toLocaleTimeString('en-US', {hour12: true});
+          $('clock-date').textContent = now.toLocaleDateString(undefined, {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+          playTick(); // Tick!
+      };
+      update();
+      clockInterval = setInterval(update, 1000);
+  };
+  const stopLiveClock = () => clearInterval(clockInterval);
+
+  // Stopwatch
+  const formatTime = (ms) => {
+      const min = Math.floor(ms / 60000);
+      const sec = Math.floor((ms % 60000) / 1000);
+      const cent = Math.floor((ms % 1000) / 10);
+      return `${pad(min)}:${pad(sec)}.${pad(cent)}`;
+  };
+
+  $('sw-start').onclick = function() {
+      if (swRunning) { // Stop
+          clearInterval(swInterval);
+          this.textContent = "Start";
+          this.style.backgroundColor = "var(--accent-bg)";
+          $('sw-lap').textContent = "Reset";
+          swRunning = false;
+      } else { // Start
+          const startTime = Date.now() - swTime;
+          swInterval = setInterval(() => {
+              swTime = Date.now() - startTime;
+              $('sw-display').textContent = formatTime(swTime);
+          }, 10);
+          this.textContent = "Stop";
+          this.style.backgroundColor = "#ef4444";
+          $('sw-lap').textContent = "Lap";
+          $('sw-lap').disabled = false;
+          swRunning = true;
+      }
+  };
+
+  $('sw-lap').onclick = function() {
+      if (swRunning) { // Lap
+          const lapItem = document.createElement('div');
+          lapItem.className = 'lap-item';
+          lapItem.innerHTML = `<span>Lap ${$('sw-laps').children.length + 1}</span><span>${formatTime(swTime)}</span>`;
+          $('sw-laps').prepend(lapItem);
+          $('sw-laps').style.display = 'block';
+      } else { // Reset
+          swTime = 0;
+          $('sw-display').textContent = "00:00.00";
+          $('sw-laps').innerHTML = '';
+          this.disabled = true;
+          this.textContent = "Lap";
+          $('sw-start').textContent = "Start"; 
+          $('sw-start').style.backgroundColor = "var(--accent-bg)";
+      }
+  };
+
+  // Timer
+  $('t-start').onclick = function() {
+      if (timerRunning) { // Stop
+          clearInterval(timerInterval);
+          this.textContent = "Start";
+          this.style.backgroundColor = "var(--accent-bg)";
+          timerRunning = false;
+      } else { // Start
+          if (timerTime <= 0) {
+              const h = parseInt($('t-h').value) || 0;
+              const m = parseInt($('t-m').value) || 0;
+              const s = parseInt($('t-s').value) || 0;
+              timerTime = (h * 3600) + (m * 60) + s;
+              if (timerTime <= 0) return;
+              $('timer-inputs').style.display = 'none';
+              $('t-display').style.display = 'block';
+          }
+          
+          timerInterval = setInterval(() => {
+              timerTime--;
+              if (timerTime < 0) {
+                  clearInterval(timerInterval);
+                  $('t-display').textContent = "Time's Up!";
+                  this.textContent = "Start";
+                  this.style.backgroundColor = "var(--accent-bg)";
+                  timerRunning = false;
+              } else {
+                  const h = Math.floor(timerTime / 3600);
+                  const m = Math.floor((timerTime % 3600) / 60);
+                  const s = timerTime % 60;
+                  $('t-display').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+              }
+          }, 1000);
+          
+          this.textContent = "Stop";
+          this.style.backgroundColor = "#ef4444";
+          timerRunning = true;
+      }
+  };
+
+  $('t-reset').onclick = () => {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerTime = 0;
+      $('t-start').textContent = "Start";
+      $('t-start').style.backgroundColor = "var(--accent-bg)";
+      $('t-display').textContent = "00:00:00";
+      $('t-display').style.display = 'none';
+      $('timer-inputs').style.display = 'flex';
+  };
+
+  /* --- 6. TOOLS LOGIC --- */
   
   // Health
   $('h-btn').onclick = () => {
@@ -1214,7 +1433,7 @@
     speed:{ opts:['kmph','mph'], fn:(v,f,t) => f===t?v:(f==='kmph'?v*0.6213:v/0.6213) }
   };
 
-  // Simple Native Select Population (No divs!)
+  // Simple Native Select Population
   function renderUnits(){ 
     const t = $('u-type').value, d = uData[t], f = $('u-from'), to = $('u-to');
     f.innerHTML = ''; to.innerHTML = ''; 
