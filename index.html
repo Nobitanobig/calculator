@@ -381,9 +381,9 @@
 </style>
 <body data-theme="dark">
 
-<div id="currency-modal" class="modal-overlay" role="dialog" aria-modal="true">
+<div id="currency-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="curr-modal-title">
   <div class="modal-card">
-    <div class="card-title" style="margin-bottom:10px; font-size:1.2rem;">Select Currency</div>
+    <div id="curr-modal-title" class="card-title" style="margin-bottom:10px; font-size:1.2rem;">Select Currency</div>
     <div style="margin-bottom:15px; color:var(--muted); font-size:0.9rem;">Choose your preferred currency for all tools.</div>
     <select id="modal-currency-select">
       <option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option>
@@ -394,7 +394,7 @@
   </div>
 </div>
 
-<div id="info-modal" class="modal-overlay" role="dialog" aria-modal="true">
+<div id="info-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="info-title">
   <div class="modal-card">
     <div id="info-title" class="card-title" style="margin-bottom:10px; font-size:1.1rem;"></div>
     <div id="info-content" class="info-list" style="color:var(--muted); font-size:0.9rem; text-align:left;"></div>
@@ -843,9 +843,9 @@
   let swInterval, swTime = 0, swRunning = false;
   let timerInterval, timerTime = 0, timerRunning = false;
 
-  // -- FIXED: Split Formatters (Senior Dev Request) --
+  // -- FIXED: Split Formatters --
   
-  // 1. Tool Formatter (Visual only)
+  // 1. Tool Formatter (Visual only - for generic inputs)
   const formatNum = (num) => {
       let clean = parseFloat(num.toFixed(10)); 
       if (String(clean).split('.')[1]?.length > 4) {
@@ -854,10 +854,11 @@
       return clean;
   };
   
-  // 2. Currency Formatter (Added Space per instruction)
-  const formatINR = (num) => {
-      // Returns "1,000.00" style
-      return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(num);
+  // 2. Currency Formatter (Dynamic Locale: Indian vs Global)
+  const formatCurrencyAmount = (num) => {
+      // If symbol is Rupee, use 'en-IN' (1,00,000), else use 'en-US' (100,000)
+      const locale = globalSym === '₹' ? 'en-IN' : 'en-US';
+      return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(num);
   };
 
   const pad = (n) => n.toString().padStart(2, '0');
@@ -904,10 +905,9 @@
   // ==========================================
   //  REGION 3: SOUND ENGINE (LAZY LOAD FIXED)
   // ==========================================
-  let audioCtx = null; // Lazy init
+  let audioCtx = null; 
   let isMuted = localStorage.getItem('clock_muted') === 'true'; 
 
-  // -- FIXED: Lazy Loader --
   const getAudioCtx = () => {
       if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -930,7 +930,6 @@
       isMuted = !isMuted;
       localStorage.setItem('clock_muted', isMuted); 
       updateMuteIcon();
-      // Initialize context on user interaction if needed
       if (!isMuted) getAudioCtx().resume();
   };
 
@@ -938,7 +937,7 @@
       if (isMuted || document.hidden) return;
       if (!$('clock-panel').classList.contains('active')) return;
 
-      const ctx = getAudioCtx(); // Use lazy getter
+      const ctx = getAudioCtx(); 
       if (ctx.state === 'suspended') ctx.resume();
       
       const t = ctx.currentTime;
@@ -953,7 +952,6 @@
       osc.start(t); osc.stop(t + 0.05);
   };
 
-  // -- FIXED: Visibility Safety --
   document.addEventListener("visibilitychange", () => {
       if (document.hidden) stopLiveClock();
       else if ($('clock-panel').classList.contains('active')) startLiveClock();
@@ -963,12 +961,32 @@
   //  REGION 4: NAVIGATION & ACCESSIBILITY
   // ==========================================
   
+  // -- FIXED: Focus Trap Helper --
+  function trapFocus(modal) {
+    const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if(focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    modal.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    });
+  }
+
+  // Initialize traps
+  trapFocus($('info-modal'));
+  trapFocus($('currency-modal'));
+  
   function showInfoModal(title, content) {
       $('info-title').textContent = title;
       $('info-content').innerHTML = content;
       const modal = $('info-modal');
       modal.classList.add('show');
-      // -- FIXED: Focus Trap --
       $('info-close-btn').focus();
   }
   
@@ -977,12 +995,10 @@
   $('info-close-btn').onclick = closeModals;
   document.querySelectorAll('.modal-overlay').forEach(m => m.onclick = (e) => { if(e.target===m) closeModals(); });
   
-  // -- FIXED: Accessibility Keyboard Trap for Modals --
   document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModals();
   });
 
-  // Tab & Chip Switching (With Persistence)
   const switchTab = (tabId) => {
       document.querySelectorAll('.tab-btn').forEach(b => {
           b.classList.remove('active');
@@ -991,21 +1007,18 @@
       });
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       $(tabId).classList.add('active');
-      localStorage.setItem('last_tab', tabId); // Save state
+      localStorage.setItem('last_tab', tabId); 
   };
 
   const switchPanel = (panelId, btn) => {
-      // Visual update
       const parent = btn.parentElement;
       parent.querySelectorAll('.chip-btn').forEach(x => x.classList.remove('active'));
       btn.classList.add('active');
       
-      // Panel update
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); 
       $(panelId).classList.add('active');
-      localStorage.setItem('last_panel', panelId); // Save state
+      localStorage.setItem('last_panel', panelId); 
 
-      // Clock Logic
       if (panelId === 'clock-panel') startLiveClock();
       else stopLiveClock();
   };
@@ -1013,7 +1026,6 @@
   document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.onclick = () => {
           switchTab(btn.dataset.tab);
-          // Auto-select stored panel if it belongs to this tab, else first child
           const content = $(btn.dataset.tab);
           const firstChip = content.querySelector('.chip-btn');
           if (firstChip) firstChip.click();
@@ -1024,7 +1036,6 @@
       b.onclick = () => switchPanel(b.dataset.panel, b);
   });
 
-  // Search Logic
   $('tool-search').addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
     const chips = document.querySelectorAll('.chip-btn');
@@ -1060,7 +1071,7 @@
   if (savedCurr) setGlobalCurrency(savedCurr);
   else setTimeout(() => {
        $('currency-modal').classList.add('show');
-       $('modal-currency-select').focus(); // Accessibility focus
+       $('modal-currency-select').focus(); 
   }, 500);
 
   $('modal-save-btn').onclick = () => {
@@ -1093,7 +1104,6 @@
       }
   }
 
-  // Restore Theme
   const savedThemeMode = localStorage.getItem('theme_mode');
   if(savedThemeMode) document.body.dataset.theme = savedThemeMode;
   const savedThemeColor = localStorage.getItem('theme_color');
@@ -1106,7 +1116,7 @@
   //  REGION 6: CLOCK & TIME LOGIC
   // ==========================================
   const startLiveClock = () => {
-      clearInterval(clockInterval); // -- FIXED: Safety Clear --
+      clearInterval(clockInterval); 
       const update = () => {
           const now = new Date();
           $('clock-display').textContent = now.toLocaleTimeString('en-US', {hour12: true});
@@ -1118,7 +1128,6 @@
   };
   const stopLiveClock = () => clearInterval(clockInterval);
 
-  // Stopwatch & Timer (Kept same as before, they were fine)
   const formatTime = (ms) => {
       const min = Math.floor(ms / 60000); 
       const sec = Math.floor((ms % 60000) / 1000); 
@@ -1303,16 +1312,25 @@
       else expr = expr.slice(0,-1); 
       upd(); 
   };
-  $('calc-copy').onclick = () => { navigator.clipboard.writeText($('calc-result').textContent); };
+  
+  // -- FIXED: Copy Feedback (Senior Dev Request) --
+  $('calc-copy').onclick = () => { 
+      navigator.clipboard.writeText($('calc-result').textContent); 
+      const originalText = $('calc-copy').textContent;
+      $('calc-copy').textContent = "Copied!";
+      setTimeout(() => $('calc-copy').textContent = originalText, 1000);
+  };
+  
   $('calc-clear').onclick = () => { 
     if (expr === '' && $('calc-result').textContent === '0') { history = []; $('calc-history').innerHTML = ''; $('hist-lbl').style.display = 'none'; } 
     else { expr = ''; upd(); $('calc-result').textContent = '0'; } 
   };
 
-  // -- FIXED: Strict Math Types (Senior Dev Fix) --
+  // -- FIXED: Strict Math Types & Error Reset --
   $('calc-equals').onclick = () => { 
     try { 
-      if (!expr) return;
+      // -- FIXED: Empty Guard --
+      if (!expr.trim()) return;
       
       let s = expr;
       const openCount = (s.match(/\(/g) || []).length; 
@@ -1327,19 +1345,20 @@
       }
       
       const rawResult = math.evaluate(s, scope);
-      
-      // CRITICAL FIX: Convert formatting back to number to prevent "String" chaining
       const numericResult = Number(math.format(rawResult, {precision: 10})); 
       
       if (!isNaN(numericResult)) { 
           updateHistory(s, numericResult); 
           $('calc-result').textContent = numericResult; 
-          expr = String(numericResult); // Cast back to string ONLY for append buffer
+          expr = String(numericResult); 
       } else { 
-          $('calc-result').textContent = "Invalid Expression"; // Text Update
+          throw new Error("NaN Result");
       }
     } catch (e) { 
-      $('calc-result').textContent = "Invalid Expression"; // Text Update
+      // -- FIXED: Reset expression on error --
+      $('calc-result').textContent = "Invalid Expression"; 
+      expr = '';
+      upd();
       console.error(e);
     } 
   };
@@ -1369,11 +1388,11 @@
     const maturityDate = new Date();
     maturityDate.setFullYear(maturityDate.getFullYear() + T);
 
-    // Updated with formatINR for spacing
+    // FIXED: Removed space after globalSym (${globalSym}${format...})
     $('fdrd-res').innerHTML = `
-      <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Investment:</span> <b>${globalSym} ${formatINR(Math.round(invVal))}</b></div>
-      <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Interest:</span> <b>${globalSym} ${formatINR(Math.round(matVal - invVal))}</b></div>
-      <div style="margin-bottom:5px; display:flex; justify-content:space-between; color:var(--accent);"><span>Total Value:</span> <b>${globalSym} ${formatINR(Math.round(matVal))}</b></div>
+      <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Investment:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(invVal))}</b></div>
+      <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Interest:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(matVal - invVal))}</b></div>
+      <div style="margin-bottom:5px; display:flex; justify-content:space-between; color:var(--accent);"><span>Total Value:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(matVal))}</b></div>
       <div style="font-size:0.8rem; color:var(--muted); text-align:right; margin-top:5px;">Maturity: ${maturityDate.toLocaleDateString()}</div>
     `;
   };
@@ -1430,10 +1449,10 @@
       const total = hotel + travel + food + act + shop + misc;
       const perPerson = total / ppl;
       
-      // Updated with formatINR for spacing
+      // FIXED: Removed space
       $('bud-res').innerHTML = `
-        <div style="font-size:1.1rem; text-align:center; margin-bottom:5px;">Total Trip Cost: <b style="color:var(--accent)">${globalSym} ${formatINR(total)}</b></div>
-        <div style="font-size:0.9rem; text-align:center; color:var(--muted)">Cost Per Person: ${globalSym} ${formatINR(Math.round(perPerson))}</div>
+        <div style="font-size:1.1rem; text-align:center; margin-bottom:5px;">Total Trip Cost: <b style="color:var(--accent)">${globalSym}${formatCurrencyAmount(total)}</b></div>
+        <div style="font-size:0.9rem; text-align:center; color:var(--muted)">Cost Per Person: ${globalSym}${formatCurrencyAmount(Math.round(perPerson))}</div>
       `;
   };
 
@@ -1462,8 +1481,8 @@
     const emi = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
     const total = emi * n;
     
-    // Updated with formatINR for spacing
-    $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym} ${formatINR(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym} ${formatINR(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym} ${formatINR(Math.round(total))}</span>`;
+    // FIXED: Removed space
+    $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym}${formatCurrencyAmount(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatCurrencyAmount(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym}${formatCurrencyAmount(Math.round(total))}</span>`;
   };
 
   // 7. GST Calculator
@@ -1474,8 +1493,8 @@
     if (mode === 'add') { gst = (amt * rate) / 100; total = amt + gst; net = amt; } 
     else { net = amt / (1 + rate/100); gst = amt - net; total = amt; }
     
-    // Updated with formatINR for spacing
-    $('gst-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Net Price:</span><span>${globalSym} ${formatINR(parseFloat(net.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Tax (${rate}%):</span><span>${globalSym} ${formatINR(parseFloat(gst.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); margin-top:5px; border-top:1px solid var(--border); padding-top:5px;"><span>Total:</span><span>${globalSym} ${formatINR(parseFloat(total.toFixed(1)))}</span></div>`;
+    // FIXED: Removed space
+    $('gst-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Net Price:</span><span>${globalSym}${formatCurrencyAmount(parseFloat(net.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Tax (${rate}%):</span><span>${globalSym}${formatCurrencyAmount(parseFloat(gst.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); margin-top:5px; border-top:1px solid var(--border); padding-top:5px;"><span>Total:</span><span>${globalSym}${formatCurrencyAmount(parseFloat(total.toFixed(1)))}</span></div>`;
   };
   $('gst-add').onclick = () => calcGST('add'); $('gst-rem').onclick = () => calcGST('remove');
 
@@ -1485,8 +1504,8 @@
      if (!p || !r || !y) { $('sip-res').textContent = "Please fill fields."; return; }
      const i = r / 1200, n = y * 12;
      const val = Math.round(p * ((Math.pow(1 + i, n) - 1) / i) * (1 + i));
-     // Updated with formatINR for spacing
-     $('sip-res').innerHTML = `Total Value: <b>${globalSym} ${formatINR(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Invested: ${globalSym} ${formatINR(p * n)} | Profit: ${globalSym} ${formatINR(val - (p * n))}</span>`;
+     // FIXED: Removed space
+     $('sip-res').innerHTML = `Total Value: <b>${globalSym}${formatCurrencyAmount(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Invested: ${globalSym}${formatCurrencyAmount(p * n)} | Profit: ${globalSym}${formatCurrencyAmount(val - (p * n))}</span>`;
   };
 
   // 9. Goal Planner
@@ -1495,8 +1514,8 @@
     if (!target || !t || !r) { $('goal-res').textContent = "Please fill fields."; return; }
     const i = r/1200, n = t*12;
     const res = Math.round(target / (((Math.pow(1+i,n)-1)/i)*(1+i)));
-    // Updated with formatINR for spacing
-    $('goal-res').innerHTML = `SIP Needed: <b>${globalSym} ${formatINR(res)}/mo</b>`;
+    // FIXED: Removed space
+    $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatCurrencyAmount(res)}/mo</b>`;
   };
   
   // 10. Percentage Calc
@@ -1504,8 +1523,8 @@
     const total = parseFloat($('perc-total').value), rate = parseFloat($('perc-rate').value);
     if (!total || !rate) { $('perc-res').textContent = "Please fill fields."; return; }
     const value = (total * rate) / 100; const off = total - value;
-    // Updated with formatINR for spacing
-    $('perc-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>${rate}% Value:</span> <b>${globalSym} ${formatINR(parseFloat(value.toFixed(2)))}</b></div><div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px"><span style="color:var(--accent)">Result after deduction:</span> <b>${globalSym} ${formatINR(parseFloat(off.toFixed(2)))}</b></div>`;
+    // FIXED: Removed space
+    $('perc-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>${rate}% Value:</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(value.toFixed(2)))}</b></div><div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px"><span style="color:var(--accent)">Result after deduction:</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(off.toFixed(2)))}</b></div>`;
   };
   
   // 11. Bill Split
@@ -1513,8 +1532,8 @@
     const amt = parseFloat($('bill-amt').value), tip = parseFloat($('bill-tip').value)||0, ppl = parseFloat($('bill-ppl').value)||1;
     if (!amt) return;
     const total = amt + (amt*tip/100); 
-    // Updated with formatINR for spacing
-    $('bill-res').innerHTML = `Total: <b>${globalSym} ${formatINR(Math.round(total))}</b><br>Per Person: <b>${globalSym} ${formatINR(Math.round(total/ppl))}</b>`;
+    // FIXED: Removed space
+    $('bill-res').innerHTML = `Total: <b>${globalSym}${formatCurrencyAmount(Math.round(total))}</b><br>Per Person: <b>${globalSym}${formatCurrencyAmount(Math.round(total/ppl))}</b>`;
   };
   
   // 12. Compound Interest
@@ -1522,8 +1541,8 @@
     const p = parseFloat($('ci-p').value), r = parseFloat($('ci-r').value), t = parseFloat($('ci-t').value), n = parseFloat($('ci-n').value);
     if (!p || !r || !t) return;
     const amt = Math.round(p * Math.pow((1 + (r/100)/n),(n*t))); 
-    // Updated with formatINR for spacing
-    $('ci-res').innerHTML = `Total Amount: <b>${globalSym} ${formatINR(amt)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Interest: ${globalSym} ${formatINR(amt-p)}</span>`;
+    // FIXED: Removed space
+    $('ci-res').innerHTML = `Total Amount: <b>${globalSym}${formatCurrencyAmount(amt)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Interest: ${globalSym}${formatCurrencyAmount(amt-p)}</span>`;
   };
 
   // 13. Fuel Cost
@@ -1531,8 +1550,8 @@
     const d = parseFloat($('fuel-dist').value), m = parseFloat($('fuel-mil').value), p = parseFloat($('fuel-price').value);
     if (!d || !m || !p) return;
     const cost = Math.round((d/m)*p);
-    // Updated with formatINR for spacing
-    $('fuel-res').innerHTML = `Total Cost: <b>${globalSym} ${formatINR(cost)}</b><br>Fuel Needed: <b>${formatNum(d/m)} L</b>`;
+    // FIXED: Removed space
+    $('fuel-res').innerHTML = `Total Cost: <b>${globalSym}${formatCurrencyAmount(cost)}</b><br>Fuel Needed: <b>${formatNum(d/m)} L</b>`;
   };
   
   // 14. ETA Calc
@@ -1621,7 +1640,7 @@
   // Startup Init
   renderUnits();
   
-  // -- FIXED: Persistence Logic (Open Last Tab) --
+  // -- FIXED: Persistence Logic --
   const lastTab = localStorage.getItem('last_tab');
   if(lastTab) {
       const tabBtn = document.querySelector(`.tab-btn[data-tab="${lastTab}"]`);
