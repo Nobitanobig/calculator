@@ -50,7 +50,7 @@
     width: 100%;
     min-height: 100vh;
     font-family: "Poppins", system-ui, -apple-system, sans-serif;
-    overflow-x: hidden; /* Prevents horizontal scroll */
+    overflow-x: hidden; 
   }
   
   body{
@@ -110,12 +110,12 @@
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
     transition: background 0.3s ease;
-    position: relative; /* For absolute positioning inside cards */
+    position: relative; 
   }
   .card-header{
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center; /* Centered specifically for the mute button alignment */
     margin-bottom: 15px;
   }
   .title-group { display: flex; flex-direction: column; }
@@ -227,27 +227,19 @@
     text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 10px;
   }
   
-  /* New Mute Button Style */
-  .mute-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
+  /* NEW INLINE MUTE BUTTON */
+  .mute-btn-inline {
     background: var(--btn-bg);
     color: var(--muted);
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    z-index: 10;
+    padding: 6px;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s;
   }
-  .mute-btn:hover { filter: brightness(1.1); }
-  .mute-btn.active { background: var(--accent-bg); color: var(--accent-text); border-color: transparent; }
+  .mute-btn-inline:hover { filter: brightness(1.1); }
+  .mute-btn-inline.active { background: var(--accent-bg); color: var(--accent-text); border-color: transparent; }
 
   .stopwatch-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
   .lap-list {
@@ -376,7 +368,6 @@
   .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
   @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.3); } 60% { transform: scale(1); } 100% { transform: scale(1); } }
 </style>
-</head>
 <body data-theme="dark">
 
 <div id="currency-modal" class="modal-overlay">
@@ -486,29 +477,52 @@
 
       <div class="search-box">
         <div class="search-icon"></div>
-        <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, Fuel, Sleep)...">
+        <input type="text" id="tool-search" class="search-input" placeholder="Search (e.g., GST, Fuel, Calorie)...">
       </div>
 
       <div class="tab-bar">
-        <button class="tab-btn active" data-tab="tab-finance">Finance</button>
-        <button class="tab-btn" data-tab="tab-clock">Clock</button>
+        <button class="tab-btn active" data-tab="tab-tools">Tools</button>
+        <button class="tab-btn" data-tab="tab-finance">Finance</button>
         <button class="tab-btn" data-tab="tab-health">Health</button>
         <button class="tab-btn" data-tab="tab-travel">Travel</button>
-        <button class="tab-btn" data-tab="tab-tools">Tools</button>
+        <button class="tab-btn" data-tab="tab-clock">Clock</button>
       </div>
 
-      <div id="tab-finance" class="tab-content active">
+      <div id="tab-tools" class="tab-content active">
         <div class="chips">
-          <button class="chip-btn active" data-panel="loan-panel">Loan</button>
+          <button class="chip-btn active" data-panel="unit-panel">Converters</button>
+          <button class="chip-btn" data-panel="text-panel">Text Tools</button>
+          <button class="chip-btn" data-panel="time-panel">Day Counter</button>
+          <button class="chip-btn" data-panel="gpa-panel">GPA</button>
+          <button class="chip-btn" data-panel="base-panel">Base Converter</button>
+        </div>
+      </div>
+
+      <div id="tab-finance" class="tab-content">
+        <div class="chips">
+          <button class="chip-btn" data-panel="loan-panel">Loan</button>
           <button class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> 
           <button class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button>
-          <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
+          <button class="chip-btn" data-panel="fdrd-panel">FD/RD</button> <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
           <button class="chip-btn" data-panel="discount-panel">Percentage</button>
           <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
           <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
         </div>
       </div>
 
+      <div id="tab-health" class="tab-content">
+        <div class="chips">
+          <button class="chip-btn" data-panel="health-panel">Health Station</button>
+          <button class="chip-btn" data-panel="calorie-panel">Calories</button> <button class="chip-btn" data-panel="bodyfat-panel">Body Fat %</button> </div>
+      </div>
+
+      <div id="tab-travel" class="tab-content">
+        <div class="chips">
+          <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
+          <button class="chip-btn" data-panel="eta-panel">Trip ETA</button>
+          <button class="chip-btn" data-panel="budget-panel">Budget Planner</button> </div>
+      </div>
+      
       <div id="tab-clock" class="tab-content">
         <div class="chips">
           <button class="chip-btn" data-panel="clock-panel">Live Clock</button>
@@ -518,85 +532,46 @@
         </div>
       </div>
 
-      <div id="tab-health" class="tab-content">
-        <div class="chips">
-          <button class="chip-btn" data-panel="health-panel">Health Station</button>
-          <button class="chip-btn" data-panel="sleep-panel">Sleep Cycle</button>
-        </div>
-      </div>
-
-      <div id="tab-travel" class="tab-content">
-        <div class="chips">
-          <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
-          <button class="chip-btn" data-panel="eta-panel">Trip ETA</button>
-        </div>
-      </div>
-
-      <div id="tab-tools" class="tab-content">
-        <div class="chips">
-          <button class="chip-btn" data-panel="unit-panel">Converters</button>
-          <button class="chip-btn" data-panel="time-panel">Day Counter</button>
-          <button class="chip-btn" data-panel="text-panel">Text Tools</button>
-          <button class="chip-btn" data-panel="base-panel">Base Converter</button>
-          <button class="chip-btn" data-panel="gpa-panel">GPA</button>
-        </div>
-      </div>
-
       <div class="divider"></div>
 
-      <div id="clock-panel" class="panel">
-         <button id="clock-mute" class="mute-btn">
-           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-         </button>
-
-         <div class="title-group" style="margin-bottom:10px; text-align:center;"><div class="card-title">Live Clock</div></div>
-         <div id="clock-display" class="clock-display">--:--:--</div>
-         <div id="clock-date" class="clock-date">-- -- --</div>
+      <div id="unit-panel" class="panel active">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div></div>
+        <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
+        <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
+        <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
+        <button id="u-btn" class="btn btn-accent btn-action">Convert</button>
+        <div id="u-res" class="result-text"></div>
       </div>
 
-      <div id="stopwatch-panel" class="panel">
-         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Stopwatch</div></div>
-         <div id="sw-display" class="clock-display">00:00.00</div>
-         <div class="stopwatch-controls">
-           <button id="sw-start" class="btn btn-accent">Start</button>
-           <button id="sw-lap" class="btn" disabled>Lap</button>
-         </div>
-         <div id="sw-laps" class="lap-list" style="display:none;"></div>
+      <div id="text-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Text Analysis</div><div class="card-sub">Analyze and format your text instantly.</div></div>
+        <div class="field"><textarea id="txt-in" rows="4" placeholder="Type or paste..."></textarea></div>
+        <div class="text-stats" style="margin-bottom:10px;"><div class="stat-box"><div id="txt-words" class="stat-val">0</div><div class="stat-lbl">Words</div></div><div class="stat-box"><div id="txt-chars" class="stat-val">0</div><div class="stat-lbl">Characters</div></div></div>
+        <div class="row" style="gap:5px;"><button id="txt-upper" class="btn small flex-1">UPPER</button><button id="txt-lower" class="btn small flex-1">lower</button><button id="txt-clear" class="btn small flex-1">Clear</button></div>
       </div>
 
-      <div id="timer-panel" class="panel">
-         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Timer</div></div>
-         <div class="timer-inputs" id="timer-inputs">
-            <div class="timer-input-group"><input type="number" id="t-h" placeholder="00" min="0"><label>Hr</label></div>
-            <div class="timer-input-group"><input type="number" id="t-m" placeholder="00" min="0" max="59"><label>Min</label></div>
-            <div class="timer-input-group"><input type="number" id="t-s" placeholder="00" min="0" max="59"><label>Sec</label></div>
-         </div>
-         <div id="t-display" class="clock-display" style="display:none;">00:00:00</div>
-         <div class="stopwatch-controls">
-           <button id="t-start" class="btn btn-accent">Start</button>
-           <button id="t-reset" class="btn">Reset</button>
-         </div>
+      <div id="time-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div><div class="card-sub">Find the number of days between two dates.</div></div>
+        <div class="row"><div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div><div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div></div>
+        <button id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
+        <div id="time-result" class="result-text"></div>
       </div>
 
-      <div id="zone-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">World Time</div><div class="card-sub">See the current time across regions.</div></div>
-        <div class="field"><label class="mini">Select Region</label>
-          <select id="zone-sel">
-            <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
-            <option value="America/New_York">🇺🇸 New York (EST)</option>
-            <option value="Europe/London">🇬🇧 London (GMT)</option>
-            <option value="Asia/Dubai">🇦🇪 Dubai (GST)</option>
-            <option value="Asia/Tokyo">🇯🇵 Tokyo (JST)</option>
-            <option value="Australia/Sydney">🇦🇺 Sydney (AEDT)</option>
-            <option value="America/Los_Angeles">🇺🇸 Los Angeles (PST)</option>
-            <option value="Europe/Paris">🇫🇷 Paris (CET)</option>
-          </select>
-        </div>
-        <button id="zone-btn" class="btn btn-accent btn-action">Get Time</button>
-        <div id="zone-res" class="result-text"></div>
+      <div id="gpa-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Find the average of any set of numbers.</div></div>
+        <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
+        <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
+        <div id="gpa-res" class="result-text"></div>
       </div>
 
-      <div id="loan-panel" class="panel active">
+      <div id="base-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Base Converter</div><div class="card-sub">Convert numbers between different numeral systems.</div></div>
+        <div class="row"><div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div><div class="field flex-1"><label class="mini">From Base</label><select id="base-from"><option value="10">Decimal</option><option value="2">Binary</option><option value="16">Hex</option></select></div></div>
+        <button id="base-btn" class="btn btn-accent btn-action">Convert</button>
+        <div id="base-res" class="result-text"></div>
+      </div>
+
+      <div id="loan-panel" class="panel">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">See how much you’ll pay every month.</div></div>
         <div class="field"><label class="mini">Loan Amount</label><input id="emi-principal" type="number" placeholder="100000"></div>
         <div class="row">
@@ -630,6 +605,21 @@
         </div>
         <button id="sip-btn" class="btn btn-accent btn-action">Calculate Return</button>
         <div id="sip-res" class="result-text"></div>
+      </div>
+
+      <div id="fdrd-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">FD/RD Calculator</div><div class="card-sub">Fixed Deposit / Recurring Deposit</div></div>
+        <div class="field">
+            <label class="mini">Type</label>
+            <select id="fdrd-type"><option value="fd">Fixed Deposit (One time)</option><option value="rd">Recurring Deposit (Monthly)</option></select>
+        </div>
+        <div class="field"><label class="mini">Amount</label><input id="fdrd-amt" type="number" placeholder="100000"></div>
+        <div class="row">
+           <div class="field flex-1"><label class="mini">Rate %</label><input id="fdrd-rate" type="number" placeholder="6.5"></div>
+           <div class="field flex-1"><label class="mini">Years</label><input id="fdrd-years" type="number" placeholder="5"></div>
+        </div>
+        <button id="fdrd-btn" class="btn btn-accent btn-action">Calculate Maturity</button>
+        <div id="fdrd-res" class="result-text"></div>
       </div>
 
       <div id="goal-panel" class="panel">
@@ -702,18 +692,32 @@
         <div id="h-msg" class="result-text" style="text-align:center;"></div>
       </div>
 
-      <div id="sleep-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Sleep Cycle</div><div class="card-sub">Sleep in 90-min cycles for best rest.</div></div>
-        <div class="field">
-          <label class="mini">Mode</label>
-          <select id="sleep-mode">
-            <option value="wake">I want to wake up at...</option>
-            <option value="sleep">I plan to sleep at...</option>
-          </select>
-        </div>
-        <div class="field"><label class="mini">Time</label><input id="sleep-time" type="time"></div>
-        <button id="sleep-btn" class="btn btn-accent btn-action">Calculate Times</button>
-        <div id="sleep-res" class="result-text"></div>
+      <div id="calorie-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Calorie Needs</div><div class="card-sub">Daily calorie goals for weight management.</div></div>
+         <div class="row">
+            <div class="field flex-1"><label class="mini">Age</label><input id="cal-age" type="number" placeholder="25"></div>
+            <div class="field flex-1"><label class="mini">Gender</label><select id="cal-gender"><option value="male">Male</option><option value="female">Female</option></select></div>
+         </div>
+         <div class="row">
+            <div class="field flex-1"><label class="mini">Weight (kg)</label><input id="cal-weight" type="number" placeholder="70"></div>
+            <div class="field flex-1"><label class="mini">Height (cm)</label><input id="cal-height" type="number" placeholder="170"></div>
+         </div>
+         <div class="field"><label class="mini">Activity</label><select id="cal-act"><option value="1.2">Sedentary</option><option value="1.375">Light Activity</option><option value="1.55">Moderate Activity</option><option value="1.725">Very Active</option></select></div>
+         <button id="cal-btn" class="btn btn-accent btn-action">Calculate</button>
+         <div id="cal-res" class="result-text"></div>
+      </div>
+
+      <div id="bodyfat-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Body Fat %</div><div class="card-sub">US Navy Method.</div></div>
+         <div class="field"><label class="mini">Gender</label><select id="bf-gender" onchange="document.getElementById('bf-hip-group').style.display = this.value==='female'?'block':'none'"><option value="male">Male</option><option value="female">Female</option></select></div>
+         <div class="row">
+             <div class="field flex-1"><label class="mini">Height (cm)</label><input id="bf-height" type="number" placeholder="175"></div>
+             <div class="field flex-1"><label class="mini">Neck (cm)</label><input id="bf-neck" type="number" placeholder="38"></div>
+         </div>
+         <div class="field"><label class="mini">Waist (at navel) (cm)</label><input id="bf-waist" type="number" placeholder="85"></div>
+         <div id="bf-hip-group" class="field" style="display:none;"><label class="mini">Hip (at widest) (cm)</label><input id="bf-hip" type="number" placeholder="95"></div>
+         <button id="bf-btn" class="btn btn-accent btn-action">Calculate Body Fat</button>
+         <div id="bf-res" class="result-text"></div>
       </div>
 
       <div id="fuel-panel" class="panel">
@@ -738,41 +742,67 @@
         <div id="eta-res" class="result-text"></div>
       </div>
 
-      <div id="unit-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div></div>
-        <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
-        <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button id="u-swap" class="btn small" style="width:40px; margin-top: 18px">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
-        <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
-        <button id="u-btn" class="btn btn-accent btn-action">Convert</button>
-        <div id="u-res" class="result-text"></div>
+      <div id="budget-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Travel Budget Planner</div><div class="card-sub">Estimate your total trip cost.</div></div>
+         <div class="row"><div class="field flex-1"><label class="mini">Hotel</label><input id="bud-hotel" type="number" placeholder="0"></div><div class="field flex-1"><label class="mini">Travel</label><input id="bud-travel" type="number" placeholder="0"></div></div>
+         <div class="row"><div class="field flex-1"><label class="mini">Food</label><input id="bud-food" type="number" placeholder="0"></div><div class="field flex-1"><label class="mini">Activity</label><input id="bud-act" type="number" placeholder="0"></div></div>
+         <div class="row"><div class="field flex-1"><label class="mini">Shopping</label><input id="bud-shop" type="number" placeholder="0"></div><div class="field flex-1"><label class="mini">Misc</label><input id="bud-misc" type="number" placeholder="0"></div></div>
+         <div class="field"><label class="mini">Total Persons</label><input id="bud-ppl" type="number" placeholder="1"></div>
+         <button id="bud-btn" class="btn btn-accent btn-action">Calculate Budget</button>
+         <div id="bud-res" class="result-text"></div>
       </div>
 
-      <div id="text-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Text Analysis</div><div class="card-sub">Analyze and format your text instantly.</div></div>
-        <div class="field"><textarea id="txt-in" rows="4" placeholder="Type or paste..."></textarea></div>
-        <div class="text-stats" style="margin-bottom:10px;"><div class="stat-box"><div id="txt-words" class="stat-val">0</div><div class="stat-lbl">Words</div></div><div class="stat-box"><div id="txt-chars" class="stat-val">0</div><div class="stat-lbl">Characters</div></div></div>
-        <div class="row" style="gap:5px;"><button id="txt-upper" class="btn small flex-1">UPPER</button><button id="txt-lower" class="btn small flex-1">lower</button><button id="txt-clear" class="btn small flex-1">Clear</button></div>
+      <div id="clock-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px; display:flex; flex-direction:row; align-items:center; justify-content:center; gap:10px;">
+             <div class="card-title">Live Clock</div>
+             <button id="clock-mute" class="mute-btn-inline">
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+             </button>
+         </div>
+         <div id="clock-display" class="clock-display">--:--:--</div>
+         <div id="clock-date" class="clock-date">-- -- --</div>
       </div>
 
-      <div id="base-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Base Converter</div><div class="card-sub">Convert numbers between different numeral systems.</div></div>
-        <div class="row"><div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div><div class="field flex-1"><label class="mini">From Base</label><select id="base-from"><option value="10">Decimal</option><option value="2">Binary</option><option value="16">Hex</option></select></div></div>
-        <button id="base-btn" class="btn btn-accent btn-action">Convert</button>
-        <div id="base-res" class="result-text"></div>
+      <div id="stopwatch-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Stopwatch</div></div>
+         <div id="sw-display" class="clock-display">00:00.00</div>
+         <div class="stopwatch-controls">
+           <button id="sw-start" class="btn btn-accent">Start</button>
+           <button id="sw-lap" class="btn" disabled>Lap</button>
+         </div>
+         <div id="sw-laps" class="lap-list" style="display:none;"></div>
       </div>
 
-      <div id="time-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div><div class="card-sub">Find the number of days between two dates.</div></div>
-        <div class="row"><div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div><div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div></div>
-        <button id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
-        <div id="time-result" class="result-text"></div>
+      <div id="timer-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Timer</div></div>
+         <div class="timer-inputs" id="timer-inputs">
+            <div class="timer-input-group"><input type="number" id="t-h" placeholder="00" min="0"><label>Hr</label></div>
+            <div class="timer-input-group"><input type="number" id="t-m" placeholder="00" min="0" max="59"><label>Min</label></div>
+            <div class="timer-input-group"><input type="number" id="t-s" placeholder="00" min="0" max="59"><label>Sec</label></div>
+         </div>
+         <div id="t-display" class="clock-display" style="display:none;">00:00:00</div>
+         <div class="stopwatch-controls">
+           <button id="t-start" class="btn btn-accent">Start</button>
+           <button id="t-reset" class="btn">Reset</button>
+         </div>
       </div>
 
-      <div id="gpa-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Find the average of any set of numbers.</div></div>
-        <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
-        <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
-        <div id="gpa-res" class="result-text"></div>
+      <div id="zone-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">World Time</div><div class="card-sub">See the current time across regions.</div></div>
+        <div class="field"><label class="mini">Select Region</label>
+          <select id="zone-sel">
+            <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
+            <option value="America/New_York">🇺🇸 New York (EST)</option>
+            <option value="Europe/London">🇬🇧 London (GMT)</option>
+            <option value="Asia/Dubai">🇦🇪 Dubai (GST)</option>
+            <option value="Asia/Tokyo">🇯🇵 Tokyo (JST)</option>
+            <option value="Australia/Sydney">🇦🇺 Sydney (AEDT)</option>
+            <option value="America/Los_Angeles">🇺🇸 Los Angeles (PST)</option>
+            <option value="Europe/Paris">🇫🇷 Paris (CET)</option>
+          </select>
+        </div>
+        <button id="zone-btn" class="btn btn-accent btn-action">Get Time</button>
+        <div id="zone-res" class="result-text"></div>
       </div>
 
     </section>
@@ -797,7 +827,6 @@
   let swInterval, swTime = 0, swRunning = false;
   let timerInterval, timerTime = 0, timerRunning = false;
 
-  // Helper: Fix floating point errors
   const formatNum = (num) => {
       let clean = parseFloat(num.toFixed(10)); 
       if (String(clean).split('.')[1]?.length > 4) {
@@ -810,7 +839,6 @@
       return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 1 }).format(num);
   };
 
-  // Helper: Pad numbers for clock (0 -> 00)
   const pad = (n) => n.toString().padStart(2, '0');
 
   /* --- 2. THEME & CURRENCY SETUP --- */
@@ -851,6 +879,7 @@
         invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; 
       }
       
+      // Update active panel button if needed
       const activeBtn = document.querySelector('.panel.active .btn-accent');
       if (activeBtn) activeBtn.click();
   }
@@ -917,13 +946,12 @@
          document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); 
          $(b.dataset.panel).classList.add('active');
          
-         // Start/Stop Clock based on visibility
          if (b.dataset.panel === 'clock-panel') startLiveClock();
          else stopLiveClock();
       }
   });
 
-  // Search Functionality
+  // Search
   $('tool-search').addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
     const chips = document.querySelectorAll('.chip-btn');
@@ -948,32 +976,21 @@
     }
   });
 
-  /* --- 4. CALCULATOR ENGINE (WITH KEYBOARD FIX) --- */
-  
-  // FIX: Listen for "Enter" on specific inputs to trigger their specific buttons
-  // This improves UX so you can hit Enter in the Age Calculator and it works.
+  /* --- 4. CALCULATOR ENGINE (ENTER FIX INCLUDED) --- */
   document.addEventListener('keydown', (e) => {
     const tag = e.target.tagName;
-    
-    // If typing in ANY input, textarea, or select
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
-        
-        // If Enter is pressed inside an input, try to find the "Action Button" for that card
         if (e.key === 'Enter') {
             e.preventDefault();
-            // Find the closest card parent
             const card = e.target.closest('.card, .panel');
             if (card) {
-                // Find the main button (class btn-accent or btn-action) inside this card
                 const actionBtn = card.querySelector('.btn-action');
                 if (actionBtn) actionBtn.click();
             }
         }
-        // STOP here. Do not trigger the Main Calculator logic.
         return;
     }
 
-    // Main Calculator Logic (Only works when NOT typing in an input)
     const key = e.key;
     if ("0123456789.+-*/%()".includes(key)) {
       e.preventDefault();
@@ -995,165 +1012,95 @@
     $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
     tape.querySelectorAll('.hist-item').forEach(item => { 
-      item.onclick = () => { 
-        expr += item.textContent.split('=')[1].trim(); 
-        upd(); 
-      }; 
+      item.onclick = () => { expr += item.textContent.split('=')[1].trim(); upd(); }; 
     });
   };
 
   const upd = () => {
-      let displayExpr = expr
-          .replace(/\*/g, '×')
-          .replace(/\//g, '÷')
-          .replace(/Math.PI/g, 'π')
-          .replace(/Math.E/g, 'e');
+      let displayExpr = expr.replace(/\*/g, '×').replace(/\//g, '÷').replace(/Math.PI/g, 'π').replace(/Math.E/g, 'e');
       $('calc-expression').textContent = displayExpr;
   };
   
-  // Standard Keys
   const k = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
   k.forEach(x => { 
-    let b = document.createElement('button'); 
-    b.className = 'btn'; 
-    b.textContent = x; 
-    b.onclick = () => {
-      expr += {'÷':'/','×':'*','−':'-'}[x] || x; 
-      upd();
-    }; 
+    let b = document.createElement('button'); b.className = 'btn'; b.textContent = x; 
+    b.onclick = () => { expr += {'÷':'/','×':'*','−':'-'}[x] || x; upd(); }; 
     $('calc-grid').appendChild(b); 
   });
 
-  // Scientific Keys Logic
   const degBtn = $('deg-toggle');
   degBtn.onclick = () => { 
-    useDeg = !useDeg; 
-    degBtn.textContent = useDeg ? "DEG" : "RAD"; 
-    degBtn.classList.toggle('active-mode', useDeg); 
+    useDeg = !useDeg; degBtn.textContent = useDeg ? "DEG" : "RAD"; degBtn.classList.toggle('active-mode', useDeg); 
   };
   degBtn.classList.add('active-mode');
 
   $('sc-switch').onclick = function() { 
-    this.classList.toggle('on'); 
-    $('sci-keys').style.display = this.classList.contains('on') ? 'grid' : 'none'; 
+    this.classList.toggle('on'); $('sci-keys').style.display = this.classList.contains('on') ? 'grid' : 'none'; 
   };
 
   document.querySelectorAll('#sci-keys .btn:not(#deg-toggle)').forEach(b => {
     b.onclick = () => { 
       const fn = b.dataset.fn; 
-      if (fn === 'pi') expr += 'Math.PI'; 
-      else if (fn === 'e') expr += 'Math.E';
-      else if (fn === 'pow') expr += '**'; 
-      else if (fn === 'inv') expr += '1/'; 
-      else if (fn === 'sqrt') expr += '√('; 
-      else if (fn === '(' || fn === ')') expr += fn;
-      else expr += `${fn}(`; 
+      if (fn === 'pi') expr += 'Math.PI'; else if (fn === 'e') expr += 'Math.E'; else if (fn === 'pow') expr += '**'; 
+      else if (fn === 'inv') expr += '1/'; else if (fn === 'sqrt') expr += '√('; else if (fn === '(' || fn === ')') expr += fn; else expr += `${fn}(`; 
       upd(); 
     };
   });
 
   $('calc-back').onclick = () => { 
-      if(expr.endsWith('Math.PI')) expr = expr.slice(0, -7);
-      else if(expr.endsWith('Math.E')) expr = expr.slice(0, -6);
-      else expr = expr.slice(0,-1); 
+      if(expr.endsWith('Math.PI')) expr = expr.slice(0, -7); else if(expr.endsWith('Math.E')) expr = expr.slice(0, -6); else expr = expr.slice(0,-1); 
       upd(); 
   };
   $('calc-copy').onclick = () => { navigator.clipboard.writeText($('calc-result').textContent); };
   $('calc-clear').onclick = () => { 
-    if (expr === '' && $('calc-result').textContent === '0') {
-      history = [];
-      $('calc-history').innerHTML = '';
-      $('hist-lbl').style.display = 'none';
-    } else {
-      expr = '';
-      upd();
-      $('calc-result').textContent = '0';
-    } 
+    if (expr === '' && $('calc-result').textContent === '0') { history = []; $('calc-history').innerHTML = ''; $('hist-lbl').style.display = 'none'; } 
+    else { expr = ''; upd(); $('calc-result').textContent = '0'; } 
   };
 
   $('calc-equals').onclick = () => { 
     try { 
       if (!expr) return;
       let s = expr;
-      const openCount = (s.match(/\(/g) || []).length;
-      const closeCount = (s.match(/\)/g) || []).length;
+      const openCount = (s.match(/\(/g) || []).length; const closeCount = (s.match(/\)/g) || []).length;
       if (openCount > closeCount) s += ')'.repeat(openCount - closeCount);
-
-      s = s.replace(/(\d+(\.\d+)?)([\+\-])(\d+(\.\d+)?)%/g, (m,n1,_,op,n2) => {
-          const v1 = parseFloat(n1), v2 = parseFloat(n2); 
-          return op === '+' ? v1 * (1 + v2/100) : v1 * (1 - v2/100);
-      }).replace(/(\d+(\.\d+)?)%/g, '($1/100)');
-      
+      s = s.replace(/(\d+(\.\d+)?)([\+\-])(\d+(\.\d+)?)%/g, (m,n1,_,op,n2) => op === '+' ? parseFloat(n1)*(1+parseFloat(n2)/100) : parseFloat(n1)*(1-parseFloat(n2)/100)).replace(/(\d+(\.\d+)?)%/g, '($1/100)');
       s = s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/√\(/g,'Math.sqrt(').replace(/\^/g,'**');
-
-      if (useDeg) {
-          const toRad = "(Math.PI/180)*";
-          s = s.replace(/sin\(/g, `Math.sin(${toRad}`)
-               .replace(/cos\(/g, `Math.cos(${toRad}`)
-               .replace(/tan\(/g, `Math.tan(${toRad}`);
-      } else {
-          s = s.replace(/sin\(/g, 'Math.sin(').replace(/cos\(/g, 'Math.cos(').replace(/tan\(/g, 'Math.tan(');
-      }
+      if (useDeg) { const toRad = "(Math.PI/180)*"; s = s.replace(/sin\(/g, `Math.sin(${toRad}`).replace(/cos\(/g, `Math.cos(${toRad}`).replace(/tan\(/g, `Math.tan(${toRad}`); } 
+      else { s = s.replace(/sin\(/g, 'Math.sin(').replace(/cos\(/g, 'Math.cos(').replace(/tan\(/g, 'Math.tan('); }
       s = s.replace(/log\(/g, 'Math.log10(').replace(/ln\(/g, 'Math.log(');
-
-      const raw = eval(s);
-      const res = formatNum(raw);
-      
-      if (!isNaN(res) && isFinite(res)) {
-          updateHistory(expr, res); 
-          $('calc-result').textContent = res; 
-          expr = String(res); 
-      } else { $('calc-result').textContent = "Err"; }
-    } catch (e) { console.error(e); $('calc-result').textContent = "Err"; } 
+      const res = formatNum(eval(s));
+      if (!isNaN(res) && isFinite(res)) { updateHistory(expr, res); $('calc-result').textContent = res; expr = String(res); } else { $('calc-result').textContent = "Err"; }
+    } catch (e) { $('calc-result').textContent = "Err"; } 
   };
 
-  /* --- 5. CLOCK, AUDIO (NEW WOODBLOCK) & STOPWATCH --- */
-  
-  // Audio Engine: Woodblock / Tick-Tock Logic
+  /* --- 5. CLOCK, AUDIO & STOPWATCH --- */
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   let soundEnabled = true;
 
-  // WAKE UP AUDIO CONTEXT on first click anywhere
-  document.addEventListener('click', () => {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-  }, { once: true });
+  document.addEventListener('click', () => { if (audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
 
   const playTick = () => {
       if (!soundEnabled) return;
       if (audioCtx.state === 'suspended') audioCtx.resume();
-
       const t = audioCtx.currentTime;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      
-      // Synthesis for "Woodblock" / Mechanical Tick
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1200, t); // High pitch for crispness
-      osc.frequency.exponentialRampToValueAtTime(800, t + 0.05); // Slight pitch drop
-      
-      gain.gain.setValueAtTime(0.3, t); // Moderate volume
-      gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05); // Very fast decay
-      
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      
-      osc.start(t);
-      osc.stop(t + 0.05);
+      osc.type = 'sine'; osc.frequency.setValueAtTime(1200, t); osc.frequency.exponentialRampToValueAtTime(800, t + 0.05); 
+      gain.gain.setValueAtTime(0.3, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05); 
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.05);
   };
 
   $('clock-mute').onclick = function() {
       soundEnabled = !soundEnabled;
-      // SVG Icon Toggle logic
       if(soundEnabled) {
-        this.classList.remove('active'); // Default style
+        this.classList.remove('active'); 
         this.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
       } else {
-        this.classList.add('active'); // Highlighted/Warn style or just visually distinct
+        this.classList.add('active'); 
         this.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
       }
   };
 
-  // Live Clock
   const startLiveClock = () => {
       clearInterval(clockInterval);
       const update = () => {
@@ -1167,107 +1114,146 @@
   };
   const stopLiveClock = () => clearInterval(clockInterval);
 
-  // Stopwatch
   const formatTime = (ms) => {
-      const min = Math.floor(ms / 60000);
-      const sec = Math.floor((ms % 60000) / 1000);
-      const cent = Math.floor((ms % 1000) / 10);
+      const min = Math.floor(ms / 60000); const sec = Math.floor((ms % 60000) / 1000); const cent = Math.floor((ms % 1000) / 10);
       return `${pad(min)}:${pad(sec)}.${pad(cent)}`;
   };
 
   $('sw-start').onclick = function() {
-      if (swRunning) { // Stop
-          clearInterval(swInterval);
-          this.textContent = "Start";
-          this.style.backgroundColor = "var(--accent-bg)";
-          $('sw-lap').textContent = "Reset";
-          swRunning = false;
-      } else { // Start
+      if (swRunning) { clearInterval(swInterval); this.textContent = "Start"; this.style.backgroundColor = "var(--accent-bg)"; $('sw-lap').textContent = "Reset"; swRunning = false; } 
+      else { 
           const startTime = Date.now() - swTime;
-          swInterval = setInterval(() => {
-              swTime = Date.now() - startTime;
-              $('sw-display').textContent = formatTime(swTime);
-          }, 10);
-          this.textContent = "Stop";
-          this.style.backgroundColor = "#ef4444";
-          $('sw-lap').textContent = "Lap";
-          $('sw-lap').disabled = false;
-          swRunning = true;
+          swInterval = setInterval(() => { swTime = Date.now() - startTime; $('sw-display').textContent = formatTime(swTime); }, 10);
+          this.textContent = "Stop"; this.style.backgroundColor = "#ef4444"; $('sw-lap').textContent = "Lap"; $('sw-lap').disabled = false; swRunning = true;
       }
   };
 
   $('sw-lap').onclick = function() {
-      if (swRunning) { // Lap
-          const lapItem = document.createElement('div');
-          lapItem.className = 'lap-item';
+      if (swRunning) { 
+          const lapItem = document.createElement('div'); lapItem.className = 'lap-item';
           lapItem.innerHTML = `<span>Lap ${$('sw-laps').children.length + 1}</span><span>${formatTime(swTime)}</span>`;
-          $('sw-laps').prepend(lapItem);
-          $('sw-laps').style.display = 'block';
-      } else { // Reset
-          swTime = 0;
-          $('sw-display').textContent = "00:00.00";
-          $('sw-laps').innerHTML = '';
-          this.disabled = true;
-          this.textContent = "Lap";
-          $('sw-start').textContent = "Start"; 
-          $('sw-start').style.backgroundColor = "var(--accent-bg)";
+          $('sw-laps').prepend(lapItem); $('sw-laps').style.display = 'block';
+      } else { 
+          swTime = 0; $('sw-display').textContent = "00:00.00"; $('sw-laps').innerHTML = ''; this.disabled = true; this.textContent = "Lap"; $('sw-start').textContent = "Start"; $('sw-start').style.backgroundColor = "var(--accent-bg)";
       }
   };
 
-  // Timer
   $('t-start').onclick = function() {
-      if (timerRunning) { // Stop
-          clearInterval(timerInterval);
-          this.textContent = "Start";
-          this.style.backgroundColor = "var(--accent-bg)";
-          timerRunning = false;
-      } else { // Start
+      if (timerRunning) { clearInterval(timerInterval); this.textContent = "Start"; this.style.backgroundColor = "var(--accent-bg)"; timerRunning = false; } 
+      else { 
           if (timerTime <= 0) {
-              const h = parseInt($('t-h').value) || 0;
-              const m = parseInt($('t-m').value) || 0;
-              const s = parseInt($('t-s').value) || 0;
-              timerTime = (h * 3600) + (m * 60) + s;
-              if (timerTime <= 0) return;
-              $('timer-inputs').style.display = 'none';
-              $('t-display').style.display = 'block';
+              const h = parseInt($('t-h').value)||0, m = parseInt($('t-m').value)||0, s = parseInt($('t-s').value)||0;
+              timerTime = (h * 3600) + (m * 60) + s; if (timerTime <= 0) return;
+              $('timer-inputs').style.display = 'none'; $('t-display').style.display = 'block';
           }
-          
           timerInterval = setInterval(() => {
               timerTime--;
-              if (timerTime < 0) {
-                  clearInterval(timerInterval);
-                  $('t-display').textContent = "Time's Up!";
-                  this.textContent = "Start";
-                  this.style.backgroundColor = "var(--accent-bg)";
-                  timerRunning = false;
-              } else {
-                  const h = Math.floor(timerTime / 3600);
-                  const m = Math.floor((timerTime % 3600) / 60);
-                  const s = timerTime % 60;
-                  $('t-display').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
-              }
+              if (timerTime < 0) { clearInterval(timerInterval); $('t-display').textContent = "Time's Up!"; this.textContent = "Start"; this.style.backgroundColor = "var(--accent-bg)"; timerRunning = false; } 
+              else { const h = Math.floor(timerTime / 3600), m = Math.floor((timerTime % 3600) / 60), s = timerTime % 60; $('t-display').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`; }
           }, 1000);
-          
-          this.textContent = "Stop";
-          this.style.backgroundColor = "#ef4444";
-          timerRunning = true;
+          this.textContent = "Stop"; this.style.backgroundColor = "#ef4444"; timerRunning = true;
       }
   };
-
-  $('t-reset').onclick = () => {
-      clearInterval(timerInterval);
-      timerRunning = false;
-      timerTime = 0;
-      $('t-start').textContent = "Start";
-      $('t-start').style.backgroundColor = "var(--accent-bg)";
-      $('t-display').textContent = "00:00:00";
-      $('t-display').style.display = 'none';
-      $('timer-inputs').style.display = 'flex';
-  };
+  $('t-reset').onclick = () => { clearInterval(timerInterval); timerRunning = false; timerTime = 0; $('t-start').textContent = "Start"; $('t-start').style.backgroundColor = "var(--accent-bg)"; $('t-display').textContent = "00:00:00"; $('t-display').style.display = 'none'; $('timer-inputs').style.display = 'flex'; };
 
   /* --- 6. TOOLS LOGIC --- */
   
-  // Health
+  // 1. FD/RD Calculator (NEW)
+  $('fdrd-btn').onclick = () => {
+    const type = $('fdrd-type').value;
+    const P = parseFloat($('fdrd-amt').value), R = parseFloat($('fdrd-rate').value), T = parseFloat($('fdrd-years').value);
+    
+    if(!P || !R || !T) { $('fdrd-res').textContent = "Please fill all fields."; return; }
+
+    let matVal = 0, invVal = 0;
+    
+    if(type === 'fd'){
+        // FD: Quarterly Compounding standard
+        invVal = P;
+        matVal = P * Math.pow((1 + (R/400)), 4*T);
+    } else {
+        // RD: Monthly Compounding (Annuity)
+        const months = T * 12;
+        invVal = P * months;
+        let i = R / 1200; 
+        // RD Formula (Annuity Due): P * [((1+i)^n - 1)/i] * (1+i)
+        matVal = P * ( (Math.pow(1+i, months) - 1) / i ) * (1+i);
+    }
+    
+    const maturityDate = new Date();
+    maturityDate.setFullYear(maturityDate.getFullYear() + T);
+
+    $('fdrd-res').innerHTML = `
+      <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Investment:</span> <b>${globalSym}${formatINR(Math.round(invVal))}</b></div>
+      <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Interest:</span> <b>${globalSym}${formatINR(Math.round(matVal - invVal))}</b></div>
+      <div style="margin-bottom:5px; display:flex; justify-content:space-between; color:var(--accent);"><span>Total Value:</span> <b>${globalSym}${formatINR(Math.round(matVal))}</b></div>
+      <div style="font-size:0.8rem; color:var(--muted); text-align:right; margin-top:5px;">Maturity: ${maturityDate.toLocaleDateString()}</div>
+    `;
+  };
+
+  // 2. Calorie Calculator (NEW)
+  $('cal-btn').onclick = () => {
+     const age = parseFloat($('cal-age').value), w = parseFloat($('cal-weight').value), h = parseFloat($('cal-height').value), act = parseFloat($('cal-act').value);
+     const gender = $('cal-gender').value;
+     
+     if(!age || !w || !h) { $('cal-res').textContent = "Please fill all fields."; return; }
+     
+     // Mifflin-St Jeor Equation
+     let bmr = (10 * w) + (6.25 * h) - (5 * age);
+     bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
+     
+     const tdee = Math.round(bmr * act);
+     
+     $('cal-res').innerHTML = `
+        <div style="text-align:center; font-weight:600; font-size:1.1rem; margin-bottom:10px;">Maintenance: <span style="color:var(--accent)">${tdee} cal/day</span></div>
+        <div style="font-size:0.9rem; color:var(--muted); margin-bottom:5px;">To lose weight:</div>
+        <div style="display:flex; justify-content:space-between; font-size:0.9rem; border-bottom:1px solid var(--border); padding:4px 0;"><span>0.25 kg/week</span> <b>${tdee - 275} cal</b></div>
+        <div style="display:flex; justify-content:space-between; font-size:0.9rem; border-bottom:1px solid var(--border); padding:4px 0;"><span>0.50 kg/week</span> <b>${tdee - 550} cal</b></div>
+        <div style="display:flex; justify-content:space-between; font-size:0.9rem; padding:4px 0;"><span>1.00 kg/week</span> <b>${tdee - 1100} cal</b></div>
+     `;
+  };
+
+  // 3. Body Fat Calculator (US Navy Method) (NEW)
+  $('bf-btn').onclick = () => {
+     const gender = $('bf-gender').value;
+     const h = parseFloat($('bf-height').value), neck = parseFloat($('bf-neck').value), waist = parseFloat($('bf-waist').value), hip = parseFloat($('bf-hip').value);
+     
+     if(!h || !neck || !waist || (gender === 'female' && !hip)) { $('bf-res').textContent = "Please fill all fields."; return; }
+     
+     let bf = 0;
+     if(gender === 'male') {
+         // 495 / (1.0324 - 0.19077(log(W-N)) + 0.15456(log(H))) - 450
+         if(waist - neck <= 0) { $('bf-res').textContent = "Waist must be larger than neck."; return; }
+         bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(h)) - 450;
+     } else {
+         // 495 / (1.29579 - 0.35004(log(W+H-N)) + 0.22100(log(H))) - 450
+         if(waist + hip - neck <= 0) { $('bf-res').textContent = "Check measurements."; return; }
+         bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(h)) - 450;
+     }
+     
+     $('bf-res').innerHTML = `Body Fat: <b style="font-size:1.2rem; color:var(--accent)">${bf.toFixed(1)}%</b>`;
+  };
+
+  // 4. Trip Budget Planner (NEW)
+  $('bud-btn').onclick = () => {
+      const hotel = parseFloat($('bud-hotel').value)||0;
+      const travel = parseFloat($('bud-travel').value)||0;
+      const food = parseFloat($('bud-food').value)||0;
+      const act = parseFloat($('bud-act').value)||0;
+      const shop = parseFloat($('bud-shop').value)||0;
+      const misc = parseFloat($('bud-misc').value)||0;
+      const ppl = parseFloat($('bud-ppl').value)||1;
+      
+      const total = hotel + travel + food + act + shop + misc;
+      const perPerson = total / ppl;
+      
+      $('bud-res').innerHTML = `
+        <div style="font-size:1.1rem; text-align:center; margin-bottom:5px;">Total Trip Cost: <b style="color:var(--accent)">${globalSym}${formatINR(total)}</b></div>
+        <div style="font-size:0.9rem; text-align:center; color:var(--muted)">Cost Per Person: ${globalSym}${formatINR(Math.round(perPerson))}</div>
+      `;
+  };
+
+  // EXISTING TOOLS (Refined)
   $('h-btn').onclick = () => {
     const age = parseFloat($('h-age').value), w = parseFloat($('h-weight').value), h = parseFloat($('h-height').value), act = parseFloat($('h-activity').value), gender = $('h-gender').value;
     if (!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
@@ -1284,40 +1270,18 @@
       showInfoModal("BMI Categories", "• <b>< 18.5:</b> Underweight<br>• <b>18.5 - 24.9:</b> Normal<br>• <b>25 - 29.9:</b> Overweight<br>• <b>30+:</b> Obese");
   };
 
-  // Sleep
-  $('sleep-btn').onclick = () => {
-      const timeStr = $('sleep-time').value, mode = $('sleep-mode').value;
-      if (!timeStr) return;
-      const d = new Date(); const [h, m] = timeStr.split(':'); d.setHours(h); d.setMinutes(m);
-      const format = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit', hour12: true });
-      let html = "";
-      if (mode === 'wake') {
-          const d1 = new Date(d.getTime() - (9 * 3600000) - 900000);
-          const d2 = new Date(d.getTime() - (7.5 * 3600000) - 900000);
-          html = `To wake up at <b>${format(d)}</b>:<br><br><div style="margin-bottom:8px">😴 <b>${format(d1)}</b><br><small style="color:var(--muted)">Best (9 Hours / 6 Cycles)</small></div><div>😄 <b>${format(d2)}</b><br><small style="color:var(--muted)">Good (7.5 Hours / 5 Cycles)</small></div>`;
-      } else {
-          const d1 = new Date(d.getTime() + 900000 + (7.5 * 3600000));
-          const d2 = new Date(d.getTime() + 900000 + (9 * 3600000));
-          html = `If you sleep at <b>${format(d)}</b>:<br><br><div style="margin-bottom:8px">😄 <b>${format(d1)}</b><br><small style="color:var(--muted)">Wake up (7.5 Hours)</small></div><div>😴 <b>${format(d2)}</b><br><small style="color:var(--muted)">Wake up (9 Hours)</small></div>`;
-      }
-      $('sleep-res').innerHTML = html;
-  };
-
-  // Finance - EMI
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value), t = parseFloat($('emi-time').value), u = $('emi-unit').value;
-    if (!p || !r || !t) { $('emi-result').textContent = "Please fill loan amount, rate and tenure."; return; }
+    if (!p || !r || !t) { $('emi-result').textContent = "Please fill fields."; return; }
     const monthlyRate = r / 1200, n = u === 'years' ? t * 12 : t;
-    if (monthlyRate <= 0 || n <= 0) { $('emi-result').textContent = "Rate and tenure must be greater than 0."; return; }
     const emi = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
     const total = emi * n;
     $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym}${formatINR(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatINR(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym}${formatINR(Math.round(total))}</span>`;
   };
 
-  // Finance - GST
   const calcGST = (mode) => {
     const amt = parseFloat($('gst-amt').value), rate = parseFloat($('gst-rate').value);
-    if (!amt || !rate) { $('gst-res').textContent = "Please enter amount and tax rate."; return; }
+    if (!amt || !rate) { $('gst-res').textContent = "Please fill fields."; return; }
     let net, gst, total; 
     if (mode === 'add') { gst = (amt * rate) / 100; total = amt + gst; net = amt; } 
     else { net = amt / (1 + rate/100); gst = amt - net; total = amt; }
@@ -1325,168 +1289,107 @@
   };
   $('gst-add').onclick = () => calcGST('add'); $('gst-rem').onclick = () => calcGST('remove');
 
-  // Finance - SIP
   $('sip-btn').onclick = () => {
      const p = parseFloat($('sip-amt').value), r = parseFloat($('sip-rate').value), y = parseFloat($('sip-years').value);
-     if (!p || !r || !y) { $('sip-res').textContent = "Please fill monthly amount, rate and years."; return; }
+     if (!p || !r || !y) { $('sip-res').textContent = "Please fill fields."; return; }
      const i = r / 1200, n = y * 12;
-     if (i <= 0 || n <= 0) { $('sip-res').textContent = "Rate and years must be greater than 0."; return; }
      const val = Math.round(p * ((Math.pow(1 + i, n) - 1) / i) * (1 + i));
      $('sip-res').innerHTML = `Total Value: <b>${globalSym}${formatINR(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Invested: ${globalSym}${formatINR(p * n)} | Profit: ${globalSym}${formatINR(val - (p * n))}</span>`;
   };
 
-  // Finance - Goal
   $('goal-btn').onclick = () => {
     const target = parseFloat($('goal-target').value), t = parseFloat($('goal-time').value), r = parseFloat($('goal-rate').value);
-    if (!target || !t || !r) { $('goal-res').textContent = "Please fill target amount, years and expected rate."; return; }
-    if (t <= 0 || r <= 0) { $('goal-res').textContent = "Rate and years must be greater than 0."; return; }
+    if (!target || !t || !r) { $('goal-res').textContent = "Please fill fields."; return; }
     const i = r/1200, n = t*12;
     const res = Math.round(target / (((Math.pow(1+i,n)-1)/i)*(1+i)));
     $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatINR(res)}/mo</b>`;
   };
   
-  // Finance - Percentage Calculator
   $('perc-btn').onclick = () => {
-    const total = parseFloat($('perc-total').value);
-    const rate = parseFloat($('perc-rate').value);
-    
-    if (!total || !rate) {
-      $('perc-res').textContent = "Please enter total amount and percentage.";
-      return;
-    }
-
-    const value = (total * rate) / 100;
-    const off = total - value;
-
-    $('perc-res').innerHTML = `
-      <div style="display:flex; justify-content:space-between; margin-bottom:5px">
-         <span>${rate}% Value:</span> <b>${globalSym}${formatINR(parseFloat(value.toFixed(2)))}</b>
-      </div>
-      <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px">
-         <span style="color:var(--accent)">Result after deduction:</span> <b>${globalSym}${formatINR(parseFloat(off.toFixed(2)))}</b>
-      </div>`;
+    const total = parseFloat($('perc-total').value), rate = parseFloat($('perc-rate').value);
+    if (!total || !rate) { $('perc-res').textContent = "Please fill fields."; return; }
+    const value = (total * rate) / 100; const off = total - value;
+    $('perc-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>${rate}% Value:</span> <b>${globalSym}${formatINR(parseFloat(value.toFixed(2)))}</b></div><div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px"><span style="color:var(--accent)">Result after deduction:</span> <b>${globalSym}${formatINR(parseFloat(off.toFixed(2)))}</b></div>`;
   };
   
-  // Finance - Bill
   $('bill-btn').onclick = () => {
     const amt = parseFloat($('bill-amt').value), tip = parseFloat($('bill-tip').value)||0, ppl = parseFloat($('bill-ppl').value)||1;
-    if (!amt) { $('bill-res').textContent = "Please enter the bill amount."; return; }
-    if (ppl <= 0) { $('bill-res').textContent = "Number of people must be at least 1."; return; }
+    if (!amt) return;
     const total = amt + (amt*tip/100); 
     $('bill-res').innerHTML = `Total: <b>${globalSym}${formatINR(Math.round(total))}</b><br>Per Person: <b>${globalSym}${formatINR(Math.round(total/ppl))}</b>`;
   };
   
-  // Finance - CI
   $('ci-btn').onclick = () => {
     const p = parseFloat($('ci-p').value), r = parseFloat($('ci-r').value), t = parseFloat($('ci-t').value), n = parseFloat($('ci-n').value);
-    if (!p || !r || !t || !n) { $('ci-res').textContent = "Please fill all compound interest fields."; return; }
+    if (!p || !r || !t) return;
     const amt = Math.round(p * Math.pow((1 + (r/100)/n),(n*t))); 
-    $('ci-res').innerHTML = `Total Amount: <b>${globalSym}${formatINR(amt)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Interest Earned: ${globalSym}${formatINR(amt-p)}</span>`;
+    $('ci-res').innerHTML = `Total Amount: <b>${globalSym}${formatINR(amt)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Interest: ${globalSym}${formatINR(amt-p)}</span>`;
   };
 
-  // Utility Tools
   $('fuel-btn').onclick = () => {
     const d = parseFloat($('fuel-dist').value), m = parseFloat($('fuel-mil').value), p = parseFloat($('fuel-price').value);
-    if (!d || !m || !p) { $('fuel-res').textContent = "Please fill distance, mileage and fuel price."; return; }
+    if (!d || !m || !p) return;
     const cost = Math.round((d/m)*p);
     $('fuel-res').innerHTML = `Total Cost: <b>${globalSym}${formatINR(cost)}</b><br>Fuel Needed: <b>${formatNum(d/m)} L</b>`;
   };
   
   $('eta-btn').onclick = () => {
       const d = parseFloat($('eta-dist').value), s = parseFloat($('eta-speed').value), start = $('eta-start').value;
-      if (!d || !s || !start) { $('eta-res').textContent = "Please fill distance, speed and start time."; return; }
+      if (!d || !s || !start) return;
       const now = new Date(); const [h, m] = start.split(':'); now.setHours(h); now.setMinutes(m);
       now.setMinutes(now.getMinutes() + ((d/s)*60));
-      $('eta-res').innerHTML = `Estimated Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
+      $('eta-res').innerHTML = `Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
   };
   
   $('age-btn').onclick = () => {
     const dVal = $('dob-input').value; if(!dVal) return;
     const d = new Date(dVal), t = new Date();
-    if(isNaN(d.getTime())) { $('age-result').textContent = "Invalid date."; return; }
-    if(d>t) return $('age-result').textContent = "Date is in the future!";
+    if(isNaN(d.getTime())) return;
     let y = t.getFullYear()-d.getFullYear(), m = t.getMonth()-d.getMonth(), days = t.getDate()-d.getDate();
-    if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); }
-    if(m<0){ y--; m+=12; }
+    if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
     $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
   };
   
-  // APIs & Logic (Fixed with Fallback)
   $('cur-btn').onclick = async () => {
     const a = $('cur-amt').value||1, f = $('cur-from').value, t = $('cur-to').value;
     $('cur-res').textContent = "Loading..."; $('cur-source').style.display = 'none';
-    
     try { 
       const r = await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); 
-      if(!r.ok) throw new Error("API Error");
+      if(!r.ok) throw new Error();
       const d = await r.json();
       $('cur-res').innerHTML = `${a} ${f} = <b>${d.rates[t]} ${t}</b>`;
       $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display = 'block'; 
-    } catch (err) { 
-      // Fallback Message
-      $('cur-res').innerHTML = `<span style="color:#ef4444">Service Unavailable.</span><br><span style="font-size:0.8rem; color:var(--muted)">Please try again later.</span>`;
-    }
+    } catch (err) { $('cur-res').innerHTML = `<span style="color:#ef4444">Service Unavailable.</span>`; }
   };
-
-  $('cur-swap').onclick = () => { 
-    const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; 
-    f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); 
-  };
-  $('zone-btn').onclick = () => {
-      $('zone-res').textContent = `Current Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`;
-  };
+  $('cur-swap').onclick = () => { const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
+  
+  $('zone-btn').onclick = () => { $('zone-res').textContent = `Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`; };
+  
   $('qr-btn').onclick = () => { 
     const txt = $('qr-text').value; if (!txt) return; 
     $('qr-container').classList.add('show'); $('qr-image').style.display = 'none'; $('qr-loading').style.display = 'block'; 
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    $('qr-image').onload = () => { 
-      $('qr-loading').style.display = 'none'; $('qr-image').style.display = 'block'; 
-      fetch(url).then(r=>r.blob()).then(b=>{ $('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block"; });
-    }; 
+    $('qr-image').onload = () => { $('qr-loading').style.display = 'none'; $('qr-image').style.display = 'block'; fetch(url).then(r=>r.blob()).then(b=>{ $('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block"; }); }; 
     $('qr-image').src = url; 
   };
 
-  // Converters & Gen
   $('u-btn').onclick = () => { 
       const v = parseFloat($('u-val').value); if(isNaN(v)) return;
       const type = $('u-type').value, f = $('u-from').value, t = $('u-to').value;
       const converted = uData[type].fn(v, f, t);
-      if (typeof converted === 'number' && !isNaN(converted)) {
-          $('u-res').textContent = `${formatNum(converted)} ${t}`;
-      } else { $('u-res').textContent = "Conversion not available."; }
+      if (typeof converted === 'number' && !isNaN(converted)) { $('u-res').textContent = `${formatNum(converted)} ${t}`; } 
   };
   $('time-diff').onclick = () => { 
-    const startVal = $('time-start').value, endVal = $('time-end').value;
-    if (!startVal || !endVal) { $('time-result').textContent = "Please select both dates."; return; }
+    const startVal = $('time-start').value, endVal = $('time-end').value; if (!startVal || !endVal) return;
     const d1 = new Date(startVal), d2 = new Date(endVal);
-    if(isNaN(d1.getTime())||isNaN(d2.getTime())) { $('time-result').textContent = "Invalid date(s)."; return; }
     $('time-result').textContent = `${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`;
   };
-  $('base-btn').onclick = () => { 
-    try { 
-      const d = parseInt($('base-num').value, parseInt($('base-from').value)); 
-      if(isNaN(d)) throw Error;
-      $('base-res').innerHTML = `DEC: ${d}<br>BIN: ${d.toString(2)}<br>HEX: ${d.toString(16).toUpperCase()}`; 
-    } catch { $('base-res').textContent = "Invalid"; } 
-  };
-  $('gpa-btn').onclick = () => { 
-    const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); 
-    $('gpa-res').textContent = "Avg: " + (n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); 
-  };
+  $('base-btn').onclick = () => { try { const d = parseInt($('base-num').value, parseInt($('base-from').value)); if(isNaN(d)) throw Error; $('base-res').innerHTML = `DEC: ${d}<br>BIN: ${d.toString(2)}<br>HEX: ${d.toString(16).toUpperCase()}`; } catch { $('base-res').textContent = "Invalid"; } };
+  $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent = "Avg: " + (n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
   
-  // Text Tools
-  const txtStats = () => { 
-    const v = $('txt-in').value; 
-    $('txt-chars').textContent = v.length; 
-    $('txt-words').textContent = v.trim().split(/\s+/).filter(w=>w.length>0).length; 
-  };
-  $('txt-in').oninput = txtStats; 
-  $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); txtStats(); }; 
-  $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); txtStats(); }; 
-  $('txt-clear').onclick = () => { $('txt-in').value = ''; txtStats(); };
+  const txtStats = () => { const v = $('txt-in').value; $('txt-chars').textContent = v.length; $('txt-words').textContent = v.trim().split(/\s+/).filter(w=>w.length>0).length; };
+  $('txt-in').oninput = txtStats; $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); txtStats(); }; $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); txtStats(); }; $('txt-clear').onclick = () => { $('txt-in').value = ''; txtStats(); };
 
-  /* --- 6. INITIALIZATION --- */
-  
   const uData = {
     length: { opts:['m','cm','ft','in'], fn:(v,f,t) => { let m=v; if(f=='cm')m=v/100; if(f=='ft')m=v/3.2808; if(f=='in')m=v/39.37; if(t=='m')return m; if(t=='cm')return m*100; if(t=='ft')return m*3.2808; if(t=='in')return m*39.37; } },
     weight:{ opts:['kg','lb'], fn:(v,f,t) => f===t?v:(f==='kg'?v*2.2046:v/2.2046) },
@@ -1494,21 +1397,15 @@
     speed:{ opts:['kmph','mph'], fn:(v,f,t) => f===t?v:(f==='kmph'?v*0.6213:v/0.6213) }
   };
 
-  // Simple Native Select Population
   function renderUnits(){ 
     const t = $('u-type').value, d = uData[t], f = $('u-from'), to = $('u-to');
-    f.innerHTML = ''; to.innerHTML = ''; 
-    d.opts.forEach(o => { f.add(new Option(o,o)); to.add(new Option(o,o)); }); 
-    if(to.options.length>1) to.selectedIndex = 1; 
+    f.innerHTML = ''; to.innerHTML = ''; d.opts.forEach(o => { f.add(new Option(o,o)); to.add(new Option(o,o)); }); if(to.options.length>1) to.selectedIndex = 1; 
   }
+  $('u-type').onchange = renderUnits; $('u-swap').onclick = () => { const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
 
-  $('u-type').onchange = renderUnits; 
-  $('u-swap').onclick = () => { const f=$('u-from'), t=$('u-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
-
-  // STARTUP
-  updateThemeColors('mono'); 
-  renderUnits();
-  document.querySelector('[data-tab="tab-finance"]').click();
+  // STARTUP: Open TOOLS tab by default as requested
+  updateThemeColors('mono'); renderUnits();
+  document.querySelector('[data-tab="tab-tools"]').click();
 </script>
 </body>
 </html>
