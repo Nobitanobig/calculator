@@ -1158,7 +1158,7 @@
 
   /* --- 6. TOOLS LOGIC --- */
   
-  // 1. FD/RD Calculator (NEW)
+  // 1. FD/RD Calculator
   $('fdrd-btn').onclick = () => {
     const type = $('fdrd-type').value;
     const P = parseFloat($('fdrd-amt').value), R = parseFloat($('fdrd-rate').value), T = parseFloat($('fdrd-years').value);
@@ -1168,15 +1168,12 @@
     let matVal = 0, invVal = 0;
     
     if(type === 'fd'){
-        // FD: Quarterly Compounding standard
         invVal = P;
         matVal = P * Math.pow((1 + (R/400)), 4*T);
     } else {
-        // RD: Monthly Compounding (Annuity)
         const months = T * 12;
         invVal = P * months;
         let i = R / 1200; 
-        // RD Formula (Annuity Due): P * [((1+i)^n - 1)/i] * (1+i)
         matVal = P * ( (Math.pow(1+i, months) - 1) / i ) * (1+i);
     }
     
@@ -1191,17 +1188,15 @@
     `;
   };
 
-  // 2. Calorie Calculator (NEW)
+  // 2. Calorie Calculator
   $('cal-btn').onclick = () => {
      const age = parseFloat($('cal-age').value), w = parseFloat($('cal-weight').value), h = parseFloat($('cal-height').value), act = parseFloat($('cal-act').value);
      const gender = $('cal-gender').value;
      
      if(!age || !w || !h) { $('cal-res').textContent = "Please fill all fields."; return; }
      
-     // Mifflin-St Jeor Equation
      let bmr = (10 * w) + (6.25 * h) - (5 * age);
      bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
-     
      const tdee = Math.round(bmr * act);
      
      $('cal-res').innerHTML = `
@@ -1213,7 +1208,7 @@
      `;
   };
 
-  // 3. Body Fat Calculator (US Navy Method) (NEW)
+  // 3. Body Fat Calculator (US Navy Method)
   $('bf-btn').onclick = () => {
      const gender = $('bf-gender').value;
      const h = parseFloat($('bf-height').value), neck = parseFloat($('bf-neck').value), waist = parseFloat($('bf-waist').value), hip = parseFloat($('bf-hip').value);
@@ -1222,11 +1217,9 @@
      
      let bf = 0;
      if(gender === 'male') {
-         // 495 / (1.0324 - 0.19077(log(W-N)) + 0.15456(log(H))) - 450
          if(waist - neck <= 0) { $('bf-res').textContent = "Waist must be larger than neck."; return; }
          bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(h)) - 450;
      } else {
-         // 495 / (1.29579 - 0.35004(log(W+H-N)) + 0.22100(log(H))) - 450
          if(waist + hip - neck <= 0) { $('bf-res').textContent = "Check measurements."; return; }
          bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(h)) - 450;
      }
@@ -1234,7 +1227,7 @@
      $('bf-res').innerHTML = `Body Fat: <b style="font-size:1.2rem; color:var(--accent)">${bf.toFixed(1)}%</b>`;
   };
 
-  // 4. Trip Budget Planner (NEW)
+  // 4. Trip Budget Planner
   $('bud-btn').onclick = () => {
       const hotel = parseFloat($('bud-hotel').value)||0;
       const travel = parseFloat($('bud-travel').value)||0;
@@ -1341,10 +1334,15 @@
       $('eta-res').innerHTML = `Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
   };
   
+  // FIXED AGE CALCULATOR LOGIC
   $('age-btn').onclick = () => {
     const dVal = $('dob-input').value; if(!dVal) return;
     const d = new Date(dVal), t = new Date();
     if(isNaN(d.getTime())) return;
+    
+    // Future Date Check restored here:
+    if(d > t) { $('age-result').textContent = "Date is in the future!"; return; }
+
     let y = t.getFullYear()-d.getFullYear(), m = t.getMonth()-d.getMonth(), days = t.getDate()-d.getDate();
     if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
     $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
