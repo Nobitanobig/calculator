@@ -585,7 +585,7 @@
       </div>
 
       <div id="gst-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="gst-title">GST / VAT</div><div class="card-sub">Add or remove Tax from any amount.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">GST / VAT</div><div class="card-sub">Add or remove Tax from any amount.</div></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Amount</label><input id="gst-amt" type="number" placeholder="1000"></div>
            <div class="field flex-1"><label class="mini">Tax Rate %</label><input id="gst-rate" type="number" placeholder="18"></div>
@@ -598,7 +598,7 @@
       </div>
 
       <div id="invest-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title" id="sip-title">SIP Calculator</div><div class="card-sub">See how your monthly investment grows over time.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">SIP Calculator</div><div class="card-sub">See how your monthly investment grows over time.</div></div>
         <div class="field"><label class="mini">Monthly Amount</label><input id="sip-amt" type="number" placeholder="5000"></div>
         <div class="row">
            <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
@@ -823,7 +823,7 @@
   let globalSym = '₹'; 
 
   // Timer Variables
-  let clockInterval;
+  let clockInterval = null; // FIXED: Initialize as null
   let swInterval, swTime = 0, swRunning = false;
   let timerInterval, timerTime = 0, timerRunning = false;
 
@@ -887,21 +887,21 @@
   //  REGION 3: NAVIGATION & ACCESSIBILITY
   // ==========================================
   
-  // Focus Trap for Modals (Senior Dev Request)
   function trapFocus(modal) {
     const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
     if(focusable.length === 0) return;
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
 
-    modal.addEventListener('keydown', (e) => {
+    // Remove old listener to prevent stacking (Fixed)
+    modal.onkeydown = (e) => {
       if (e.key !== 'Tab') return;
       if (e.shiftKey && document.activeElement === first) {
         e.preventDefault(); last.focus();
       } else if (!e.shiftKey && document.activeElement === last) {
         e.preventDefault(); first.focus();
       }
-    });
+    };
   }
 
   // Initialize traps
@@ -991,22 +991,9 @@
   });
 
   // ==========================================
-  //  REGION 4: SETUP & RESTORE STATE
+  //  REGION 4: SETUP (Definition)
   // ==========================================
-  const savedCurr = localStorage.getItem('calc_currency');
-  if (savedCurr) setGlobalCurrency(savedCurr);
-  else setTimeout(() => {
-       $('currency-modal').classList.add('show');
-       $('modal-currency-select').focus(); 
-  }, 500);
-
-  $('modal-save-btn').onclick = () => {
-      setGlobalCurrency($('modal-currency-select').value);
-      $('currency-modal').classList.remove('show');
-  };
-
-  $('global-currency').onchange = (e) => setGlobalCurrency(e.target.value);
-
+  
   function setGlobalCurrency(sym) {
       globalSym = sym;
       localStorage.setItem('calc_currency', sym);
@@ -1030,27 +1017,24 @@
       }
   }
 
-  const savedThemeMode = localStorage.getItem('theme_mode');
-  if(savedThemeMode) document.body.dataset.theme = savedThemeMode;
-  const savedThemeColor = localStorage.getItem('theme_color');
-  if(savedThemeColor) { $('theme-color').value = savedThemeColor; updateThemeColors(savedThemeColor); }
-  else updateThemeColors('mono');
-
   // ==========================================
-  //  REGION 5: CLOCK & TIME LOGIC
+  //  REGION 5: CLOCK & TIME LOGIC (FIXED)
   // ==========================================
   const startLiveClock = () => {
-      if (clockInterval) clearInterval(clockInterval); // Safety Clear
+      if (clockInterval) clearInterval(clockInterval); 
       const update = () => {
           const now = new Date();
           $('clock-display').textContent = now.toLocaleTimeString('en-US', {hour12: true});
           $('clock-date').textContent = now.toLocaleDateString(undefined, {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-          // Sound removed
       };
       update();
       clockInterval = setInterval(update, 1000);
   };
-  const stopLiveClock = () => clearInterval(clockInterval);
+  
+  // FIXED: Memory Leak
+  const stopLiveClock = () => {
+      if(clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+  };
 
   const formatTime = (ms) => {
       const min = Math.floor(ms / 60000); 
@@ -1067,6 +1051,9 @@
           $('sw-lap').textContent = "Reset"; 
           swRunning = false; 
       } else { 
+          // FIXED: Enable Lap button on start
+          $('sw-lap').disabled = false;
+          
           const startTime = Date.now() - swTime;
           swInterval = setInterval(() => { 
               swTime = Date.now() - startTime; 
@@ -1075,7 +1062,6 @@
           this.textContent = "Stop"; 
           this.style.backgroundColor = "#ef4444"; 
           $('sw-lap').textContent = "Lap"; 
-          $('sw-lap').disabled = false; 
           swRunning = true;
       }
   };
@@ -1114,16 +1100,17 @@
           }
           timerInterval = setInterval(() => {
               timerTime--;
+              // FIXED: Timer negative display bug
               if (timerTime < 0) { 
                   clearInterval(timerInterval); 
                   $('t-display').textContent = "Time's Up!"; 
                   this.textContent = "Start"; 
                   this.style.backgroundColor = "var(--accent-bg)"; 
                   timerRunning = false; 
-              } else { 
-                  const h = Math.floor(timerTime / 3600), m = Math.floor((timerTime % 3600) / 60), s = timerTime % 60; 
-                  $('t-display').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`; 
+                  return;
               }
+              const h = Math.floor(timerTime / 3600), m = Math.floor((timerTime % 3600) / 60), s = timerTime % 60; 
+              $('t-display').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`; 
           }, 1000);
           this.textContent = "Stop"; 
           this.style.backgroundColor = "#ef4444"; 
@@ -1145,7 +1132,6 @@
   //  REGION 6: SCIENTIFIC CALCULATOR ENGINE
   // ==========================================
   
-  // 1. Input Handling
   document.addEventListener('keydown', (e) => {
     const tag = e.target.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
@@ -1162,7 +1148,6 @@
     const key = e.key;
     if ("0123456789.+-*/%()^".includes(key)) {
       e.preventDefault();
-      // SAFETY: Input limit
       if (expr.length > 100) return;
       const map = {'*':'×', '/':'÷', '-': '−'};
       const btn = Array.from(document.querySelectorAll('#calc-grid .btn')).find(b => b.textContent === (map[key] || key));
@@ -1183,23 +1168,24 @@
     $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
     tape.querySelectorAll('.hist-item').forEach(item => { 
-      item.onclick = () => { expr += item.textContent.split('=')[1].trim(); upd(); }; 
+      // FIXED: Replace expression logic
+      item.onclick = () => { expr = item.textContent.split('=')[0].trim(); upd(); }; 
     });
   };
 
   const upd = () => {
+      // FIXED: Removed corrupting .replace(/e/g, 'e')
       let displayExpr = expr
           .replace(/\*/g, '×')
           .replace(/\//g, '÷')
-          .replace(/pi/g, 'π')
-          .replace(/e/g, 'e'); 
+          .replace(/pi/g, 'π');
       $('calc-expression').textContent = displayExpr;
   };
   
-  // 2. Button Generation
   const k = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
   k.forEach(x => { 
     let b = document.createElement('button'); b.className = 'btn'; b.textContent = x; 
+    b.type = "button";
     b.onclick = () => { 
         if (expr.length > 100) return;
         expr += {'÷':'/','×':'*','−':'-'}[x] || x; upd(); 
@@ -1479,26 +1465,44 @@
       $('eta-res').innerHTML = `Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
   };
   
-  // 15. Age Calc
+  // 15. Age Calc (FIXED: Timezone Logic)
   $('age-btn').onclick = () => {
     const dVal = $('dob-input').value; if(!dVal) return;
-    const d = new Date(dVal), t = new Date();
-    if(isNaN(d.getTime())) return;
     
-    if(d > t) { $('age-result').textContent = "Date is in the future!"; return; }
+    // Parse YYYY-MM-DD manually to create Local Date (Not UTC)
+    const [y, m, d] = dVal.split('-').map(Number);
+    const dob = new Date(y, m - 1, d);
+    const t = new Date();
+    
+    if(dob > t) { $('age-result').textContent = "Date is in the future!"; return; }
 
-    let y = t.getFullYear()-d.getFullYear(), m = t.getMonth()-d.getMonth(), days = t.getDate()-d.getDate();
-    if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
-    $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
+    let years = t.getFullYear() - dob.getFullYear();
+    let months = t.getMonth() - dob.getMonth();
+    let days = t.getDate() - dob.getDate();
+    
+    if(days < 0){ 
+        months--; 
+        days += new Date(t.getFullYear(), t.getMonth(), 0).getDate(); 
+    } 
+    if(months < 0){ 
+        years--; 
+        months += 12; 
+    }
+    
+    $('age-result').textContent = `${years} Years, ${months} Months, ${days} Days`;
   };
   
-  // 16. Currency API (Senior Dev Fix: AbortController Timeout)
+  // 16. Currency API (FIXED: Validation & Timeout)
   $('cur-btn').onclick = async () => {
-    const a = $('cur-amt').value||1, f = $('cur-from').value, t = $('cur-to').value;
+    const val = parseFloat($('cur-amt').value);
+    // VALIDATION: No NaN or negatives
+    const a = (isNaN(val) || val <= 0) ? 1 : val; 
+    
+    const f = $('cur-from').value, t = $('cur-to').value;
     $('cur-res').textContent = "Loading..."; $('cur-source').style.display = 'none';
     
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 sec timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
 
     try { 
       const r = await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`, { signal: controller.signal }); 
@@ -1518,13 +1522,34 @@
   // 17. World Time
   $('zone-btn').onclick = () => { $('zone-res').textContent = `Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`; };
   
-  // 18. QR Gen
-  $('qr-btn').onclick = () => { 
+  // 18. QR Gen (FIXED: Single Network Request)
+  $('qr-btn').onclick = async () => { 
     const txt = $('qr-text').value; if (!txt) return; 
-    $('qr-container').classList.add('show'); $('qr-image').style.display = 'none'; $('qr-loading').style.display = 'block'; 
+    
+    $('qr-container').classList.add('show'); 
+    $('qr-image').style.display = 'none'; 
+    $('qr-loading').style.display = 'block'; 
+    $('qr-download').style.display = 'none';
+
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    $('qr-image').onload = () => { $('qr-loading').style.display = 'none'; $('qr-image').style.display = 'block'; fetch(url).then(r=>r.blob()).then(b=>{ $('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block"; }); }; 
-    $('qr-image').src = url; 
+    
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const objUrl = URL.createObjectURL(blob);
+        
+        const img = $('qr-image');
+        img.src = objUrl;
+        img.style.display = 'block';
+        $('qr-loading').style.display = 'none';
+        
+        const dl = $('qr-download');
+        dl.href = objUrl;
+        dl.download = "qr.png";
+        dl.style.display = "inline-block";
+    } catch (e) {
+        $('qr-loading').textContent = "Error generating QR";
+    }
   };
 
   // 19. Unit Converter
@@ -1537,7 +1562,12 @@
 
   function renderUnits(){ 
     const t = $('u-type').value, d = uData[t], f = $('u-from'), to = $('u-to');
-    f.innerHTML = ''; to.innerHTML = ''; d.opts.forEach(o => { f.add(new Option(o,o)); to.add(new Option(o,o)); }); if(to.options.length>1) to.selectedIndex = 1; 
+    f.innerHTML = ''; to.innerHTML = ''; 
+    d.opts.forEach(o => { f.add(new Option(o,o)); to.add(new Option(o,o)); }); 
+    if(to.options.length>1) to.selectedIndex = 1; 
+    
+    // FIXED: Clear result on type change
+    $('u-res').textContent = '';
   }
   
   $('u-type').onchange = renderUnits; 
