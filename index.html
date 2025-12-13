@@ -373,13 +373,12 @@
   .amort-table th { text-align: right; color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--card-bg); z-index: 2; }
   .amort-table tr:last-child td { border-bottom: none; }
   
-  /* UPDATED: Randomizer Styles */
-  .random-big-text { font-size: 2.5rem; font-weight: 700; text-align: center; margin: 10px 0; color: var(--accent); }
-  /* New Animation Class for Re-run effect */
+  /* UPDATED: Randomizer Styles - ZERO MARGINS */
+  .random-big-text { font-size: 2.5rem; font-weight: 700; text-align: center; margin: 0; line-height: 1; color: var(--accent); }
   .pop-anim { animation: popIn 0.2s ease forwards; }
   @keyframes popIn { 0%{transform:scale(0.8);opacity:0;} 100%{transform:scale(1);opacity:1;} }
 
-  /* UPDATED: Hero Result Style for Converters */
+  /* UPDATED: HERO CARD DESIGN (Unified) */
   .hero-box {
       margin-top: 20px;
       padding: 20px;
@@ -390,7 +389,16 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center;
   }
   .hero-val { font-size: 2.2rem; font-weight: 700; color: var(--accent); line-height: 1.1; margin-bottom: 4px; word-break: break-all; }
-  .hero-unit { font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+  .hero-sub { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+  
+  .hero-details { 
+      border-top: 1px solid var(--border); 
+      margin-top: 12px; padding-top: 12px; 
+      width: 100%; 
+      display: flex; flex-direction: column; gap: 6px;
+  }
+  .detail-row { display: flex; justify-content: space-between; font-size: 0.95rem; color: var(--muted); }
+  .detail-row span:last-child { color: var(--text); font-weight: 500; }
 
   footer{ text-align: center; padding: 20px 0; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 20px; }
   .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
@@ -468,7 +476,7 @@
       <div class="card-header"><div class="title-group"><div class="card-title">Age Calculator</div><div class="card-sub">Calculate exact age.</div></div></div>
       <div class="field"><label class="mini">Date of birth</label><input type="date" id="dob-input"></div>
       <button type="button" id="age-btn" class="btn btn-accent btn-action">Calculate Age</button>
-      <div id="age-result" class="result-text" aria-live="polite"></div>
+      <div id="age-result" aria-live="polite"></div>
     </section>
 
     <section class="card">
@@ -482,7 +490,7 @@
         <button type="button" id="cur-btn" class="btn btn-accent flex-1 btn-action">Convert</button>
         <button type="button" id="cur-swap" class="btn small" style="width:50px; margin-top:10px;" aria-label="Swap Currencies">⇄</button>
       </div>
-      <div id="cur-res" class="result-text" aria-live="polite"></div>
+      <div id="cur-res" aria-live="polite"></div>
       <div id="cur-source" class="muted-text" style="display:none;"><span id="cur-date"></span> | <a href="https://www.frankfurter.app" target="_blank" rel="noopener noreferrer" class="link-btn">Source: Frankfurter API</a></div>
     </section>
 
@@ -664,13 +672,13 @@
           <div class="field" style="width:100px"><label class="mini">Period</label><select id="emi-unit"><option value="years">Years</option><option value="months">Months</option></select></div>
         </div>
         <button type="button" id="emi-calc" class="btn btn-accent btn-action">Calculate EMI</button>
-        <div id="emi-result" class="result-text" aria-live="polite"></div>
+        <div id="emi-result" aria-live="polite"></div>
         
         <div id="emi-extras" style="display:none; margin-top:15px; border-top:1px solid var(--border); padding-top:15px;">
              <button type="button" id="emi-show-table" class="btn small" style="width:100%; margin-bottom:10px;">Show Schedule</button>
              <div id="amort-container" class="table-wrapper">
                  <table class="amort-table">
-                     <thead><tr><th>Mon</th><th>Principal</th><th>Interest</th><th>EMI</th><th>Balance</th></tr></thead>
+                     <thead><tr><th>Month</th><th>Principal</th><th>Interest</th><th>EMI</th><th>Balance</th></tr></thead>
                      <tbody id="amort-body"></tbody>
                  </table>
              </div>
@@ -688,7 +696,7 @@
           <button type="button" id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add Tax (+)</button>
           <button type="button" id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove Tax (-)</button>
         </div>
-        <div id="gst-res" class="result-text" aria-live="polite"></div>
+        <div id="gst-res" aria-live="polite"></div>
       </div>
 
       <div id="invest-panel" class="panel">
@@ -699,7 +707,7 @@
            <div class="field flex-1"><label class="mini">Years</label><input id="sip-years" type="number" placeholder="10"></div>
         </div>
         <button type="button" id="sip-btn" class="btn btn-accent btn-action">Calculate Return</button>
-        <div id="sip-res" class="result-text" aria-live="polite"></div>
+        <div id="sip-res" aria-live="polite"></div>
       </div>
 
       <div id="fdrd-panel" class="panel">
@@ -714,7 +722,7 @@
            <div class="field flex-1"><label class="mini">Years</label><input id="fdrd-years" type="number" placeholder="5"></div>
         </div>
         <button type="button" id="fdrd-btn" class="btn btn-accent btn-action">Calculate Maturity</button>
-        <div id="fdrd-res" class="result-text" aria-live="polite"></div>
+        <div id="fdrd-res" aria-live="polite"></div>
       </div>
 
       <div id="goal-panel" class="panel">
@@ -725,7 +733,7 @@
            <div class="field flex-1"><label class="mini">Exp. Rate %</label><input id="goal-rate" type="number" placeholder="12"></div>
         </div>
         <button type="button" id="goal-btn" class="btn btn-accent btn-action">Calculate Monthly SIP</button>
-        <div id="goal-res" class="result-text" aria-live="polite"></div>
+        <div id="goal-res" aria-live="polite"></div>
       </div>
 
       <div id="bill-panel" class="panel">
@@ -736,7 +744,7 @@
         </div>
         <div class="field"><label class="mini">People</label><input id="bill-ppl" type="number" placeholder="4"></div>
         <button type="button" id="bill-btn" class="btn btn-accent btn-action">Split Bill</button>
-        <div id="bill-res" class="result-text" aria-live="polite"></div>
+        <div id="bill-res" aria-live="polite"></div>
       </div>
 
       <div id="ci-panel" class="panel">
@@ -750,7 +758,7 @@
            <div class="field flex-1"><label class="mini">Compounded</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12">Monthly</option></select></div>
         </div>
         <button type="button" id="ci-btn" class="btn btn-accent btn-action">Calculate Amount</button>
-        <div id="ci-res" class="result-text" aria-live="polite"></div>
+        <div id="ci-res" aria-live="polite"></div>
       </div>
 
       <div id="health-panel" class="panel">
@@ -791,7 +799,7 @@
          </div>
          <div class="field"><label class="mini">Activity</label><select id="cal-act"><option value="1.2">Sedentary</option><option value="1.375">Light Activity</option><option value="1.55">Moderate Activity</option><option value="1.725">Very Active</option></select></div>
          <button type="button" id="cal-btn" class="btn btn-accent btn-action">Calculate</button>
-         <div id="cal-res" class="result-text" aria-live="polite"></div>
+         <div id="cal-res" aria-live="polite"></div>
       </div>
 
       <div id="bodyfat-panel" class="panel">
@@ -804,7 +812,7 @@
          <div class="field"><label class="mini">Waist (at navel) (cm)</label><input id="bf-waist" type="number" placeholder="85"></div>
          <div id="bf-hip-group" class="field" style="display:none;"><label class="mini">Hip (at widest) (cm)</label><input id="bf-hip" type="number" placeholder="95"></div>
          <button type="button" id="bf-btn" class="btn btn-accent btn-action">Calculate Body Fat</button>
-         <div id="bf-res" class="result-text" aria-live="polite"></div>
+         <div id="bf-res" aria-live="polite"></div>
       </div>
 
       <div id="fuel-panel" class="panel">
@@ -815,7 +823,7 @@
         </div>
         <div class="field"><label class="mini">Fuel Price</label><input id="fuel-price" type="number" placeholder="100"></div>
         <button type="button" id="fuel-btn" class="btn btn-accent btn-action">Calculate Cost</button>
-        <div id="fuel-res" class="result-text" aria-live="polite"></div>
+        <div id="fuel-res" aria-live="polite"></div>
       </div>
 
       <div id="eta-panel" class="panel">
@@ -826,7 +834,7 @@
         </div>
         <div class="field"><label class="mini">Start Time</label><input id="eta-start" type="time"></div>
         <button type="button" id="eta-btn" class="btn btn-accent btn-action">Calculate Arrival</button>
-        <div id="eta-res" class="result-text" aria-live="polite"></div>
+        <div id="eta-res" aria-live="polite"></div>
       </div>
 
       <div id="budget-panel" class="panel">
@@ -836,7 +844,7 @@
          <div class="row"><div class="field flex-1"><label class="mini">Shopping</label><input id="bud-shop" type="number" placeholder="0"></div><div class="field flex-1"><label class="mini">Misc</label><input id="bud-misc" type="number" placeholder="0"></div></div>
          <div class="field"><label class="mini">Total Persons</label><input id="bud-ppl" type="number" placeholder="1"></div>
          <button type="button" id="bud-btn" class="btn btn-accent btn-action">Calculate Budget</button>
-         <div id="bud-res" class="result-text" aria-live="polite"></div>
+         <div id="bud-res" aria-live="polite"></div>
       </div>
 
       <div id="clock-panel" class="panel">
@@ -878,7 +886,7 @@
             <div class="field flex-1"><label class="mini">End Time</label><input id="dur-end" type="time"></div>
          </div>
          <button type="button" id="dur-btn" class="btn btn-accent btn-action">Calculate Duration</button>
-         <div id="dur-res" class="result-text" aria-live="polite"></div>
+         <div id="dur-res" aria-live="polite"></div>
       </div>
 
       <div id="zone-panel" class="panel">
@@ -896,7 +904,7 @@
           </select>
         </div>
         <button type="button" id="zone-btn" class="btn btn-accent btn-action">Get Time</button>
-        <div id="zone-res" class="result-text" aria-live="polite"></div>
+        <div id="zone-res" aria-live="polite"></div>
       </div>
 
     </section>
@@ -931,13 +939,30 @@
       return clean;
   };
   
-  // 2. Currency Formatter
+  // 2. Currency Formatter (With Commas)
   const formatCurrencyAmount = (num) => {
       const locale = globalSym === '₹' ? 'en-IN' : 'en-US';
       return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(num);
   };
 
   const pad = (n) => n.toString().padStart(2, '0');
+
+  // 3. HERO HELPER (Generates the beautiful result box)
+  const renderHero = (mainVal, mainLabel, details = []) => {
+      let detailsHTML = '';
+      if(details.length > 0) {
+          detailsHTML = `<div class="hero-details">` + 
+              details.map(d => `<div class="detail-row"><span>${d.lbl}</span><span>${d.val}</span></div>`).join('') + 
+          `</div>`;
+      }
+      return `
+        <div class="hero-box">
+            <div class="hero-val">${mainVal}</div>
+            <div class="hero-sub">${mainLabel}</div>
+            ${detailsHTML}
+        </div>
+      `;
+  };
 
   // ==========================================
   //  REGION 2: THEME ENGINE
@@ -1078,7 +1103,6 @@
       $('bf-hip-group').style.display = this.value === 'female' ? 'block' : 'none';
   });
   
-  // Randomizer Mode Switch
   $('rnd-mode').addEventListener('change', function() {
       const mode = this.value;
       $('rnd-num-group').style.display = mode === 'num' ? 'block' : 'none';
@@ -1164,7 +1188,6 @@
       $('t-display').textContent = "00:00:00"; $('t-display').style.display = 'none'; $('timer-inputs').style.display = 'flex'; 
   };
   
-  // NEW: Time Duration Calculator (Using Native Inputs)
   $('dur-btn').onclick = () => {
      const s = $('dur-start').value, e = $('dur-end').value;
      if(!s || !e) { $('dur-res').textContent = "Select times."; return; }
@@ -1175,13 +1198,14 @@
      let startMin = h1 * 60 + m1;
      let endMin = h2 * 60 + m2;
      
-     if (endMin < startMin) endMin += 24 * 60; // Handle overnight
+     if (endMin < startMin) endMin += 24 * 60; 
      
      const diff = endMin - startMin;
      const h = Math.floor(diff / 60);
      const m = diff % 60;
      
-     $('dur-res').innerHTML = `Duration: <b style="color:var(--accent)">${h} hr ${m} min</b>`;
+     // HERO DISPLAY FOR DURATION
+     $('dur-res').innerHTML = renderHero(`${h}h ${m}m`, "Time Difference");
   };
 
   // ==========================================
@@ -1272,7 +1296,7 @@
   };
 
   // ==========================================
-  //  REGION 6: TOOLS LOGIC (UPGRADED)
+  //  REGION 6: TOOLS LOGIC (PRO UPDATE)
   // ==========================================
 
   // 1. FD/RD Calculator
@@ -1284,7 +1308,17 @@
     if(type === 'fd'){ invVal = P; matVal = P * Math.pow((1 + (R/400)), 4*T); } 
     else { const months = T * 12; invVal = P * months; let i = R / 1200; matVal = P * ( (Math.pow(1+i, months) - 1) / i ) * (1+i); }
     const maturityDate = new Date(); maturityDate.setFullYear(maturityDate.getFullYear() + T);
-    $('fdrd-res').innerHTML = `<div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Investment:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(invVal))}</b></div><div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Interest:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(matVal - invVal))}</b></div><div style="margin-bottom:5px; display:flex; justify-content:space-between; color:var(--accent);"><span>Total Value:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(matVal))}</b></div><div style="font-size:0.8rem; color:var(--muted); text-align:right; margin-top:5px;">Maturity: ${maturityDate.toLocaleDateString()}</div>`;
+    
+    // HERO DISPLAY
+    $('fdrd-res').innerHTML = renderHero(
+        `${globalSym}${formatCurrencyAmount(Math.round(matVal))}`,
+        "Maturity Value",
+        [
+            {lbl: "Invested", val: `${globalSym}${formatCurrencyAmount(Math.round(invVal))}`},
+            {lbl: "Interest", val: `${globalSym}${formatCurrencyAmount(Math.round(matVal - invVal))}`},
+            {lbl: "Date", val: maturityDate.toLocaleDateString()}
+        ]
+    );
   };
 
   // 2. Calorie
@@ -1294,7 +1328,17 @@
      if(!age || !w || !h) { $('cal-res').textContent = "Please fill all fields."; return; }
      let bmr = (10 * w) + (6.25 * h) - (5 * age); bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
      const tdee = Math.round(bmr * act);
-     $('cal-res').innerHTML = `<div style="text-align:center; font-weight:600; font-size:1.1rem; margin-bottom:10px;">Maintenance: <span style="color:var(--accent)">${tdee} cal/day</span></div><div style="font-size:0.9rem; color:var(--muted); margin-bottom:5px;">To lose weight:</div><div style="display:flex; justify-content:space-between; font-size:0.9rem; border-bottom:1px solid var(--border); padding:4px 0;"><span>0.25 kg/week</span> <b>${tdee - 275} cal</b></div><div style="display:flex; justify-content:space-between; font-size:0.9rem; border-bottom:1px solid var(--border); padding:4px 0;"><span>0.50 kg/week</span> <b>${tdee - 550} cal</b></div><div style="display:flex; justify-content:space-between; font-size:0.9rem; padding:4px 0;"><span>1.00 kg/week</span> <b>${tdee - 1100} cal</b></div>`;
+     
+     // HERO DISPLAY
+     $('cal-res').innerHTML = renderHero(
+         `${tdee} cal/day`, 
+         "Maintenance",
+         [
+             {lbl: "Lose 0.25kg/w", val: `${tdee - 275} cal`},
+             {lbl: "Lose 0.5kg/w", val: `${tdee - 550} cal`},
+             {lbl: "Lose 1kg/w", val: `${tdee - 1100} cal`}
+         ]
+     );
   };
 
   // 3. Body Fat
@@ -1305,7 +1349,8 @@
      let bf = 0;
      if(gender === 'male') { if(waist - neck <= 0) { $('bf-res').textContent = "Waist > Neck req."; return; } bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(h)) - 450; } 
      else { if(waist + hip - neck <= 0) { $('bf-res').textContent = "Check measurements."; return; } bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(h)) - 450; }
-     $('bf-res').innerHTML = `Body Fat: <b style="font-size:1.2rem; color:var(--accent)">${bf.toFixed(1)}%</b>`;
+     
+     $('bf-res').innerHTML = renderHero(`${bf.toFixed(1)}%`, "Body Fat");
   };
 
   // 4. Trip Budget
@@ -1314,7 +1359,12 @@
       const act = parseFloat($('bud-act').value)||0, shop = parseFloat($('bud-shop').value)||0, misc = parseFloat($('bud-misc').value)||0;
       const ppl = parseFloat($('bud-ppl').value)||1;
       const total = hotel + travel + food + act + shop + misc; const perPerson = total / ppl;
-      $('bud-res').innerHTML = `<div style="font-size:1.1rem; text-align:center; margin-bottom:5px;">Total Trip Cost: <b style="color:var(--accent)">${globalSym}${formatCurrencyAmount(total)}</b></div><div style="font-size:0.9rem; text-align:center; color:var(--muted)">Cost Per Person: ${globalSym}${formatCurrencyAmount(Math.round(perPerson))}</div>`;
+      
+      $('bud-res').innerHTML = renderHero(
+          `${globalSym}${formatCurrencyAmount(total)}`,
+          "Total Budget",
+          [{lbl: "Cost Per Person", val: `${globalSym}${formatCurrencyAmount(Math.round(perPerson))}`}]
+      );
   };
 
   // 5. Health Station
@@ -1330,7 +1380,7 @@
   };
   $('bmi-info').onclick = (e) => { e.stopPropagation(); showInfoModal("BMI Categories", "• <b>< 18.5:</b> Underweight<br>• <b>18.5 - 24.9:</b> Normal<br>• <b>25 - 29.9:</b> Overweight<br>• <b>30+:</b> Obese"); };
 
-  // 6. EMI + Amortization (PRO FORMATTING)
+  // 6. EMI + Amortization (FULL HERO & TABLE FIX)
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value), t = parseFloat($('emi-time').value), u = $('emi-unit').value;
     if (!p || !r || !t) { $('emi-result').textContent = "Please fill fields."; return; }
@@ -1338,7 +1388,15 @@
     const emi = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
     const total = emi * n;
     
-    $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym}${formatCurrencyAmount(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatCurrencyAmount(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym}${formatCurrencyAmount(Math.round(total))}</span>`;
+    // HERO DISPLAY
+    $('emi-result').innerHTML = renderHero(
+        `${globalSym}${formatCurrencyAmount(Math.round(emi))}`,
+        "Monthly EMI",
+        [
+            {lbl: "Total Interest", val: `${globalSym}${formatCurrencyAmount(Math.round(total - p))}`},
+            {lbl: "Total Amount", val: `${globalSym}${formatCurrencyAmount(Math.round(total))}`}
+        ]
+    );
     
     $('emi-extras').style.display = 'block';
     
@@ -1360,13 +1418,13 @@
     $('emi-show-table').onclick = () => {
         const tbody = $('amort-body'); tbody.innerHTML = '';
         schedule.forEach(row => {
-            // Apply Currency Formatting to every cell
+            // Updated Loop: Currency on EVERY value
             tbody.innerHTML += `<tr>
                 <td>${row.month}</td>
-                <td>${formatCurrencyAmount(Math.round(row.p))}</td>
-                <td>${formatCurrencyAmount(Math.round(row.i))}</td>
-                <td>${formatCurrencyAmount(Math.round(row.e))}</td>
-                <td>${formatCurrencyAmount(Math.round(row.b))}</td>
+                <td>${globalSym}${formatCurrencyAmount(Math.round(row.p))}</td>
+                <td>${globalSym}${formatCurrencyAmount(Math.round(row.i))}</td>
+                <td>${globalSym}${formatCurrencyAmount(Math.round(row.e))}</td>
+                <td>${globalSym}${formatCurrencyAmount(Math.round(row.b))}</td>
             </tr>`;
         });
         $('amort-container').classList.toggle('show');
@@ -1395,7 +1453,16 @@
     let net, gst, total; 
     if (mode === 'add') { gst = (amt * rate) / 100; total = amt + gst; net = amt; } 
     else { net = amt / (1 + rate/100); gst = amt - net; total = amt; }
-    $('gst-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Net Price:</span><span>${globalSym}${formatCurrencyAmount(parseFloat(net.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Tax (${rate}%):</span><span>${globalSym}${formatCurrencyAmount(parseFloat(gst.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); margin-top:5px; border-top:1px solid var(--border); padding-top:5px;"><span>Total:</span><span>${globalSym}${formatCurrencyAmount(parseFloat(total.toFixed(1)))}</span></div>`;
+    
+    // HERO DISPLAY
+    $('gst-res').innerHTML = renderHero(
+        `${globalSym}${formatCurrencyAmount(parseFloat(total.toFixed(1)))}`,
+        "Total Amount",
+        [
+            {lbl: "Net Price", val: `${globalSym}${formatCurrencyAmount(parseFloat(net.toFixed(1)))}`},
+            {lbl: `Tax (${rate}%)`, val: `${globalSym}${formatCurrencyAmount(parseFloat(gst.toFixed(1)))}`}
+        ]
+    );
   };
   $('gst-add').onclick = () => calcGST('add'); $('gst-rem').onclick = () => calcGST('remove');
 
@@ -1405,7 +1472,16 @@
      if (!p || !r || !y) { $('sip-res').textContent = "Please fill fields."; return; }
      const i = r / 1200, n = y * 12;
      const val = Math.round(p * ((Math.pow(1 + i, n) - 1) / i) * (1 + i));
-     $('sip-res').innerHTML = `Total Value: <b>${globalSym}${formatCurrencyAmount(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Invested: ${globalSym}${formatCurrencyAmount(p * n)} | Profit: ${globalSym}${formatCurrencyAmount(val - (p * n))}</span>`;
+     
+     // HERO DISPLAY
+     $('sip-res').innerHTML = renderHero(
+         `${globalSym}${formatCurrencyAmount(val)}`,
+         "Total Value",
+         [
+             {lbl: "Invested", val: `${globalSym}${formatCurrencyAmount(p * n)}`},
+             {lbl: "Profit", val: `${globalSym}${formatCurrencyAmount(val - (p * n))}`}
+         ]
+     );
   };
 
   // 9. Goal Planner
@@ -1414,7 +1490,8 @@
     if (!target || !t || !r) { $('goal-res').textContent = "Please fill fields."; return; }
     const i = r/1200, n = t*12;
     const res = Math.round(target / (((Math.pow(1+i,n)-1)/i)*(1+i)));
-    $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatCurrencyAmount(res)}/mo</b>`;
+    
+    $('goal-res').innerHTML = renderHero(`${globalSym}${formatCurrencyAmount(res)}/mo`, "SIP Needed");
   };
   
   // 10. Percentage
@@ -1422,7 +1499,12 @@
     const total = parseFloat($('perc-total').value), rate = parseFloat($('perc-rate').value);
     if (!total || !rate) { $('perc-res').textContent = "Please fill fields."; return; }
     const value = (total * rate) / 100; const off = total - value;
-    $('perc-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>${rate}% Value:</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(value.toFixed(2)))}</b></div><div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px"><span style="color:var(--accent)">Result (Total - %):</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(off.toFixed(2)))}</b></div>`;
+    
+    $('perc-res').innerHTML = renderHero(
+        `${globalSym}${formatCurrencyAmount(parseFloat(off.toFixed(2)))}`,
+        "Result (Total - %)",
+        [{lbl: `${rate}% Value`, val: `${globalSym}${formatCurrencyAmount(parseFloat(value.toFixed(2)))}`}]
+    );
   };
   
   // 11. Bill Split
@@ -1430,7 +1512,12 @@
     const amt = parseFloat($('bill-amt').value), tip = parseFloat($('bill-tip').value)||0, ppl = parseFloat($('bill-ppl').value)||1;
     if (!amt) return;
     const total = amt + (amt*tip/100); 
-    $('bill-res').innerHTML = `Total: <b>${globalSym}${formatCurrencyAmount(Math.round(total))}</b><br>Per Person: <b>${globalSym}${formatCurrencyAmount(Math.round(total/ppl))}</b>`;
+    
+    $('bill-res').innerHTML = renderHero(
+        `${globalSym}${formatCurrencyAmount(Math.round(total/ppl))}`,
+        "Per Person",
+        [{lbl: "Total Bill", val: `${globalSym}${formatCurrencyAmount(Math.round(total))}`}]
+    );
   };
   
   // 12. Compound Interest
@@ -1438,7 +1525,12 @@
     const p = parseFloat($('ci-p').value), r = parseFloat($('ci-r').value), t = parseFloat($('ci-t').value), n = parseFloat($('ci-n').value);
     if (!p || !r || !t) return;
     const amt = Math.round(p * Math.pow((1 + (r/100)/n),(n*t))); 
-    $('ci-res').innerHTML = `Total Amount: <b>${globalSym}${formatCurrencyAmount(amt)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Interest: ${globalSym}${formatCurrencyAmount(amt-p)}</span>`;
+    
+    $('ci-res').innerHTML = renderHero(
+        `${globalSym}${formatCurrencyAmount(amt)}`,
+        "Total Amount",
+        [{lbl: "Interest", val: `${globalSym}${formatCurrencyAmount(amt-p)}`}]
+    );
   };
 
   // 13. Fuel Cost
@@ -1446,7 +1538,12 @@
     const d = parseFloat($('fuel-dist').value), m = parseFloat($('fuel-mil').value), p = parseFloat($('fuel-price').value);
     if (!d || !m || !p) return;
     const cost = Math.round((d/m)*p);
-    $('fuel-res').innerHTML = `Total Cost: <b>${globalSym}${formatCurrencyAmount(cost)}</b><br>Fuel Needed: <b>${formatNum(d/m)} L</b>`;
+    
+    $('fuel-res').innerHTML = renderHero(
+        `${globalSym}${formatCurrencyAmount(cost)}`,
+        "Total Cost",
+        [{lbl: "Fuel Needed", val: `${formatNum(d/m)} L`}]
+    );
   };
   
   // 14. ETA
@@ -1455,7 +1552,11 @@
       if (!d || !s || !start) return;
       const now = new Date(); const [h, m] = start.split(':'); now.setHours(h); now.setMinutes(m);
       now.setMinutes(now.getMinutes() + ((d/s)*60));
-      $('eta-res').innerHTML = `Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
+      
+      $('eta-res').innerHTML = renderHero(
+          now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true}),
+          "Arrival Time"
+      );
   };
   
   // 15. Age Calc
@@ -1467,7 +1568,8 @@
     if(d > t) { $('age-result').textContent = "Date is in the future!"; return; }
     let y = t.getFullYear()-d.getFullYear(), m = t.getMonth()-d.getMonth(), days = t.getDate()-d.getDate();
     if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
-    $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
+    
+    $('age-result').innerHTML = renderHero(`${y} Y, ${m} M, ${days} D`, "Exact Age");
   };
   
   // 16. Currency API
@@ -1482,13 +1584,25 @@
       clearTimeout(timeoutId);
       if(!r.ok) throw new Error();
       const d = await r.json();
-      $('cur-res').innerHTML = `${a} ${f} = <b>${d.rates[t]} ${t}</b>`; $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display = 'block'; 
+      
+      $('cur-res').innerHTML = renderHero(
+          `${d.rates[t]} ${t}`,
+          `${a} ${f}`,
+          [{lbl: "Last Updated", val: d.date}]
+      );
+      
+      $('cur-source').style.display = 'block'; 
     } catch (err) { $('cur-res').innerHTML = `<span style="color:#ef4444">Service Unavailable.</span>`; }
   };
   $('cur-swap').onclick = () => { const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
   
   // 17. World Time
-  $('zone-btn').onclick = () => { $('zone-res').textContent = `Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`; };
+  $('zone-btn').onclick = () => { 
+      $('zone-res').innerHTML = renderHero(
+          new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true}),
+          "Current Time"
+      );
+  };
   
   // 18. QR Gen
   $('qr-btn').onclick = () => { 
@@ -1562,12 +1676,7 @@
       
       // HERO DISPLAY
       if (typeof converted === 'number' && !isNaN(converted)) { 
-          $('u-res').innerHTML = `
-            <div class="hero-box">
-                <div class="hero-val">${formatNum(converted)}</div>
-                <div class="hero-unit">${unitName}</div>
-            </div>
-          `; 
+          $('u-res').innerHTML = renderHero(formatNum(converted), unitName);
       } 
   };
 
@@ -1575,7 +1684,7 @@
   $('time-diff').onclick = () => { 
     const startVal = $('time-start').value, endVal = $('time-end').value; if (!startVal || !endVal) return;
     const d1 = new Date(startVal), d2 = new Date(endVal);
-    $('time-result').textContent = `${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`;
+    $('time-result').innerHTML = renderHero(`${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`, "Difference");
   };
   $('date-calc-btn').onclick = () => {
       const startVal = $('date-calc-start').value, days = parseInt($('date-calc-days').value);
@@ -1583,7 +1692,10 @@
       const parts = startVal.split('-');
       const d = new Date(parts[0], parts[1]-1, parts[2]);
       d.setDate(d.getDate() + days);
-      $('date-calc-res').textContent = `Result Date: ${d.toLocaleDateString(undefined, {weekday:'short', year:'numeric', month:'short', day:'numeric'})}`;
+      $('date-calc-res').innerHTML = renderHero(
+          d.toLocaleDateString(undefined, {weekday:'short', year:'numeric', month:'short', day:'numeric'}),
+          "Result Date"
+      );
   };
 
   $('base-btn').onclick = () => { 
