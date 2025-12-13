@@ -820,10 +820,10 @@
   let expr = ''; 
   let useDeg = true; 
   let history = []; 
-  let globalSym = '₹'; 
+  let globalSym = '₹'; // Default
 
   // Timer Variables
-  let clockInterval = null; // FIXED: Initialize as null
+  let clockInterval = null; 
   let swInterval, swTime = 0, swRunning = false;
   let timerInterval, timerTime = 0, timerRunning = false;
 
@@ -836,7 +836,7 @@
       return clean;
   };
   
-  // 2. Currency Formatter (Fixed: No space, Dynamic Locale)
+  // 2. Currency Formatter (Dynamic Locale)
   const formatCurrencyAmount = (num) => {
       const locale = globalSym === '₹' ? 'en-IN' : 'en-US';
       return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(num);
@@ -845,8 +845,44 @@
   const pad = (n) => n.toString().padStart(2, '0');
 
   // ==========================================
-  //  REGION 2: THEME ENGINE
+  //  REGION 2: CURRENCY & THEME ENGINE
   // ==========================================
+  
+  // DEFINED EARLY TO FIX BUG
+  function setGlobalCurrency(sym) {
+      globalSym = sym;
+      localStorage.setItem('calc_currency', sym);
+      
+      // Update UI elements
+      const globalSel = $('global-currency');
+      if(globalSel) globalSel.value = sym;
+      
+      const modalSel = $('modal-currency-select');
+      if(modalSel) modalSel.value = sym;
+      
+      // Update Button Text in Finance Tab
+      const taxBtn = $('btn-tax');
+      const invBtn = $('btn-invest');
+      const gstTitle = $('gst-title');
+      const sipTitle = $('sip-title');
+
+      if (taxBtn && invBtn) {
+          if (['₹', 'A$', 'C$', 'NZ$', 'CN¥'].includes(sym)) { 
+            taxBtn.textContent = "GST"; if(gstTitle) gstTitle.textContent = "GST Calculator"; 
+          } else if (['€', '£'].includes(sym)) { 
+            taxBtn.textContent = "VAT"; if(gstTitle) gstTitle.textContent = "VAT Calculator"; 
+          } else { 
+            taxBtn.textContent = "Tax"; if(gstTitle) gstTitle.textContent = "Tax Calculator"; 
+          }
+
+          if (sym === '₹') { 
+            invBtn.textContent = "SIP"; if(sipTitle) sipTitle.textContent = "SIP Calculator"; 
+          } else { 
+            invBtn.textContent = "Invest"; if(sipTitle) sipTitle.textContent = "Investment Calc"; 
+          }
+      }
+  }
+
   function updateThemeColors(themeName) {
     const root = document.documentElement; 
     const themes = {
@@ -893,7 +929,6 @@
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
 
-    // Remove old listener to prevent stacking (Fixed)
     modal.onkeydown = (e) => {
       if (e.key !== 'Tab') return;
       if (e.shiftKey && document.activeElement === first) {
@@ -904,7 +939,6 @@
     };
   }
 
-  // Initialize traps
   trapFocus($('info-modal'));
   trapFocus($('currency-modal'));
   
@@ -991,34 +1025,7 @@
   });
 
   // ==========================================
-  //  REGION 4: SETUP (Definition)
-  // ==========================================
-  
-  function setGlobalCurrency(sym) {
-      globalSym = sym;
-      localStorage.setItem('calc_currency', sym);
-      $('global-currency').value = sym;
-      $('modal-currency-select').value = sym;
-      
-      const taxBtn = $('btn-tax'), invBtn = $('btn-invest'), gstTitle = $('gst-title'), sipTitle = $('sip-title');
-
-      if (['₹', 'A$', 'C$', 'NZ$', 'CN¥'].includes(sym)) { 
-        taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator"; 
-      } else if (['€', '£'].includes(sym)) { 
-        taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator"; 
-      } else { 
-        taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator"; 
-      }
-
-      if (sym === '₹') { 
-        invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator"; 
-      } else { 
-        invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; 
-      }
-  }
-
-  // ==========================================
-  //  REGION 5: CLOCK & TIME LOGIC (FIXED)
+  //  REGION 4: CLOCK & TIME LOGIC
   // ==========================================
   const startLiveClock = () => {
       if (clockInterval) clearInterval(clockInterval); 
@@ -1031,7 +1038,6 @@
       clockInterval = setInterval(update, 1000);
   };
   
-  // FIXED: Memory Leak
   const stopLiveClock = () => {
       if(clockInterval) { clearInterval(clockInterval); clockInterval = null; }
   };
@@ -1051,9 +1057,7 @@
           $('sw-lap').textContent = "Reset"; 
           swRunning = false; 
       } else { 
-          // FIXED: Enable Lap button on start
           $('sw-lap').disabled = false;
-          
           const startTime = Date.now() - swTime;
           swInterval = setInterval(() => { 
               swTime = Date.now() - startTime; 
@@ -1100,7 +1104,6 @@
           }
           timerInterval = setInterval(() => {
               timerTime--;
-              // FIXED: Timer negative display bug
               if (timerTime < 0) { 
                   clearInterval(timerInterval); 
                   $('t-display').textContent = "Time's Up!"; 
@@ -1129,7 +1132,7 @@
   };
 
   // ==========================================
-  //  REGION 6: SCIENTIFIC CALCULATOR ENGINE
+  //  REGION 5: SCIENTIFIC CALCULATOR ENGINE
   // ==========================================
   
   document.addEventListener('keydown', (e) => {
@@ -1168,13 +1171,11 @@
     $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
     tape.querySelectorAll('.hist-item').forEach(item => { 
-      // FIXED: Replace expression logic
       item.onclick = () => { expr = item.textContent.split('=')[0].trim(); upd(); }; 
     });
   };
 
   const upd = () => {
-      // FIXED: Removed corrupting .replace(/e/g, 'e')
       let displayExpr = expr
           .replace(/\*/g, '×')
           .replace(/\//g, '÷')
