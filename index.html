@@ -283,7 +283,13 @@
     display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
     pointer-events: auto; z-index: 10;
     opacity: 0; transition: opacity 0.2s;
+    /* FIX: Hide Scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
   }
+  /* FIX: Hide Scrollbar Chrome/Safari */
+  .calc-history::-webkit-scrollbar { display: none; }
+
   .calc-history.show { opacity: 1; }
   .hist-item { font-size: 0.8rem; color: var(--muted); cursor: pointer; white-space: nowrap; }
   .hist-item:hover { color: var(--accent); }
@@ -519,9 +525,10 @@
 
       <div id="tab-travel" class="tab-content" role="tabpanel">
         <div class="chips">
+          <button type="button" class="chip-btn" data-panel="budget-panel">Budget Planner</button> 
           <button type="button" class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
           <button type="button" class="chip-btn" data-panel="eta-panel">Trip ETA</button>
-          <button type="button" class="chip-btn" data-panel="budget-panel">Budget Planner</button> </div>
+        </div>
       </div>
       
       <div id="tab-clock" class="tab-content" role="tabpanel">
@@ -536,7 +543,17 @@
       <div class="divider"></div>
       <div id="unit-panel" class="panel active">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div></div>
-        <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
+        <div class="field"><label class="mini">Type</label>
+            <select id="u-type">
+                <option value="length">Length</option>
+                <option value="weight">Weight</option>
+                <option value="temp">Temperature</option>
+                <option value="speed">Speed</option>
+                <option value="power">Power</option>
+                <option value="area">Area</option>
+                <option value="data">Data</option>
+            </select>
+        </div>
         <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button type="button" id="u-swap" class="btn small" style="width:40px; margin-top: 18px" aria-label="Swap Units">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
         <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
         <button type="button" id="u-btn" class="btn btn-accent btn-action">Convert</button>
@@ -566,7 +583,13 @@
 
       <div id="base-panel" class="panel">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Base Converter</div><div class="card-sub">Convert numbers between different numeral systems.</div></div>
-        <div class="row"><div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div><div class="field flex-1"><label class="mini">From Base</label><select id="base-from"><option value="10">Decimal</option><option value="2">Binary</option><option value="16">Hex</option></select></div></div>
+        <div class="row"><div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div><div class="field flex-1"><label class="mini">From Base</label>
+            <select id="base-from">
+                <option value="10">Decimal</option>
+                <option value="2">Binary</option>
+                <option value="16">Hex</option>
+                <option value="8">Octal</option> </select>
+        </div></div>
         <button type="button" id="base-btn" class="btn btn-accent btn-action">Convert</button>
         <div id="base-res" class="result-text" aria-live="polite"></div>
       </div>
@@ -822,7 +845,7 @@
   let globalSym = '₹'; 
 
   // Timer Variables
-  let clockInterval = null; // Fix: Initialize as null
+  let clockInterval = null; 
   let swInterval, swTime = 0, swRunning = false;
   let timerInterval, timerTime = 0, timerRunning = false;
 
@@ -1002,7 +1025,6 @@
       clockInterval = setInterval(update, 1000);
   };
 
-  // Fix: Nullify interval to prevent leaks
   const stopLiveClock = () => {
       if(clockInterval) {
           clearInterval(clockInterval);
@@ -1033,7 +1055,6 @@
           this.textContent = "Stop"; 
           this.style.backgroundColor = "#ef4444"; 
           $('sw-lap').textContent = "Lap"; 
-          // Fix: Ensure button is enabled when starting
           $('sw-lap').disabled = false; 
           swRunning = true;
       }
@@ -1047,7 +1068,6 @@
           $('sw-laps').prepend(lapItem); 
           $('sw-laps').style.display = 'block';
       } else { 
-          // Reset Logic
           swTime = 0; 
           $('sw-display').textContent = "00:00.00"; 
           $('sw-laps').innerHTML = ''; 
@@ -1074,7 +1094,6 @@
           }
           timerInterval = setInterval(() => {
               timerTime--;
-              // Fix: Check <= 0 to avoid negative display
               if (timerTime <= 0) { 
                   clearInterval(timerInterval); 
                   $('t-display').textContent = "Time's Up!"; 
@@ -1143,13 +1162,11 @@
     $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
     tape.querySelectorAll('.hist-item').forEach(item => { 
-      // Fix: Replace logic instead of Append
       item.onclick = () => { expr = item.textContent.split('=')[0].trim(); upd(); }; 
     });
   };
 
   const upd = () => {
-      // Fix: Removed .replace(/e/g, 'e') to prevent math.js collision
       let displayExpr = expr
           .replace(/\*/g, '×')
           .replace(/\//g, '÷')
@@ -1404,7 +1421,6 @@
     const total = parseFloat($('perc-total').value), rate = parseFloat($('perc-rate').value);
     if (!total || !rate) { $('perc-res').textContent = "Please fill fields."; return; }
     const value = (total * rate) / 100; const off = total - value;
-    // Fix: Updated label text
     $('perc-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>${rate}% Value:</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(value.toFixed(2)))}</b></div><div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px"><span style="color:var(--accent)">Result (Total - %):</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(off.toFixed(2)))}</b></div>`;
   };
   
@@ -1444,7 +1460,6 @@
   // 15. Age Calc (Fix: Timezone off-by-one)
   $('age-btn').onclick = () => {
     const dVal = $('dob-input').value; if(!dVal) return;
-    // Fix: Parse YYYY-MM-DD manually
     const parts = dVal.split('-');
     const d = new Date(parts[0], parts[1]-1, parts[2]);
     const t = new Date();
@@ -1459,7 +1474,6 @@
   // 16. Currency API
   $('cur-btn').onclick = async () => {
     const a = parseFloat($('cur-amt').value);
-    // Fix: Validate Input
     if (isNaN(a) || a <= 0) { $('cur-res').innerHTML = `<span style="color:#ef4444">Please enter valid amount</span>`; return; }
 
     const f = $('cur-from').value, t = $('cur-to').value;
@@ -1486,13 +1500,12 @@
   // 17. World Time
   $('zone-btn').onclick = () => { $('zone-res').textContent = `Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`; };
   
-  // 18. QR Gen (Fix: Optimize Fetch)
+  // 18. QR Gen
   $('qr-btn').onclick = () => { 
     const txt = $('qr-text').value; if (!txt) return; 
     $('qr-container').classList.add('show'); $('qr-image').style.display = 'none'; $('qr-loading').style.display = 'block'; 
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
     
-    // Fix: Set SRC first, only fetch for download on load
     const img = $('qr-image');
     img.onload = () => { 
         $('qr-loading').style.display = 'none'; 
@@ -1506,17 +1519,47 @@
     img.src = url; 
   };
 
-  // 19. Unit Converter
+  // 19. Unit Converter (EXPANDED)
   const uData = {
     length: { opts:['m','cm','ft','in'], fn:(v,f,t) => { let m=v; if(f=='cm')m=v/100; if(f=='ft')m=v/3.2808; if(f=='in')m=v/39.37; if(t=='m')return m; if(t=='cm')return m*100; if(t=='ft')return m*3.2808; if(t=='in')return m*39.37; } },
-    weight:{ opts:['kg','lb'], fn:(v,f,t) => f===t?v:(f==='kg'?v*2.2046:v/2.2046) },
-    temp:{ opts:['C','F'], fn:(v,f,t) => f===t?v:(f==='C'?(v*1.8+32):(v-32)/1.8) },
-    speed:{ opts:['kmph','mph'], fn:(v,f,t) => f===t?v:(f==='kmph'?v*0.6213:v/0.6213) }
+    weight: {
+        opts: ['kg','lb','g','mg','oz','t','q'],
+        fn: (v,f,t) => {
+            // Convert to grams first, then to target
+            const toG = { kg:1000, lb:453.59237, g:1, mg:0.001, oz:28.34952, t:1000000, q:100000 };
+            const valInG = v * toG[f];
+            return valInG / toG[t];
+        }
+    },
+    temp: { opts:['C','F'], fn:(v,f,t) => f===t?v:(f==='C'?(v*1.8+32):(v-32)/1.8) },
+    speed: { opts:['kmph','mph'], fn:(v,f,t) => f===t?v:(f==='kmph'?v*0.6213:v/0.6213) },
+    power: {
+        opts: ['W','kW','hp','mW'],
+        fn: (v,f,t) => {
+            // Convert to Watts
+            const toW = { W:1, kW:1000, hp:745.7, mW:0.001 };
+            return (v * toW[f]) / toW[t];
+        }
+    },
+    area: {
+        opts: ['m²','ft²','ac','ha'],
+        fn: (v,f,t) => {
+            // Convert to Square Meters
+            const toM2 = { 'm²':1, 'ft²':0.092903, 'ac':4046.86, 'ha':10000 };
+            return (v * toM2[f]) / toM2[t];
+        }
+    },
+    data: {
+        opts: ['B','KB','MB','GB','TB'],
+        fn: (v,f,t) => {
+            const p = { B:0, KB:1, MB:2, GB:3, TB:4 };
+            return v * Math.pow(1024, p[f] - p[t]);
+        }
+    }
   };
 
   function renderUnits(){ 
     const t = $('u-type').value, d = uData[t], f = $('u-from'), to = $('u-to');
-    // Fix: Clear previous results when type changes
     $('u-res').textContent = '';
     f.innerHTML = ''; to.innerHTML = ''; d.opts.forEach(o => { f.add(new Option(o,o)); to.add(new Option(o,o)); }); if(to.options.length>1) to.selectedIndex = 1; 
   }
@@ -1537,7 +1580,14 @@
     const d1 = new Date(startVal), d2 = new Date(endVal);
     $('time-result').textContent = `${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`;
   };
-  $('base-btn').onclick = () => { try { const d = parseInt($('base-num').value, parseInt($('base-from').value)); if(isNaN(d)) throw Error; $('base-res').innerHTML = `DEC: ${d}<br>BIN: ${d.toString(2)}<br>HEX: ${d.toString(16).toUpperCase()}`; } catch { $('base-res').textContent = "Invalid"; } };
+  $('base-btn').onclick = () => { 
+      try { 
+          const d = parseInt($('base-num').value, parseInt($('base-from').value)); 
+          if(isNaN(d)) throw Error; 
+          // UPDATED: Added Octal
+          $('base-res').innerHTML = `DEC: ${d}<br>BIN: ${d.toString(2)}<br>OCT: ${d.toString(8)}<br>HEX: ${d.toString(16).toUpperCase()}`; 
+      } catch { $('base-res').textContent = "Invalid"; } 
+  };
   $('gpa-btn').onclick = () => { const n=$('gpa-in').value.split(',').map(Number).filter(x=>!isNaN(x)); $('gpa-res').textContent = "Avg: " + (n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(2):0); };
   
   const txtStats = () => { const v = $('txt-in').value; $('txt-chars').textContent = v.length; $('txt-words').textContent = v.trim().split(/\s+/).filter(w=>w.length>0).length; };
@@ -1547,12 +1597,10 @@
   //  REGION 7: INIT & RESTORE STATE
   // ==========================================
   
-  // Defined here to ensure hoisting safety
   function setGlobalCurrency(sym) {
       globalSym = sym;
       localStorage.setItem('calc_currency', sym);
       
-      // Fix: Ensure Selectors Update
       const globalSel = $('global-currency');
       const modalSel = $('modal-currency-select');
       if(globalSel) globalSel.value = sym;
@@ -1575,7 +1623,6 @@
       }
   }
 
-  // Restore State
   const savedCurr = localStorage.getItem('calc_currency');
   if (savedCurr) {
       setGlobalCurrency(savedCurr);
