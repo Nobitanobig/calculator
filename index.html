@@ -238,20 +238,6 @@
     text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 10px;
   }
   
-  /* NEW INLINE MUTE BUTTON */
-  .mute-btn-inline {
-    background: var(--btn-bg);
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 6px;
-    width: 34px; height: 34px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: 0.2s;
-  }
-  .mute-btn-inline:hover { filter: brightness(1.1); }
-  .mute-btn-inline.active { background: var(--accent-bg); color: var(--accent-text); border-color: transparent; }
-
   .stopwatch-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
   .lap-list {
     max-height: 150px; overflow-y: auto; margin-top: 15px; 
@@ -379,6 +365,7 @@
   .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
   @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.3); } 60% { transform: scale(1); } 100% { transform: scale(1); } }
 </style>
+</head>
 <body data-theme="dark">
 
 <div id="currency-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="curr-modal-title">
@@ -389,7 +376,7 @@
       <option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option>
       <option value="A$">A$ AUD</option><option value="C$">C$ CAD</option><option value="CN¥">CN¥ CNY</option><option value="₣">₣ CHF</option><option value="NZ$">NZ$ NZD</option>
     </select>
-    <button id="modal-save-btn" class="btn btn-accent" style="width:100%; margin-top:15px;">Get Started</button>
+    <button type="button" id="modal-save-btn" class="btn btn-accent" style="width:100%; margin-top:15px;">Get Started</button>
     <div style="margin-top:12px; font-size:0.75rem; color:var(--muted);">Change anytime in <b>More Tools</b>.</div>
   </div>
 </div>
@@ -398,7 +385,7 @@
   <div class="modal-card">
     <div id="info-title" class="card-title" style="margin-bottom:10px; font-size:1.1rem;"></div>
     <div id="info-content" class="info-list" style="color:var(--muted); font-size:0.9rem; text-align:left;"></div>
-    <button id="info-close-btn" class="btn btn-accent" style="width:100%; margin-top:15px;">Got it</button>
+    <button type="button" id="info-close-btn" class="btn btn-accent" style="width:100%; margin-top:15px;">Got it</button>
   </div>
 </div>
 
@@ -410,7 +397,7 @@
       <div class="subtitle">Minimal, fast & versatile.</div>
     </div>
     <div class="theme-block">
-      <button id="toggle-theme" class="pill" aria-label="Toggle Dark Mode">Dark / Light</button>
+      <button type="button" id="toggle-theme" class="pill" aria-label="Toggle Dark Mode">Dark / Light</button>
       <select id="theme-color" aria-label="Select Theme Color">
         <option value="mono" selected>Default</option>
         <option value="blue">Blue</option><option value="red">Red</option><option value="green">Green</option>
@@ -434,23 +421,23 @@
       </div>
       <div id="calc-grid" class="calc-grid"></div>
       <div class="calc-grid" style="margin-top:10px">
-        <button id="calc-clear" class="btn small" style="color:#ef4444" data-key="Escape" aria-label="Clear All">AC</button>
-        <button id="calc-back" class="btn small" data-key="Backspace" aria-label="Backspace">⌫</button>
-        <button id="calc-copy" class="btn small" aria-label="Copy Result">Copy</button>
-        <button id="calc-equals" class="btn btn-accent" data-key="Enter" aria-label="Calculate">=</button>
+        <button type="button" id="calc-clear" class="btn small" style="color:#ef4444" data-key="Escape" aria-label="Clear All">AC</button>
+        <button type="button" id="calc-back" class="btn small" data-key="Backspace" aria-label="Backspace">⌫</button>
+        <button type="button" id="calc-copy" class="btn small" aria-label="Copy Result">Copy</button>
+        <button type="button" id="calc-equals" class="btn btn-accent" data-key="Enter" aria-label="Calculate">=</button>
       </div>
       <div id="sci-keys" class="calc-grid" style="margin-top:10px; display:none;">
-        <button class="btn small" id="deg-toggle" style="font-size:0.8rem">DEG</button>
-        <button class="btn small" data-fn="sin">sin</button><button class="btn small" data-fn="cos">cos</button><button class="btn small" data-fn="tan">tan</button>
-        <button class="btn small" data-fn="sqrt">√</button><button class="btn small" data-fn="log">ln</button><button class="btn small" data-fn="log10">log</button><button class="btn small" data-fn="pow">xʸ</button><button class="btn small" data-fn="pi">π</button>
-        <button class="btn small" data-fn="(">(</button><button class="btn small" data-fn=")">)</button><button class="btn small" data-fn="e">e</button><button class="btn small" data-fn="inv">1/x</button>
+        <button type="button" class="btn small" id="deg-toggle" style="font-size:0.8rem">DEG</button>
+        <button type="button" class="btn small" data-fn="sin">sin</button><button type="button" class="btn small" data-fn="cos">cos</button><button type="button" class="btn small" data-fn="tan">tan</button>
+        <button type="button" class="btn small" data-fn="sqrt">√</button><button type="button" class="btn small" data-fn="log">ln</button><button type="button" class="btn small" data-fn="log10">log</button><button type="button" class="btn small" data-fn="pow">xʸ</button><button type="button" class="btn small" data-fn="pi">π</button>
+        <button type="button" class="btn small" data-fn="(">(</button><button type="button" class="btn small" data-fn=")">)</button><button type="button" class="btn small" data-fn="e">e</button><button type="button" class="btn small" data-fn="inv">1/x</button>
       </div>
     </section>
 
     <section class="card">
       <div class="card-header"><div class="title-group"><div class="card-title">Age Calculator</div><div class="card-sub">Calculate exact age.</div></div></div>
       <div class="field"><label class="mini">Date of birth</label><input type="date" id="dob-input"></div>
-      <button id="age-btn" class="btn btn-accent btn-action">Calculate Age</button>
+      <button type="button" id="age-btn" class="btn btn-accent btn-action">Calculate Age</button>
       <div id="age-result" class="result-text" aria-live="polite"></div>
     </section>
 
@@ -462,17 +449,17 @@
         <div class="field flex-1"><label class="mini">To</label><select id="cur-to"><option value="INR" selected>INR</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="JPY">JPY</option><option value="AUD">AUD</option><option value="CAD">CAD</option><option value="CNY">CNY</option><option value="CHF">CHF</option><option value="NZD">NZD</option></select></div>
       </div>
       <div class="row">
-        <button id="cur-btn" class="btn btn-accent flex-1 btn-action">Convert</button>
-        <button id="cur-swap" class="btn small" style="width:50px; margin-top:10px;" aria-label="Swap Currencies">⇄</button>
+        <button type="button" id="cur-btn" class="btn btn-accent flex-1 btn-action">Convert</button>
+        <button type="button" id="cur-swap" class="btn small" style="width:50px; margin-top:10px;" aria-label="Swap Currencies">⇄</button>
       </div>
       <div id="cur-res" class="result-text" aria-live="polite"></div>
-      <div id="cur-source" class="muted-text" style="display:none;"><span id="cur-date"></span> | <a href="https://www.frankfurter.app" target="_blank" class="link-btn">Source: Frankfurter API</a></div>
+      <div id="cur-source" class="muted-text" style="display:none;"><span id="cur-date"></span> | <a href="https://www.frankfurter.app" target="_blank" rel="noopener noreferrer" class="link-btn">Source: Frankfurter API</a></div>
     </section>
 
     <section class="card">
       <div class="card-header"><div class="title-group"><div class="card-title">QR Generator</div><div class="card-sub">Create QR codes.</div></div></div>
       <div class="field"><label class="mini">Text or URL</label><input id="qr-text" type="text" placeholder="https://example.com"></div>
-      <button id="qr-btn" class="btn btn-accent btn-action">Generate</button>
+      <button type="button" id="qr-btn" class="btn btn-accent btn-action">Generate</button>
       <div id="qr-container" class="qr-container" aria-live="polite">
         <div id="qr-loading" class="loading-txt">Generating...</div>
         <img id="qr-image" class="qr-img" alt="QR Code" style="display:none;" />
@@ -495,54 +482,54 @@
       </div>
 
       <div class="tab-bar" role="tablist">
-        <button class="tab-btn active" data-tab="tab-tools" role="tab" aria-selected="true">Tools</button>
-        <button class="tab-btn" data-tab="tab-finance" role="tab" aria-selected="false">Finance</button>
-        <button class="tab-btn" data-tab="tab-health" role="tab" aria-selected="false">Health</button>
-        <button class="tab-btn" data-tab="tab-travel" role="tab" aria-selected="false">Travel</button>
-        <button class="tab-btn" data-tab="tab-clock" role="tab" aria-selected="false">Clock</button>
+        <button type="button" class="tab-btn active" data-tab="tab-tools" role="tab" aria-selected="true">Tools</button>
+        <button type="button" class="tab-btn" data-tab="tab-finance" role="tab" aria-selected="false">Finance</button>
+        <button type="button" class="tab-btn" data-tab="tab-health" role="tab" aria-selected="false">Health</button>
+        <button type="button" class="tab-btn" data-tab="tab-travel" role="tab" aria-selected="false">Travel</button>
+        <button type="button" class="tab-btn" data-tab="tab-clock" role="tab" aria-selected="false">Clock</button>
       </div>
 
       <div id="tab-tools" class="tab-content active" role="tabpanel">
         <div class="chips">
-          <button class="chip-btn active" data-panel="unit-panel">Converters</button>
-          <button class="chip-btn" data-panel="text-panel">Text Tools</button>
-          <button class="chip-btn" data-panel="time-panel">Day Counter</button>
-          <button class="chip-btn" data-panel="gpa-panel">GPA</button>
-          <button class="chip-btn" data-panel="base-panel">Base Converter</button>
+          <button type="button" class="chip-btn active" data-panel="unit-panel">Converters</button>
+          <button type="button" class="chip-btn" data-panel="text-panel">Text Tools</button>
+          <button type="button" class="chip-btn" data-panel="time-panel">Day Counter</button>
+          <button type="button" class="chip-btn" data-panel="gpa-panel">GPA</button>
+          <button type="button" class="chip-btn" data-panel="base-panel">Base Converter</button>
         </div>
       </div>
 
       <div id="tab-finance" class="tab-content" role="tabpanel">
         <div class="chips">
-          <button class="chip-btn" data-panel="loan-panel">Loan</button>
-          <button class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> 
-          <button class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button>
-          <button class="chip-btn" data-panel="fdrd-panel">FD/RD</button> <button class="chip-btn" data-panel="goal-panel">Goal Planner</button>
-          <button class="chip-btn" data-panel="discount-panel">Percentage</button>
-          <button class="chip-btn" data-panel="bill-panel">Split Bill</button>
-          <button class="chip-btn" data-panel="ci-panel">Compound Int.</button>
+          <button type="button" class="chip-btn" data-panel="loan-panel">Loan</button>
+          <button type="button" class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> 
+          <button type="button" class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button>
+          <button type="button" class="chip-btn" data-panel="fdrd-panel">FD/RD</button> <button type="button" class="chip-btn" data-panel="goal-panel">Goal Planner</button>
+          <button type="button" class="chip-btn" data-panel="discount-panel">Percentage</button>
+          <button type="button" class="chip-btn" data-panel="bill-panel">Split Bill</button>
+          <button type="button" class="chip-btn" data-panel="ci-panel">Compound Int.</button>
         </div>
       </div>
 
       <div id="tab-health" class="tab-content" role="tabpanel">
         <div class="chips">
-          <button class="chip-btn" data-panel="health-panel">Health Station</button>
-          <button class="chip-btn" data-panel="calorie-panel">Calories</button> <button class="chip-btn" data-panel="bodyfat-panel">Body Fat %</button> </div>
+          <button type="button" class="chip-btn" data-panel="health-panel">Health Station</button>
+          <button type="button" class="chip-btn" data-panel="calorie-panel">Calories</button> <button type="button" class="chip-btn" data-panel="bodyfat-panel">Body Fat %</button> </div>
       </div>
 
       <div id="tab-travel" class="tab-content" role="tabpanel">
         <div class="chips">
-          <button class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
-          <button class="chip-btn" data-panel="eta-panel">Trip ETA</button>
-          <button class="chip-btn" data-panel="budget-panel">Budget Planner</button> </div>
+          <button type="button" class="chip-btn" data-panel="fuel-panel">Fuel Cost</button>
+          <button type="button" class="chip-btn" data-panel="eta-panel">Trip ETA</button>
+          <button type="button" class="chip-btn" data-panel="budget-panel">Budget Planner</button> </div>
       </div>
       
       <div id="tab-clock" class="tab-content" role="tabpanel">
         <div class="chips">
-          <button class="chip-btn" data-panel="clock-panel">Live Clock</button>
-          <button class="chip-btn" data-panel="stopwatch-panel">Stopwatch</button>
-          <button class="chip-btn" data-panel="timer-panel">Timer</button>
-          <button class="chip-btn" data-panel="zone-panel">World Time</button>
+          <button type="button" class="chip-btn" data-panel="clock-panel">Live Clock</button>
+          <button type="button" class="chip-btn" data-panel="stopwatch-panel">Stopwatch</button>
+          <button type="button" class="chip-btn" data-panel="timer-panel">Timer</button>
+          <button type="button" class="chip-btn" data-panel="zone-panel">World Time</button>
         </div>
       </div>
 
@@ -551,9 +538,9 @@
       <div id="unit-panel" class="panel active">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div></div>
         <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
-        <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button id="u-swap" class="btn small" style="width:40px; margin-top: 18px" aria-label="Swap Units">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
+        <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button type="button" id="u-swap" class="btn small" style="width:40px; margin-top: 18px" aria-label="Swap Units">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
         <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
-        <button id="u-btn" class="btn btn-accent btn-action">Convert</button>
+        <button type="button" id="u-btn" class="btn btn-accent btn-action">Convert</button>
         <div id="u-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -561,27 +548,27 @@
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Text Analysis</div><div class="card-sub">Analyze and format your text instantly.</div></div>
         <div class="field"><textarea id="txt-in" rows="4" placeholder="Type or paste..."></textarea></div>
         <div class="text-stats" style="margin-bottom:10px;"><div class="stat-box"><div id="txt-words" class="stat-val">0</div><div class="stat-lbl">Words</div></div><div class="stat-box"><div id="txt-chars" class="stat-val">0</div><div class="stat-lbl">Characters</div></div></div>
-        <div class="row" style="gap:5px;"><button id="txt-upper" class="btn small flex-1">UPPER</button><button id="txt-lower" class="btn small flex-1">lower</button><button id="txt-clear" class="btn small flex-1">Clear</button></div>
+        <div class="row" style="gap:5px;"><button type="button" id="txt-upper" class="btn small flex-1">UPPER</button><button type="button" id="txt-lower" class="btn small flex-1">lower</button><button type="button" id="txt-clear" class="btn small flex-1">Clear</button></div>
       </div>
 
       <div id="time-panel" class="panel">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div><div class="card-sub">Find the number of days between two dates.</div></div>
         <div class="row"><div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div><div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div></div>
-        <button id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
+        <button type="button" id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
         <div id="time-result" class="result-text" aria-live="polite"></div>
       </div>
 
       <div id="gpa-panel" class="panel">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">GPA / Average</div><div class="card-sub">Find the average of any set of numbers.</div></div>
         <div class="field"><label class="mini">Numbers (comma separated)</label><input id="gpa-in" type="text" placeholder="8.5, 9.0, 7.5"></div>
-        <button id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
+        <button type="button" id="gpa-btn" class="btn btn-accent btn-action">Calculate Average</button>
         <div id="gpa-res" class="result-text" aria-live="polite"></div>
       </div>
 
       <div id="base-panel" class="panel">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Base Converter</div><div class="card-sub">Convert numbers between different numeral systems.</div></div>
         <div class="row"><div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div><div class="field flex-1"><label class="mini">From Base</label><select id="base-from"><option value="10">Decimal</option><option value="2">Binary</option><option value="16">Hex</option></select></div></div>
-        <button id="base-btn" class="btn btn-accent btn-action">Convert</button>
+        <button type="button" id="base-btn" class="btn btn-accent btn-action">Convert</button>
         <div id="base-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -593,7 +580,7 @@
           <div class="field" style="width:80px"><label class="mini">Tenure</label><input id="emi-time" type="number" placeholder="5"></div>
           <div class="field" style="width:100px"><label class="mini">Period</label><select id="emi-unit"><option value="years">Years</option><option value="months">Months</option></select></div>
         </div>
-        <button id="emi-calc" class="btn btn-accent btn-action">Calculate EMI</button>
+        <button type="button" id="emi-calc" class="btn btn-accent btn-action">Calculate EMI</button>
         <div id="emi-result" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -604,8 +591,8 @@
            <div class="field flex-1"><label class="mini">Tax Rate %</label><input id="gst-rate" type="number" placeholder="18"></div>
         </div>
         <div class="row" style="margin-top:15px; gap:10px;">
-          <button id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add Tax (+)</button>
-          <button id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove Tax (-)</button>
+          <button type="button" id="gst-add" class="btn flex-1" style="font-size:0.9rem">Add Tax (+)</button>
+          <button type="button" id="gst-rem" class="btn flex-1" style="font-size:0.9rem">Remove Tax (-)</button>
         </div>
         <div id="gst-res" class="result-text" aria-live="polite"></div>
       </div>
@@ -617,7 +604,7 @@
            <div class="field flex-1"><label class="mini">Rate %</label><input id="sip-rate" type="number" placeholder="12"></div>
            <div class="field flex-1"><label class="mini">Years</label><input id="sip-years" type="number" placeholder="10"></div>
         </div>
-        <button id="sip-btn" class="btn btn-accent btn-action">Calculate Return</button>
+        <button type="button" id="sip-btn" class="btn btn-accent btn-action">Calculate Return</button>
         <div id="sip-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -632,7 +619,7 @@
            <div class="field flex-1"><label class="mini">Rate %</label><input id="fdrd-rate" type="number" placeholder="6.5"></div>
            <div class="field flex-1"><label class="mini">Years</label><input id="fdrd-years" type="number" placeholder="5"></div>
         </div>
-        <button id="fdrd-btn" class="btn btn-accent btn-action">Calculate Maturity</button>
+        <button type="button" id="fdrd-btn" class="btn btn-accent btn-action">Calculate Maturity</button>
         <div id="fdrd-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -643,7 +630,7 @@
            <div class="field flex-1"><label class="mini">Years</label><input id="goal-time" type="number" placeholder="10"></div>
            <div class="field flex-1"><label class="mini">Exp. Rate %</label><input id="goal-rate" type="number" placeholder="12"></div>
         </div>
-        <button id="goal-btn" class="btn btn-accent btn-action">Calculate Monthly SIP</button>
+        <button type="button" id="goal-btn" class="btn btn-accent btn-action">Calculate Monthly SIP</button>
         <div id="goal-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -651,7 +638,7 @@
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Percentage Calculator</div><div class="card-sub">Get the % value or price after discount.</div></div>
         <div class="field"><label class="mini">Total Amount</label><input id="perc-total" type="number" placeholder="2000"></div>
         <div class="field"><label class="mini">Percentage %</label><input id="perc-rate" type="number" placeholder="50"></div>
-        <button id="perc-btn" class="btn btn-accent btn-action">Calculate</button>
+        <button type="button" id="perc-btn" class="btn btn-accent btn-action">Calculate</button>
         <div id="perc-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -662,7 +649,7 @@
            <div class="field flex-1"><label class="mini">Tip %</label><input id="bill-tip" type="number" placeholder="10"></div>
         </div>
         <div class="field"><label class="mini">People</label><input id="bill-ppl" type="number" placeholder="4"></div>
-        <button id="bill-btn" class="btn btn-accent btn-action">Split Bill</button>
+        <button type="button" id="bill-btn" class="btn btn-accent btn-action">Split Bill</button>
         <div id="bill-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -676,7 +663,7 @@
            <div class="field flex-1"><label class="mini">Years</label><input id="ci-t" type="number" placeholder="10"></div>
            <div class="field flex-1"><label class="mini">Compounded</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12">Monthly</option></select></div>
         </div>
-        <button id="ci-btn" class="btn btn-accent btn-action">Calculate Amount</button>
+        <button type="button" id="ci-btn" class="btn btn-accent btn-action">Calculate Amount</button>
         <div id="ci-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -696,7 +683,7 @@
             <option value="1.2">Sedentary (Little/No exercise)</option><option value="1.375">Light</option><option value="1.55">Moderate</option><option value="1.725">Active</option><option value="1.9">Very Active</option>
           </select>
         </div>
-        <button id="h-btn" class="btn btn-accent btn-action">Calculate Stats</button>
+        <button type="button" id="h-btn" class="btn btn-accent btn-action">Calculate Stats</button>
         <div id="h-result" class="health-stats" style="display:none;" aria-live="polite">
           <div class="stat-box"><div class="info-icon" id="bmi-info" aria-label="BMI Info" role="button" tabindex="0">i</div><div id="res-bmi" class="stat-val">--</div><div class="stat-lbl">BMI Score</div></div>
           <div class="stat-box"><div id="res-bmr" class="stat-val">--</div><div class="stat-lbl">BMR (Cal/Day)</div></div>
@@ -717,7 +704,7 @@
             <div class="field flex-1"><label class="mini">Height (cm)</label><input id="cal-height" type="number" placeholder="170"></div>
          </div>
          <div class="field"><label class="mini">Activity</label><select id="cal-act"><option value="1.2">Sedentary</option><option value="1.375">Light Activity</option><option value="1.55">Moderate Activity</option><option value="1.725">Very Active</option></select></div>
-         <button id="cal-btn" class="btn btn-accent btn-action">Calculate</button>
+         <button type="button" id="cal-btn" class="btn btn-accent btn-action">Calculate</button>
          <div id="cal-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -730,7 +717,7 @@
          </div>
          <div class="field"><label class="mini">Waist (at navel) (cm)</label><input id="bf-waist" type="number" placeholder="85"></div>
          <div id="bf-hip-group" class="field" style="display:none;"><label class="mini">Hip (at widest) (cm)</label><input id="bf-hip" type="number" placeholder="95"></div>
-         <button id="bf-btn" class="btn btn-accent btn-action">Calculate Body Fat</button>
+         <button type="button" id="bf-btn" class="btn btn-accent btn-action">Calculate Body Fat</button>
          <div id="bf-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -741,7 +728,7 @@
            <div class="field flex-1"><label class="mini">Mileage (km/l)</label><input id="fuel-mil" type="number" placeholder="15"></div>
         </div>
         <div class="field"><label class="mini">Fuel Price</label><input id="fuel-price" type="number" placeholder="100"></div>
-        <button id="fuel-btn" class="btn btn-accent btn-action">Calculate Cost</button>
+        <button type="button" id="fuel-btn" class="btn btn-accent btn-action">Calculate Cost</button>
         <div id="fuel-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -752,7 +739,7 @@
            <div class="field flex-1"><label class="mini">Speed (km/h)</label><input id="eta-speed" type="number" placeholder="60"></div>
         </div>
         <div class="field"><label class="mini">Start Time</label><input id="eta-start" type="time"></div>
-        <button id="eta-btn" class="btn btn-accent btn-action">Calculate Arrival</button>
+        <button type="button" id="eta-btn" class="btn btn-accent btn-action">Calculate Arrival</button>
         <div id="eta-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -762,16 +749,13 @@
          <div class="row"><div class="field flex-1"><label class="mini">Food</label><input id="bud-food" type="number" placeholder="0"></div><div class="field flex-1"><label class="mini">Activity</label><input id="bud-act" type="number" placeholder="0"></div></div>
          <div class="row"><div class="field flex-1"><label class="mini">Shopping</label><input id="bud-shop" type="number" placeholder="0"></div><div class="field flex-1"><label class="mini">Misc</label><input id="bud-misc" type="number" placeholder="0"></div></div>
          <div class="field"><label class="mini">Total Persons</label><input id="bud-ppl" type="number" placeholder="1"></div>
-         <button id="bud-btn" class="btn btn-accent btn-action">Calculate Budget</button>
+         <button type="button" id="bud-btn" class="btn btn-accent btn-action">Calculate Budget</button>
          <div id="bud-res" class="result-text" aria-live="polite"></div>
       </div>
 
       <div id="clock-panel" class="panel">
          <div class="title-group" style="margin-bottom:10px; display:flex; flex-direction:row; align-items:center; justify-content:center; gap:10px;">
              <div class="card-title">Live Clock</div>
-             <button id="clock-mute" class="mute-btn-inline" aria-label="Toggle Sound">
-               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-             </button>
          </div>
          <div id="clock-display" class="clock-display">--:--:--</div>
          <div id="clock-date" class="clock-date">-- -- --</div>
@@ -781,8 +765,8 @@
          <div class="title-group" style="margin-bottom:10px"><div class="card-title">Stopwatch</div></div>
          <div id="sw-display" class="clock-display">00:00.00</div>
          <div class="stopwatch-controls">
-           <button id="sw-start" class="btn btn-accent">Start</button>
-           <button id="sw-lap" class="btn" disabled>Lap</button>
+           <button type="button" id="sw-start" class="btn btn-accent">Start</button>
+           <button type="button" id="sw-lap" class="btn" disabled>Lap</button>
          </div>
          <div id="sw-laps" class="lap-list" style="display:none;" aria-live="polite"></div>
       </div>
@@ -796,8 +780,8 @@
          </div>
          <div id="t-display" class="clock-display" style="display:none;">00:00:00</div>
          <div class="stopwatch-controls">
-           <button id="t-start" class="btn btn-accent">Start</button>
-           <button id="t-reset" class="btn">Reset</button>
+           <button type="button" id="t-start" class="btn btn-accent">Start</button>
+           <button type="button" id="t-reset" class="btn">Reset</button>
          </div>
       </div>
 
@@ -815,7 +799,7 @@
             <option value="Europe/Paris">🇫🇷 Paris (CET)</option>
           </select>
         </div>
-        <button id="zone-btn" class="btn btn-accent btn-action">Get Time</button>
+        <button type="button" id="zone-btn" class="btn btn-accent btn-action">Get Time</button>
         <div id="zone-res" class="result-text" aria-live="polite"></div>
       </div>
 
@@ -843,9 +827,7 @@
   let swInterval, swTime = 0, swRunning = false;
   let timerInterval, timerTime = 0, timerRunning = false;
 
-  // -- FIXED: Split Formatters --
-  
-  // 1. Tool Formatter (Visual only - for generic inputs)
+  // 1. Tool Formatter (Visual only)
   const formatNum = (num) => {
       let clean = parseFloat(num.toFixed(10)); 
       if (String(clean).split('.')[1]?.length > 4) {
@@ -854,9 +836,8 @@
       return clean;
   };
   
-  // 2. Currency Formatter (Dynamic Locale: Indian vs Global)
+  // 2. Currency Formatter (Fixed: No space, Dynamic Locale)
   const formatCurrencyAmount = (num) => {
-      // If symbol is Rupee, use 'en-IN' (1,00,000), else use 'en-US' (100,000)
       const locale = globalSym === '₹' ? 'en-IN' : 'en-US';
       return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(num);
   };
@@ -903,65 +884,10 @@
   };
 
   // ==========================================
-  //  REGION 3: SOUND ENGINE (LAZY LOAD FIXED)
-  // ==========================================
-  let audioCtx = null; 
-  let isMuted = localStorage.getItem('clock_muted') === 'true'; 
-
-  const getAudioCtx = () => {
-      if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      return audioCtx;
-  };
-
-  const updateMuteIcon = () => {
-    const btn = $('clock-mute');
-    if(!isMuted) {
-        btn.classList.remove('active'); 
-        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
-    } else {
-        btn.classList.add('active'); 
-        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
-    }
-  };
-
-  $('clock-mute').onclick = function() {
-      isMuted = !isMuted;
-      localStorage.setItem('clock_muted', isMuted); 
-      updateMuteIcon();
-      if (!isMuted) getAudioCtx().resume();
-  };
-
-  const playTick = () => {
-      if (isMuted || document.hidden) return;
-      if (!$('clock-panel').classList.contains('active')) return;
-
-      const ctx = getAudioCtx(); 
-      if (ctx.state === 'suspended') ctx.resume();
-      
-      const t = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine'; 
-      osc.frequency.setValueAtTime(1200, t); 
-      osc.frequency.exponentialRampToValueAtTime(800, t + 0.05); 
-      gain.gain.setValueAtTime(0.3, t); 
-      gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05); 
-      osc.connect(gain); gain.connect(ctx.destination); 
-      osc.start(t); osc.stop(t + 0.05);
-  };
-
-  document.addEventListener("visibilitychange", () => {
-      if (document.hidden) stopLiveClock();
-      else if ($('clock-panel').classList.contains('active')) startLiveClock();
-  });
-
-  // ==========================================
-  //  REGION 4: NAVIGATION & ACCESSIBILITY
+  //  REGION 3: NAVIGATION & ACCESSIBILITY
   // ==========================================
   
-  // -- FIXED: Focus Trap Helper --
+  // Focus Trap for Modals (Senior Dev Request)
   function trapFocus(modal) {
     const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
     if(focusable.length === 0) return;
@@ -1065,7 +991,7 @@
   });
 
   // ==========================================
-  //  REGION 5: SETUP & RESTORE STATE
+  //  REGION 4: SETUP & RESTORE STATE
   // ==========================================
   const savedCurr = localStorage.getItem('calc_currency');
   if (savedCurr) setGlobalCurrency(savedCurr);
@@ -1109,19 +1035,17 @@
   const savedThemeColor = localStorage.getItem('theme_color');
   if(savedThemeColor) { $('theme-color').value = savedThemeColor; updateThemeColors(savedThemeColor); }
   else updateThemeColors('mono');
-  
-  updateMuteIcon();
 
   // ==========================================
-  //  REGION 6: CLOCK & TIME LOGIC
+  //  REGION 5: CLOCK & TIME LOGIC
   // ==========================================
   const startLiveClock = () => {
-      clearInterval(clockInterval); 
+      if (clockInterval) clearInterval(clockInterval); // Safety Clear
       const update = () => {
           const now = new Date();
           $('clock-display').textContent = now.toLocaleTimeString('en-US', {hour12: true});
           $('clock-date').textContent = now.toLocaleDateString(undefined, {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-          playTick(); 
+          // Sound removed
       };
       update();
       clockInterval = setInterval(update, 1000);
@@ -1137,7 +1061,7 @@
 
   $('sw-start').onclick = function() {
       if (swRunning) { 
-          clearInterval(swInterval); 
+          if(swInterval) clearInterval(swInterval); 
           this.textContent = "Start"; 
           this.style.backgroundColor = "var(--accent-bg)"; 
           $('sw-lap').textContent = "Reset"; 
@@ -1176,7 +1100,7 @@
 
   $('t-start').onclick = function() {
       if (timerRunning) { 
-          clearInterval(timerInterval); 
+          if(timerInterval) clearInterval(timerInterval); 
           this.textContent = "Start"; 
           this.style.backgroundColor = "var(--accent-bg)"; 
           timerRunning = false; 
@@ -1207,7 +1131,7 @@
       }
   };
   $('t-reset').onclick = () => { 
-      clearInterval(timerInterval); 
+      if(timerInterval) clearInterval(timerInterval); 
       timerRunning = false; 
       timerTime = 0; 
       $('t-start').textContent = "Start"; 
@@ -1218,7 +1142,7 @@
   };
 
   // ==========================================
-  //  REGION 7: SCIENTIFIC CALCULATOR ENGINE
+  //  REGION 6: SCIENTIFIC CALCULATOR ENGINE
   // ==========================================
   
   // 1. Input Handling
@@ -1238,6 +1162,8 @@
     const key = e.key;
     if ("0123456789.+-*/%()^".includes(key)) {
       e.preventDefault();
+      // SAFETY: Input limit
+      if (expr.length > 100) return;
       const map = {'*':'×', '/':'÷', '-': '−'};
       const btn = Array.from(document.querySelectorAll('#calc-grid .btn')).find(b => b.textContent === (map[key] || key));
       if (btn) btn.click();
@@ -1274,7 +1200,10 @@
   const k = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
   k.forEach(x => { 
     let b = document.createElement('button'); b.className = 'btn'; b.textContent = x; 
-    b.onclick = () => { expr += {'÷':'/','×':'*','−':'-'}[x] || x; upd(); }; 
+    b.onclick = () => { 
+        if (expr.length > 100) return;
+        expr += {'÷':'/','×':'*','−':'-'}[x] || x; upd(); 
+    }; 
     $('calc-grid').appendChild(b); 
   });
 
@@ -1294,6 +1223,7 @@
 
   document.querySelectorAll('#sci-keys .btn:not(#deg-toggle)').forEach(b => {
     b.onclick = () => { 
+      if (expr.length > 100) return;
       const fn = b.dataset.fn; 
       if (fn === 'pi') expr += 'pi'; 
       else if (fn === 'e') expr += 'e'; 
@@ -1313,7 +1243,6 @@
       upd(); 
   };
   
-  // -- FIXED: Copy Feedback (Senior Dev Request) --
   $('calc-copy').onclick = () => { 
       navigator.clipboard.writeText($('calc-result').textContent); 
       const originalText = $('calc-copy').textContent;
@@ -1326,10 +1255,8 @@
     else { expr = ''; upd(); $('calc-result').textContent = '0'; } 
   };
 
-  // -- FIXED: Strict Math Types & Error Reset --
   $('calc-equals').onclick = () => { 
     try { 
-      // -- FIXED: Empty Guard --
       if (!expr.trim()) return;
       
       let s = expr;
@@ -1355,7 +1282,6 @@
           throw new Error("NaN Result");
       }
     } catch (e) { 
-      // -- FIXED: Reset expression on error --
       $('calc-result').textContent = "Invalid Expression"; 
       expr = '';
       upd();
@@ -1388,7 +1314,6 @@
     const maturityDate = new Date();
     maturityDate.setFullYear(maturityDate.getFullYear() + T);
 
-    // FIXED: Removed space after globalSym (${globalSym}${format...})
     $('fdrd-res').innerHTML = `
       <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Investment:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(invVal))}</b></div>
       <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Interest:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(matVal - invVal))}</b></div>
@@ -1449,7 +1374,6 @@
       const total = hotel + travel + food + act + shop + misc;
       const perPerson = total / ppl;
       
-      // FIXED: Removed space
       $('bud-res').innerHTML = `
         <div style="font-size:1.1rem; text-align:center; margin-bottom:5px;">Total Trip Cost: <b style="color:var(--accent)">${globalSym}${formatCurrencyAmount(total)}</b></div>
         <div style="font-size:0.9rem; text-align:center; color:var(--muted)">Cost Per Person: ${globalSym}${formatCurrencyAmount(Math.round(perPerson))}</div>
@@ -1481,7 +1405,6 @@
     const emi = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
     const total = emi * n;
     
-    // FIXED: Removed space
     $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym}${formatCurrencyAmount(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatCurrencyAmount(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym}${formatCurrencyAmount(Math.round(total))}</span>`;
   };
 
@@ -1493,7 +1416,6 @@
     if (mode === 'add') { gst = (amt * rate) / 100; total = amt + gst; net = amt; } 
     else { net = amt / (1 + rate/100); gst = amt - net; total = amt; }
     
-    // FIXED: Removed space
     $('gst-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Net Price:</span><span>${globalSym}${formatCurrencyAmount(parseFloat(net.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Tax (${rate}%):</span><span>${globalSym}${formatCurrencyAmount(parseFloat(gst.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); margin-top:5px; border-top:1px solid var(--border); padding-top:5px;"><span>Total:</span><span>${globalSym}${formatCurrencyAmount(parseFloat(total.toFixed(1)))}</span></div>`;
   };
   $('gst-add').onclick = () => calcGST('add'); $('gst-rem').onclick = () => calcGST('remove');
@@ -1504,7 +1426,6 @@
      if (!p || !r || !y) { $('sip-res').textContent = "Please fill fields."; return; }
      const i = r / 1200, n = y * 12;
      const val = Math.round(p * ((Math.pow(1 + i, n) - 1) / i) * (1 + i));
-     // FIXED: Removed space
      $('sip-res').innerHTML = `Total Value: <b>${globalSym}${formatCurrencyAmount(val)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Invested: ${globalSym}${formatCurrencyAmount(p * n)} | Profit: ${globalSym}${formatCurrencyAmount(val - (p * n))}</span>`;
   };
 
@@ -1514,7 +1435,6 @@
     if (!target || !t || !r) { $('goal-res').textContent = "Please fill fields."; return; }
     const i = r/1200, n = t*12;
     const res = Math.round(target / (((Math.pow(1+i,n)-1)/i)*(1+i)));
-    // FIXED: Removed space
     $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatCurrencyAmount(res)}/mo</b>`;
   };
   
@@ -1523,7 +1443,6 @@
     const total = parseFloat($('perc-total').value), rate = parseFloat($('perc-rate').value);
     if (!total || !rate) { $('perc-res').textContent = "Please fill fields."; return; }
     const value = (total * rate) / 100; const off = total - value;
-    // FIXED: Removed space
     $('perc-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>${rate}% Value:</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(value.toFixed(2)))}</b></div><div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px"><span style="color:var(--accent)">Result after deduction:</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(off.toFixed(2)))}</b></div>`;
   };
   
@@ -1532,7 +1451,6 @@
     const amt = parseFloat($('bill-amt').value), tip = parseFloat($('bill-tip').value)||0, ppl = parseFloat($('bill-ppl').value)||1;
     if (!amt) return;
     const total = amt + (amt*tip/100); 
-    // FIXED: Removed space
     $('bill-res').innerHTML = `Total: <b>${globalSym}${formatCurrencyAmount(Math.round(total))}</b><br>Per Person: <b>${globalSym}${formatCurrencyAmount(Math.round(total/ppl))}</b>`;
   };
   
@@ -1541,7 +1459,6 @@
     const p = parseFloat($('ci-p').value), r = parseFloat($('ci-r').value), t = parseFloat($('ci-t').value), n = parseFloat($('ci-n').value);
     if (!p || !r || !t) return;
     const amt = Math.round(p * Math.pow((1 + (r/100)/n),(n*t))); 
-    // FIXED: Removed space
     $('ci-res').innerHTML = `Total Amount: <b>${globalSym}${formatCurrencyAmount(amt)}</b><br><span style="font-size:0.8rem; color:var(--muted)">Interest: ${globalSym}${formatCurrencyAmount(amt-p)}</span>`;
   };
 
@@ -1550,7 +1467,6 @@
     const d = parseFloat($('fuel-dist').value), m = parseFloat($('fuel-mil').value), p = parseFloat($('fuel-price').value);
     if (!d || !m || !p) return;
     const cost = Math.round((d/m)*p);
-    // FIXED: Removed space
     $('fuel-res').innerHTML = `Total Cost: <b>${globalSym}${formatCurrencyAmount(cost)}</b><br>Fuel Needed: <b>${formatNum(d/m)} L</b>`;
   };
   
@@ -1576,17 +1492,26 @@
     $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
   };
   
-  // 16. Currency API
+  // 16. Currency API (Senior Dev Fix: AbortController Timeout)
   $('cur-btn').onclick = async () => {
     const a = $('cur-amt').value||1, f = $('cur-from').value, t = $('cur-to').value;
     $('cur-res').textContent = "Loading..."; $('cur-source').style.display = 'none';
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 sec timeout
+
     try { 
-      const r = await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`); 
+      const r = await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`, { signal: controller.signal }); 
+      clearTimeout(timeoutId);
+      
       if(!r.ok) throw new Error();
       const d = await r.json();
       $('cur-res').innerHTML = `${a} ${f} = <b>${d.rates[t]} ${t}</b>`;
       $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display = 'block'; 
-    } catch (err) { $('cur-res').innerHTML = `<span style="color:#ef4444">Service Unavailable.</span>`; }
+    } catch (err) { 
+        if (err.name === 'AbortError') $('cur-res').innerHTML = `<span style="color:#ef4444">Network timed out.</span>`;
+        else $('cur-res').innerHTML = `<span style="color:#ef4444">Service Unavailable.</span>`; 
+    }
   };
   $('cur-swap').onclick = () => { const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
   
