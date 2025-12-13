@@ -365,17 +365,32 @@
   .loading-txt { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; }
   .link-btn { text-decoration: none; font-size: 0.75rem; color: var(--muted); border-bottom: 1px dotted var(--muted); cursor: pointer; }
   
-  /* NEW: Amortization Table Styles */
+  /* Amortization Table Styles */
   .table-wrapper { max-height: 250px; overflow-y: auto; margin-top: 15px; border: 1px solid var(--border); border-radius: 12px; display:none; }
   .table-wrapper.show { display: block; }
-  .amort-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: right; }
-  .amort-table th, .amort-table td { padding: 10px; border-bottom: 1px solid var(--border); }
-  .amort-table th { text-align: right; color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--card-bg); }
+  .amort-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: right; min-width: 320px; }
+  .amort-table th, .amort-table td { padding: 10px 6px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .amort-table th { text-align: right; color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--card-bg); z-index: 2; }
   .amort-table tr:last-child td { border-bottom: none; }
   
-  /* NEW: Randomizer Styles */
-  .random-big-text { font-size: 2.5rem; font-weight: 700; text-align: center; margin: 20px 0; color: var(--accent); animation: popIn 0.3s ease; }
+  /* UPDATED: Randomizer Styles */
+  .random-big-text { font-size: 2.5rem; font-weight: 700; text-align: center; margin: 10px 0; color: var(--accent); }
+  /* New Animation Class for Re-run effect */
+  .pop-anim { animation: popIn 0.2s ease forwards; }
   @keyframes popIn { 0%{transform:scale(0.8);opacity:0;} 100%{transform:scale(1);opacity:1;} }
+
+  /* UPDATED: Hero Result Style for Converters */
+  .hero-box {
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--input-bg);
+      border-radius: 16px;
+      text-align: center;
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .hero-val { font-size: 2.2rem; font-weight: 700; color: var(--accent); line-height: 1.1; margin-bottom: 4px; word-break: break-all; }
+  .hero-unit { font-size: 0.9rem; color: var(--muted); font-weight: 500; }
 
   footer{ text-align: center; padding: 20px 0; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 20px; }
   .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
@@ -562,13 +577,16 @@
                 <option value="temp">Temperature</option>
                 <option value="speed">Speed</option>
                 <option value="area">Area</option>
-                <option value="volume">Volume (Liquid)</option> <option value="time">Time</option> <option value="data">Data Storage</option> <option value="power">Power</option>
+                <option value="volume">Volume (Liquid)</option>
+                <option value="time">Time</option>
+                <option value="data">Data Storage</option>
+                <option value="power">Power</option>
             </select>
         </div>
         <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button type="button" id="u-swap" class="btn small" style="width:40px; margin-top: 18px" aria-label="Swap Units">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
         <div class="field"><label class="mini">Value</label><input id="u-val" type="number" placeholder="1"></div>
         <button type="button" id="u-btn" class="btn btn-accent btn-action">Convert</button>
-        <div id="u-res" class="result-text" aria-live="polite"></div>
+        <div id="u-res" aria-live="polite"></div>
       </div>
 
       <div id="text-panel" class="panel">
@@ -652,7 +670,7 @@
              <button type="button" id="emi-show-table" class="btn small" style="width:100%; margin-bottom:10px;">Show Schedule</button>
              <div id="amort-container" class="table-wrapper">
                  <table class="amort-table">
-                     <thead><tr><th>Mon</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+                     <thead><tr><th>Mon</th><th>Principal</th><th>Interest</th><th>EMI</th><th>Balance</th></tr></thead>
                      <tbody id="amort-body"></tbody>
                  </table>
              </div>
@@ -916,7 +934,7 @@
   // 2. Currency Formatter
   const formatCurrencyAmount = (num) => {
       const locale = globalSym === '₹' ? 'en-IN' : 'en-US';
-      return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(num);
+      return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(num);
   };
 
   const pad = (n) => n.toString().padStart(2, '0');
@@ -1146,7 +1164,7 @@
       $('t-display').textContent = "00:00:00"; $('t-display').style.display = 'none'; $('timer-inputs').style.display = 'flex'; 
   };
   
-  // NEW: Time Duration Calculator
+  // NEW: Time Duration Calculator (Using Native Inputs)
   $('dur-btn').onclick = () => {
      const s = $('dur-start').value, e = $('dur-end').value;
      if(!s || !e) { $('dur-res').textContent = "Select times."; return; }
@@ -1312,7 +1330,7 @@
   };
   $('bmi-info').onclick = (e) => { e.stopPropagation(); showInfoModal("BMI Categories", "• <b>< 18.5:</b> Underweight<br>• <b>18.5 - 24.9:</b> Normal<br>• <b>25 - 29.9:</b> Overweight<br>• <b>30+:</b> Obese"); };
 
-  // 6. EMI + Amortization + CSV
+  // 6. EMI + Amortization (PRO FORMATTING)
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value), t = parseFloat($('emi-time').value), u = $('emi-unit').value;
     if (!p || !r || !t) { $('emi-result').textContent = "Please fill fields."; return; }
@@ -1322,7 +1340,6 @@
     
     $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym}${formatCurrencyAmount(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatCurrencyAmount(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym}${formatCurrencyAmount(Math.round(total))}</span>`;
     
-    // Setup Download & Table
     $('emi-extras').style.display = 'block';
     
     const generateSchedule = () => {
@@ -1333,7 +1350,7 @@
             const principal = emi - interest;
             balance -= principal;
             if(balance < 0) balance = 0;
-            data.push({ month: i, p: principal, i: interest, b: balance });
+            data.push({ month: i, p: principal, i: interest, e: emi, b: balance });
         }
         return data;
     };
@@ -1343,16 +1360,23 @@
     $('emi-show-table').onclick = () => {
         const tbody = $('amort-body'); tbody.innerHTML = '';
         schedule.forEach(row => {
-            tbody.innerHTML += `<tr><td>${row.month}</td><td>${Math.round(row.p)}</td><td>${Math.round(row.i)}</td><td>${Math.round(row.b)}</td></tr>`;
+            // Apply Currency Formatting to every cell
+            tbody.innerHTML += `<tr>
+                <td>${row.month}</td>
+                <td>${formatCurrencyAmount(Math.round(row.p))}</td>
+                <td>${formatCurrencyAmount(Math.round(row.i))}</td>
+                <td>${formatCurrencyAmount(Math.round(row.e))}</td>
+                <td>${formatCurrencyAmount(Math.round(row.b))}</td>
+            </tr>`;
         });
         $('amort-container').classList.toggle('show');
         $('emi-show-table').textContent = $('amort-container').classList.contains('show') ? "Hide Schedule" : "Show Schedule";
     };
     
     $('emi-download').onclick = () => {
-        let csvContent = "data:text/csv;charset=utf-8,Month,Principal,Interest,Balance\n";
+        let csvContent = "data:text/csv;charset=utf-8,Month,Principal,Interest,EMI,Balance\n";
         schedule.forEach(row => {
-            csvContent += `${row.month},${row.p.toFixed(2)},${row.i.toFixed(2)},${row.b.toFixed(2)}\n`;
+            csvContent += `${row.month},${row.p.toFixed(2)},${row.i.toFixed(2)},${row.e.toFixed(2)},${row.b.toFixed(2)}\n`;
         });
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
@@ -1476,7 +1500,7 @@
     img.src = url; 
   };
 
-  // 19. Unit Converter (FULL UPGRADE)
+  // 19. Unit Converter (FULL HERO UPDATE)
   const uData = {
     length: { 
         map: { 'm':'Meter (m)', 'cm':'Centimeter (cm)', 'ft':'Feet (ft)', 'in':'Inches (in)' },
@@ -1534,11 +1558,20 @@
       const v = parseFloat($('u-val').value); if(isNaN(v)) return;
       const type = $('u-type').value, f = $('u-from').value, t = $('u-to').value;
       const converted = uData[type].fn(v, f, t);
-      if (typeof converted === 'number' && !isNaN(converted)) { $('u-res').textContent = `${formatNum(converted)} ${uData[type].map[t].split('(')[0].trim()}`; } 
+      const unitName = uData[type].map[t].split('(')[0].trim();
+      
+      // HERO DISPLAY
+      if (typeof converted === 'number' && !isNaN(converted)) { 
+          $('u-res').innerHTML = `
+            <div class="hero-box">
+                <div class="hero-val">${formatNum(converted)}</div>
+                <div class="hero-unit">${unitName}</div>
+            </div>
+          `; 
+      } 
   };
 
   // 20. Other Text & Math Tools
-  // A. Day Counter
   $('time-diff').onclick = () => { 
     const startVal = $('time-start').value, endVal = $('time-end').value; if (!startVal || !endVal) return;
     const d1 = new Date(startVal), d2 = new Date(endVal);
@@ -1553,7 +1586,6 @@
       $('date-calc-res').textContent = `Result Date: ${d.toLocaleDateString(undefined, {weekday:'short', year:'numeric', month:'short', day:'numeric'})}`;
   };
 
-  // B. Base Converter
   $('base-btn').onclick = () => { 
       try { 
           const d = parseInt($('base-num').value, parseInt($('base-from').value)); 
@@ -1566,23 +1598,28 @@
   const txtStats = () => { const v = $('txt-in').value; $('txt-chars').textContent = v.length; $('txt-words').textContent = v.trim().split(/\s+/).filter(w=>w.length>0).length; };
   $('txt-in').oninput = txtStats; $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); txtStats(); }; $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); txtStats(); }; $('txt-clear').onclick = () => { $('txt-in').value = ''; txtStats(); };
 
-  // NEW: Randomizer Logic
+  // UPDATED: Randomizer Logic with Animation
   $('rnd-btn').onclick = () => {
       const mode = $('rnd-mode').value;
-      const res = $('rnd-res');
+      const resBox = $('rnd-res');
+      
+      // Trigger Animation Reflow
+      resBox.classList.remove('pop-anim');
+      void resBox.offsetWidth; // Force Reflow
+      resBox.classList.add('pop-anim');
       
       if(mode === 'num') {
           const min = parseInt($('rnd-min').value), max = parseInt($('rnd-max').value);
-          if(min >= max) { res.textContent = "Invalid Range"; return; }
+          if(min >= max) { resBox.textContent = "Invalid Range"; return; }
           const val = Math.floor(Math.random() * (max - min + 1)) + min;
-          res.textContent = val;
+          resBox.textContent = val;
       } else if (mode === 'list') {
           const txt = $('rnd-list-in').value;
           const items = txt.split(',').map(s => s.trim()).filter(s => s.length > 0);
-          if(items.length === 0) { res.textContent = "Enter names"; return; }
-          res.textContent = items[Math.floor(Math.random() * items.length)];
+          if(items.length === 0) { resBox.textContent = "Enter names"; return; }
+          resBox.textContent = items[Math.floor(Math.random() * items.length)];
       } else if (mode === 'coin') {
-          res.textContent = Math.random() < 0.5 ? "HEADS" : "TAILS";
+          resBox.textContent = Math.random() < 0.5 ? "HEADS" : "TAILS";
       }
   };
 
