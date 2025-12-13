@@ -283,11 +283,9 @@
     display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
     pointer-events: auto; z-index: 10;
     opacity: 0; transition: opacity 0.2s;
-    /* FIX: Hide Scrollbar */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  /* FIX: Hide Scrollbar Chrome/Safari */
   .calc-history::-webkit-scrollbar { display: none; }
 
   .calc-history.show { opacity: 1; }
@@ -366,6 +364,18 @@
   .qr-img { border-radius: 8px; border: 4px solid #fff; max-width: 180px; }
   .loading-txt { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; }
   .link-btn { text-decoration: none; font-size: 0.75rem; color: var(--muted); border-bottom: 1px dotted var(--muted); cursor: pointer; }
+  
+  /* NEW: Amortization Table Styles */
+  .table-wrapper { max-height: 250px; overflow-y: auto; margin-top: 15px; border: 1px solid var(--border); border-radius: 12px; display:none; }
+  .table-wrapper.show { display: block; }
+  .amort-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: right; }
+  .amort-table th, .amort-table td { padding: 10px; border-bottom: 1px solid var(--border); }
+  .amort-table th { text-align: right; color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--card-bg); }
+  .amort-table tr:last-child td { border-bottom: none; }
+  
+  /* NEW: Randomizer Styles */
+  .random-big-text { font-size: 2.5rem; font-weight: 700; text-align: center; margin: 20px 0; color: var(--accent); animation: popIn 0.3s ease; }
+  @keyframes popIn { 0%{transform:scale(0.8);opacity:0;} 100%{transform:scale(1);opacity:1;} }
 
   footer{ text-align: center; padding: 20px 0; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 20px; }
   .heart { display: inline-block; color: var(--accent); animation: heartbeat 1.5s infinite; }
@@ -502,6 +512,7 @@
           <button type="button" class="chip-btn" data-panel="gpa-panel">GPA</button>
           <button type="button" class="chip-btn" data-panel="base-panel">Base Converter</button>
           <button type="button" class="chip-btn" data-panel="discount-panel">Percentage</button>
+          <button type="button" class="chip-btn" data-panel="random-panel">Randomizer</button>
         </div>
       </div>
 
@@ -537,6 +548,7 @@
           <button type="button" class="chip-btn" data-panel="stopwatch-panel">Stopwatch</button>
           <button type="button" class="chip-btn" data-panel="timer-panel">Timer</button>
           <button type="button" class="chip-btn" data-panel="zone-panel">World Time</button>
+          <button type="button" class="chip-btn" data-panel="duration-panel">Duration</button>
         </div>
       </div>
 
@@ -549,9 +561,8 @@
                 <option value="weight">Weight</option>
                 <option value="temp">Temperature</option>
                 <option value="speed">Speed</option>
-                <option value="power">Power</option>
                 <option value="area">Area</option>
-                <option value="data">Data</option>
+                <option value="volume">Volume (Liquid)</option> <option value="time">Time</option> <option value="data">Data Storage</option> <option value="power">Power</option>
             </select>
         </div>
         <div class="row"><div class="field flex-1"><label class="mini">From</label><select id="u-from"></select></div><button type="button" id="u-swap" class="btn small" style="width:40px; margin-top: 18px" aria-label="Swap Units">⇄</button><div class="field flex-1"><label class="mini">To</label><select id="u-to"></select></div></div>
@@ -568,10 +579,17 @@
       </div>
 
       <div id="time-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div><div class="card-sub">Find the number of days between two dates.</div></div>
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Day Counter</div><div class="card-sub">Calculate days between dates or find a future date.</div></div>
         <div class="row"><div class="field flex-1"><label class="mini">Start</label><input id="time-start" type="date"></div><div class="field flex-1"><label class="mini">End</label><input id="time-end" type="date"></div></div>
         <button type="button" id="time-diff" class="btn btn-accent btn-action">Calculate Days</button>
-        <div id="time-result" class="result-text" aria-live="polite"></div>
+        <div id="time-result" class="result-text" aria-live="polite" style="margin-bottom:20px;"></div>
+        
+        <div style="height:1px; background:var(--border); margin:15px 0;"></div>
+        
+        <div class="field"><label class="mini">Start Date</label><input id="date-calc-start" type="date"></div>
+        <div class="field"><label class="mini">Add/Subtract Days (e.g., 45 or -10)</label><input id="date-calc-days" type="number" placeholder="45"></div>
+        <button type="button" id="date-calc-btn" class="btn btn-accent btn-action">Find Date</button>
+        <div id="date-calc-res" class="result-text" aria-live="polite"></div>
       </div>
 
       <div id="gpa-panel" class="panel">
@@ -588,7 +606,8 @@
                 <option value="10">Decimal</option>
                 <option value="2">Binary</option>
                 <option value="16">Hex</option>
-                <option value="8">Octal</option> </select>
+                <option value="8">Octal</option>
+            </select>
         </div></div>
         <button type="button" id="base-btn" class="btn btn-accent btn-action">Convert</button>
         <div id="base-res" class="result-text" aria-live="polite"></div>
@@ -602,6 +621,22 @@
         <div id="perc-res" class="result-text" aria-live="polite"></div>
       </div>
 
+      <div id="random-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Randomizer</div><div class="card-sub">Generate numbers, pick names, or flip a coin.</div></div>
+        <div class="field"><label class="mini">Mode</label><select id="rnd-mode"><option value="num">Number Generator</option><option value="list">List Picker</option><option value="coin">Coin Flip</option></select></div>
+        
+        <div id="rnd-num-group">
+            <div class="row"><div class="field flex-1"><label class="mini">Min</label><input id="rnd-min" type="number" value="1"></div><div class="field flex-1"><label class="mini">Max</label><input id="rnd-max" type="number" value="100"></div></div>
+        </div>
+        
+        <div id="rnd-list-group" style="display:none;">
+            <div class="field"><label class="mini">Names (comma separated)</label><textarea id="rnd-list-in" rows="3" placeholder="Alice, Bob, Charlie..."></textarea></div>
+        </div>
+        
+        <button type="button" id="rnd-btn" class="btn btn-accent btn-action">Generate</button>
+        <div id="rnd-res" class="random-big-text" aria-live="polite"></div>
+      </div>
+
       <div id="loan-panel" class="panel">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Loan / EMI</div><div class="card-sub">See how much you’ll pay every month.</div></div>
         <div class="field"><label class="mini">Loan Amount</label><input id="emi-principal" type="number" placeholder="100000"></div>
@@ -612,6 +647,17 @@
         </div>
         <button type="button" id="emi-calc" class="btn btn-accent btn-action">Calculate EMI</button>
         <div id="emi-result" class="result-text" aria-live="polite"></div>
+        
+        <div id="emi-extras" style="display:none; margin-top:15px; border-top:1px solid var(--border); padding-top:15px;">
+             <button type="button" id="emi-show-table" class="btn small" style="width:100%; margin-bottom:10px;">Show Schedule</button>
+             <div id="amort-container" class="table-wrapper">
+                 <table class="amort-table">
+                     <thead><tr><th>Mon</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+                     <tbody id="amort-body"></tbody>
+                 </table>
+             </div>
+             <button type="button" id="emi-download" class="btn small" style="width:100%; margin-top:10px;">Download CSV (Excel)</button>
+        </div>
       </div>
 
       <div id="gst-panel" class="panel">
@@ -806,6 +852,16 @@
            <button type="button" id="t-reset" class="btn">Reset</button>
          </div>
       </div>
+      
+      <div id="duration-panel" class="panel">
+         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Time Duration</div><div class="card-sub">Calculate hours and minutes between two times.</div></div>
+         <div class="row">
+            <div class="field flex-1"><label class="mini">Start Time</label><input id="dur-start" type="time"></div>
+            <div class="field flex-1"><label class="mini">End Time</label><input id="dur-end" type="time"></div>
+         </div>
+         <button type="button" id="dur-btn" class="btn btn-accent btn-action">Calculate Duration</button>
+         <div id="dur-res" class="result-text" aria-live="polite"></div>
+      </div>
 
       <div id="zone-panel" class="panel">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">World Time</div><div class="card-sub">See the current time across regions.</div></div>
@@ -849,12 +905,11 @@
   let swInterval, swTime = 0, swRunning = false;
   let timerInterval, timerTime = 0, timerRunning = false;
 
-  // 1. Tool Formatter (Visual only)
+  // 1. Tool Formatter
   const formatNum = (num) => {
+      if(Math.abs(num) < 1e-6 && num !== 0) return num.toExponential(4);
       let clean = parseFloat(num.toFixed(10)); 
-      if (String(clean).split('.')[1]?.length > 4) {
-          return parseFloat(clean.toFixed(4));
-      }
+      if (String(clean).split('.')[1]?.length > 4) return parseFloat(clean.toFixed(4));
       return clean;
   };
   
@@ -925,7 +980,6 @@
     });
   }
 
-  // Initialize traps once
   trapFocus($('info-modal'));
   trapFocus($('currency-modal'));
   
@@ -941,10 +995,7 @@
   
   $('info-close-btn').onclick = closeModals;
   document.querySelectorAll('.modal-overlay').forEach(m => m.onclick = (e) => { if(e.target===m) closeModals(); });
-  
-  document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModals();
-  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModals(); });
 
   const switchTab = (tabId) => {
       document.querySelectorAll('.tab-btn').forEach(b => {
@@ -961,11 +1012,9 @@
       const parent = btn.parentElement;
       parent.querySelectorAll('.chip-btn').forEach(x => x.classList.remove('active'));
       btn.classList.add('active');
-      
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); 
       $(panelId).classList.add('active');
       localStorage.setItem('last_panel', panelId); 
-
       if (panelId === 'clock-panel') startLiveClock();
       else stopLiveClock();
   };
@@ -1010,6 +1059,14 @@
   $('bf-gender').addEventListener('change', function() {
       $('bf-hip-group').style.display = this.value === 'female' ? 'block' : 'none';
   });
+  
+  // Randomizer Mode Switch
+  $('rnd-mode').addEventListener('change', function() {
+      const mode = this.value;
+      $('rnd-num-group').style.display = mode === 'num' ? 'block' : 'none';
+      $('rnd-list-group').style.display = mode === 'list' ? 'block' : 'none';
+      $('rnd-res').textContent = mode === 'coin' ? 'Flip me!' : '';
+  });
 
   // ==========================================
   //  REGION 4: CLOCK & TIME LOGIC
@@ -1026,10 +1083,7 @@
   };
 
   const stopLiveClock = () => {
-      if(clockInterval) {
-          clearInterval(clockInterval);
-          clockInterval = null;
-      }
+      if(clockInterval) { clearInterval(clockInterval); clockInterval = null; }
   };
 
   const formatTime = (ms) => {
@@ -1042,100 +1096,86 @@
   $('sw-start').onclick = function() {
       if (swRunning) { 
           if(swInterval) clearInterval(swInterval); 
-          this.textContent = "Start"; 
-          this.style.backgroundColor = "var(--accent-bg)"; 
-          $('sw-lap').textContent = "Reset"; 
-          swRunning = false; 
+          this.textContent = "Start"; this.style.backgroundColor = "var(--accent-bg)"; $('sw-lap').textContent = "Reset"; swRunning = false; 
       } else { 
           const startTime = Date.now() - swTime;
-          swInterval = setInterval(() => { 
-              swTime = Date.now() - startTime; 
-              $('sw-display').textContent = formatTime(swTime); 
-          }, 10);
-          this.textContent = "Stop"; 
-          this.style.backgroundColor = "#ef4444"; 
-          $('sw-lap').textContent = "Lap"; 
-          $('sw-lap').disabled = false; 
-          swRunning = true;
+          swInterval = setInterval(() => { swTime = Date.now() - startTime; $('sw-display').textContent = formatTime(swTime); }, 10);
+          this.textContent = "Stop"; this.style.backgroundColor = "#ef4444"; $('sw-lap').textContent = "Lap"; $('sw-lap').disabled = false; swRunning = true;
       }
   };
 
   $('sw-lap').onclick = function() {
       if (swRunning) { 
-          const lapItem = document.createElement('div'); 
-          lapItem.className = 'lap-item';
+          const lapItem = document.createElement('div'); lapItem.className = 'lap-item';
           lapItem.innerHTML = `<span>Lap ${$('sw-laps').children.length + 1}</span><span>${formatTime(swTime)}</span>`;
-          $('sw-laps').prepend(lapItem); 
-          $('sw-laps').style.display = 'block';
+          $('sw-laps').prepend(lapItem); $('sw-laps').style.display = 'block';
       } else { 
-          swTime = 0; 
-          $('sw-display').textContent = "00:00.00"; 
-          $('sw-laps').innerHTML = ''; 
-          this.disabled = true; 
-          this.textContent = "Lap"; 
-          $('sw-start').textContent = "Start"; 
-          $('sw-start').style.backgroundColor = "var(--accent-bg)";
+          swTime = 0; $('sw-display').textContent = "00:00.00"; $('sw-laps').innerHTML = ''; 
+          this.disabled = true; this.textContent = "Lap"; $('sw-start').textContent = "Start"; $('sw-start').style.backgroundColor = "var(--accent-bg)";
       }
   };
 
   $('t-start').onclick = function() {
       if (timerRunning) { 
           if(timerInterval) clearInterval(timerInterval); 
-          this.textContent = "Start"; 
-          this.style.backgroundColor = "var(--accent-bg)"; 
-          timerRunning = false; 
+          this.textContent = "Start"; this.style.backgroundColor = "var(--accent-bg)"; timerRunning = false; 
       } else { 
           if (timerTime <= 0) {
               const h = parseInt($('t-h').value)||0, m = parseInt($('t-m').value)||0, s = parseInt($('t-s').value)||0;
               timerTime = (h * 3600) + (m * 60) + s; 
               if (timerTime <= 0) return;
-              $('timer-inputs').style.display = 'none'; 
-              $('t-display').style.display = 'block';
+              $('timer-inputs').style.display = 'none'; $('t-display').style.display = 'block';
           }
           timerInterval = setInterval(() => {
               timerTime--;
               if (timerTime <= 0) { 
-                  clearInterval(timerInterval); 
-                  $('t-display').textContent = "Time's Up!"; 
-                  this.textContent = "Start"; 
-                  this.style.backgroundColor = "var(--accent-bg)"; 
-                  timerRunning = false; 
-                  timerTime = 0;
+                  clearInterval(timerInterval); $('t-display').textContent = "Time's Up!"; 
+                  this.textContent = "Start"; this.style.backgroundColor = "var(--accent-bg)"; timerRunning = false; timerTime = 0;
               } else { 
                   const h = Math.floor(timerTime / 3600), m = Math.floor((timerTime % 3600) / 60), s = timerTime % 60; 
                   $('t-display').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`; 
               }
           }, 1000);
-          this.textContent = "Stop"; 
-          this.style.backgroundColor = "#ef4444"; 
-          timerRunning = true;
+          this.textContent = "Stop"; this.style.backgroundColor = "#ef4444"; timerRunning = true;
       }
   };
   $('t-reset').onclick = () => { 
       if(timerInterval) clearInterval(timerInterval); 
-      timerRunning = false; 
-      timerTime = 0; 
-      $('t-start').textContent = "Start"; 
-      $('t-start').style.backgroundColor = "var(--accent-bg)"; 
-      $('t-display').textContent = "00:00:00"; 
-      $('t-display').style.display = 'none'; 
-      $('timer-inputs').style.display = 'flex'; 
+      timerRunning = false; timerTime = 0; 
+      $('t-start').textContent = "Start"; $('t-start').style.backgroundColor = "var(--accent-bg)"; 
+      $('t-display').textContent = "00:00:00"; $('t-display').style.display = 'none'; $('timer-inputs').style.display = 'flex'; 
+  };
+  
+  // NEW: Time Duration Calculator
+  $('dur-btn').onclick = () => {
+     const s = $('dur-start').value, e = $('dur-end').value;
+     if(!s || !e) { $('dur-res').textContent = "Select times."; return; }
+     
+     let [h1, m1] = s.split(':').map(Number);
+     let [h2, m2] = e.split(':').map(Number);
+     
+     let startMin = h1 * 60 + m1;
+     let endMin = h2 * 60 + m2;
+     
+     if (endMin < startMin) endMin += 24 * 60; // Handle overnight
+     
+     const diff = endMin - startMin;
+     const h = Math.floor(diff / 60);
+     const m = diff % 60;
+     
+     $('dur-res').innerHTML = `Duration: <b style="color:var(--accent)">${h} hr ${m} min</b>`;
   };
 
   // ==========================================
   //  REGION 5: SCIENTIFIC CALCULATOR ENGINE
   // ==========================================
-  
   document.addEventListener('keydown', (e) => {
     const tag = e.target.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
         if (e.key === 'Enter') {
             e.preventDefault();
             const card = e.target.closest('.card, .panel');
-            if (card) {
-                const actionBtn = card.querySelector('.btn-action');
-                if (actionBtn) actionBtn.click();
-            }
+            if(card) { const actionBtn = card.querySelector('.btn-action'); if(actionBtn) actionBtn.click(); }
         }
         return;
     }
@@ -1158,8 +1198,7 @@
     if (history.length > 3) history.shift(); 
     const tape = $('calc-history');
     tape.innerHTML = history.map(h => `<div class="hist-item">${h}</div>`).join('');
-    tape.classList.add('show');
-    $('hist-lbl').style.display = 'block'; 
+    tape.classList.add('show'); $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
     tape.querySelectorAll('.hist-item').forEach(item => { 
       item.onclick = () => { expr = item.textContent.split('=')[0].trim(); upd(); }; 
@@ -1167,34 +1206,23 @@
   };
 
   const upd = () => {
-      let displayExpr = expr
-          .replace(/\*/g, '×')
-          .replace(/\//g, '÷')
-          .replace(/pi/g, 'π'); 
+      let displayExpr = expr.replace(/\*/g, '×').replace(/\//g, '÷').replace(/pi/g, 'π'); 
       $('calc-expression').textContent = displayExpr;
   };
   
   const k = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
   k.forEach(x => { 
     let b = document.createElement('button'); b.className = 'btn'; b.textContent = x; 
-    b.onclick = () => { 
-        if (expr.length > 100) return;
-        expr += {'÷':'/','×':'*','−':'-'}[x] || x; upd(); 
-    }; 
+    b.onclick = () => { if (expr.length > 100) return; expr += {'÷':'/','×':'*','−':'-'}[x] || x; upd(); }; 
     $('calc-grid').appendChild(b); 
   });
 
   const degBtn = $('deg-toggle');
-  degBtn.onclick = () => { 
-    useDeg = !useDeg; 
-    degBtn.textContent = useDeg ? "DEG" : "RAD"; 
-    degBtn.classList.toggle('active-mode', useDeg); 
-  };
+  degBtn.onclick = () => { useDeg = !useDeg; degBtn.textContent = useDeg ? "DEG" : "RAD"; degBtn.classList.toggle('active-mode', useDeg); };
   degBtn.classList.add('active-mode');
 
   $('sc-switch').onclick = function() { 
-    this.classList.toggle('on'); 
-    this.setAttribute('aria-checked', this.classList.contains('on'));
+    this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on'));
     $('sci-keys').style.display = this.classList.contains('on') ? 'grid' : 'none'; 
   };
 
@@ -1202,160 +1230,73 @@
     b.onclick = () => { 
       if (expr.length > 100) return;
       const fn = b.dataset.fn; 
-      if (fn === 'pi') expr += 'pi'; 
-      else if (fn === 'e') expr += 'e'; 
-      else if (fn === 'pow') expr += '^'; 
-      else if (fn === 'inv') expr += '1/'; 
-      else if (fn === 'sqrt') expr += 'sqrt('; 
-      else if (fn === '(' || fn === ')') expr += fn; 
-      else expr += `${fn}(`; 
+      if (fn === 'pi') expr += 'pi'; else if (fn === 'e') expr += 'e'; else if (fn === 'pow') expr += '^'; else if (fn === 'inv') expr += '1/'; else if (fn === 'sqrt') expr += 'sqrt('; else if (fn === '(' || fn === ')') expr += fn; else expr += `${fn}(`; 
       upd(); 
     };
   });
 
-  $('calc-back').onclick = () => { 
-      if(expr.endsWith('pi')) expr = expr.slice(0, -2); 
-      else if(expr.endsWith('e')) expr = expr.slice(0, -1); 
-      else expr = expr.slice(0,-1); 
-      upd(); 
-  };
-  
-  $('calc-copy').onclick = () => { 
-      navigator.clipboard.writeText($('calc-result').textContent); 
-      const originalText = $('calc-copy').textContent;
-      $('calc-copy').textContent = "Copied!";
-      setTimeout(() => $('calc-copy').textContent = originalText, 1000);
-  };
-  
-  $('calc-clear').onclick = () => { 
-    if (expr === '' && $('calc-result').textContent === '0') { history = []; $('calc-history').innerHTML = ''; $('hist-lbl').style.display = 'none'; } 
-    else { expr = ''; upd(); $('calc-result').textContent = '0'; } 
-  };
+  $('calc-back').onclick = () => { if(expr.endsWith('pi')) expr = expr.slice(0, -2); else if(expr.endsWith('e')) expr = expr.slice(0, -1); else expr = expr.slice(0,-1); upd(); };
+  $('calc-copy').onclick = () => { navigator.clipboard.writeText($('calc-result').textContent); const originalText = $('calc-copy').textContent; $('calc-copy').textContent = "Copied!"; setTimeout(() => $('calc-copy').textContent = originalText, 1000); };
+  $('calc-clear').onclick = () => { if (expr === '' && $('calc-result').textContent === '0') { history = []; $('calc-history').innerHTML = ''; $('hist-lbl').style.display = 'none'; } else { expr = ''; upd(); $('calc-result').textContent = '0'; } };
 
   $('calc-equals').onclick = () => { 
     try { 
       if (!expr.trim()) return;
-      
       let s = expr;
-      const openCount = (s.match(/\(/g) || []).length; 
-      const closeCount = (s.match(/\)/g) || []).length;
+      const openCount = (s.match(/\(/g) || []).length; const closeCount = (s.match(/\)/g) || []).length;
       if (openCount > closeCount) s += ')'.repeat(openCount - closeCount);
-
       let scope = {};
-      if(useDeg) {
-          scope.sin = x => math.sin(math.unit(x, 'deg'));
-          scope.cos = x => math.cos(math.unit(x, 'deg'));
-          scope.tan = x => math.tan(math.unit(x, 'deg'));
-      }
-      
+      if(useDeg) { scope.sin = x => math.sin(math.unit(x, 'deg')); scope.cos = x => math.cos(math.unit(x, 'deg')); scope.tan = x => math.tan(math.unit(x, 'deg')); }
       const rawResult = math.evaluate(s, scope);
       const numericResult = Number(math.format(rawResult, {precision: 10})); 
-      
-      if (!isNaN(numericResult)) { 
-          updateHistory(s, numericResult); 
-          $('calc-result').textContent = numericResult; 
-          expr = String(numericResult); 
-      } else { 
-          throw new Error("NaN Result");
-      }
-    } catch (e) { 
-      $('calc-result').textContent = "Invalid Expression"; 
-      expr = '';
-      upd();
-      console.error(e);
-    } 
+      if (!isNaN(numericResult)) { updateHistory(s, numericResult); $('calc-result').textContent = numericResult; expr = String(numericResult); } else { throw new Error("NaN Result"); }
+    } catch (e) { $('calc-result').textContent = "Invalid Expression"; expr = ''; upd(); console.error(e); } 
   };
 
   // ==========================================
-  //  REGION 6: TOOLS LOGIC
+  //  REGION 6: TOOLS LOGIC (UPGRADED)
   // ==========================================
 
   // 1. FD/RD Calculator
   $('fdrd-btn').onclick = () => {
     const type = $('fdrd-type').value;
     const P = parseFloat($('fdrd-amt').value), R = parseFloat($('fdrd-rate').value), T = parseFloat($('fdrd-years').value);
-    
     if(!P || !R || !T) { $('fdrd-res').textContent = "Please fill all fields."; return; }
-
     let matVal = 0, invVal = 0;
-    
-    if(type === 'fd'){
-        invVal = P;
-        matVal = P * Math.pow((1 + (R/400)), 4*T);
-    } else {
-        const months = T * 12;
-        invVal = P * months;
-        let i = R / 1200; 
-        matVal = P * ( (Math.pow(1+i, months) - 1) / i ) * (1+i);
-    }
-    
-    const maturityDate = new Date();
-    maturityDate.setFullYear(maturityDate.getFullYear() + T);
-
-    $('fdrd-res').innerHTML = `
-      <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Investment:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(invVal))}</b></div>
-      <div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Interest:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(matVal - invVal))}</b></div>
-      <div style="margin-bottom:5px; display:flex; justify-content:space-between; color:var(--accent);"><span>Total Value:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(matVal))}</b></div>
-      <div style="font-size:0.8rem; color:var(--muted); text-align:right; margin-top:5px;">Maturity: ${maturityDate.toLocaleDateString()}</div>
-    `;
+    if(type === 'fd'){ invVal = P; matVal = P * Math.pow((1 + (R/400)), 4*T); } 
+    else { const months = T * 12; invVal = P * months; let i = R / 1200; matVal = P * ( (Math.pow(1+i, months) - 1) / i ) * (1+i); }
+    const maturityDate = new Date(); maturityDate.setFullYear(maturityDate.getFullYear() + T);
+    $('fdrd-res').innerHTML = `<div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Investment:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(invVal))}</b></div><div style="margin-bottom:5px; display:flex; justify-content:space-between;"><span>Interest:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(matVal - invVal))}</b></div><div style="margin-bottom:5px; display:flex; justify-content:space-between; color:var(--accent);"><span>Total Value:</span> <b>${globalSym}${formatCurrencyAmount(Math.round(matVal))}</b></div><div style="font-size:0.8rem; color:var(--muted); text-align:right; margin-top:5px;">Maturity: ${maturityDate.toLocaleDateString()}</div>`;
   };
 
-  // 2. Calorie Calculator
+  // 2. Calorie
   $('cal-btn').onclick = () => {
      const age = parseFloat($('cal-age').value), w = parseFloat($('cal-weight').value), h = parseFloat($('cal-height').value), act = parseFloat($('cal-act').value);
      const gender = $('cal-gender').value;
-     
      if(!age || !w || !h) { $('cal-res').textContent = "Please fill all fields."; return; }
-     
-     let bmr = (10 * w) + (6.25 * h) - (5 * age);
-     bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
+     let bmr = (10 * w) + (6.25 * h) - (5 * age); bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
      const tdee = Math.round(bmr * act);
-     
-     $('cal-res').innerHTML = `
-        <div style="text-align:center; font-weight:600; font-size:1.1rem; margin-bottom:10px;">Maintenance: <span style="color:var(--accent)">${tdee} cal/day</span></div>
-        <div style="font-size:0.9rem; color:var(--muted); margin-bottom:5px;">To lose weight:</div>
-        <div style="display:flex; justify-content:space-between; font-size:0.9rem; border-bottom:1px solid var(--border); padding:4px 0;"><span>0.25 kg/week</span> <b>${tdee - 275} cal</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:0.9rem; border-bottom:1px solid var(--border); padding:4px 0;"><span>0.50 kg/week</span> <b>${tdee - 550} cal</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:0.9rem; padding:4px 0;"><span>1.00 kg/week</span> <b>${tdee - 1100} cal</b></div>
-     `;
+     $('cal-res').innerHTML = `<div style="text-align:center; font-weight:600; font-size:1.1rem; margin-bottom:10px;">Maintenance: <span style="color:var(--accent)">${tdee} cal/day</span></div><div style="font-size:0.9rem; color:var(--muted); margin-bottom:5px;">To lose weight:</div><div style="display:flex; justify-content:space-between; font-size:0.9rem; border-bottom:1px solid var(--border); padding:4px 0;"><span>0.25 kg/week</span> <b>${tdee - 275} cal</b></div><div style="display:flex; justify-content:space-between; font-size:0.9rem; border-bottom:1px solid var(--border); padding:4px 0;"><span>0.50 kg/week</span> <b>${tdee - 550} cal</b></div><div style="display:flex; justify-content:space-between; font-size:0.9rem; padding:4px 0;"><span>1.00 kg/week</span> <b>${tdee - 1100} cal</b></div>`;
   };
 
-  // 3. Body Fat Calculator
+  // 3. Body Fat
   $('bf-btn').onclick = () => {
      const gender = $('bf-gender').value;
      const h = parseFloat($('bf-height').value), neck = parseFloat($('bf-neck').value), waist = parseFloat($('bf-waist').value), hip = parseFloat($('bf-hip').value);
-     
      if(!h || !neck || !waist || (gender === 'female' && !hip)) { $('bf-res').textContent = "Please fill all fields."; return; }
-     
      let bf = 0;
-     if(gender === 'male') {
-         if(waist - neck <= 0) { $('bf-res').textContent = "Waist must be larger than neck."; return; }
-         bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(h)) - 450;
-     } else {
-         if(waist + hip - neck <= 0) { $('bf-res').textContent = "Check measurements."; return; }
-         bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(h)) - 450;
-     }
-     
+     if(gender === 'male') { if(waist - neck <= 0) { $('bf-res').textContent = "Waist > Neck req."; return; } bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(h)) - 450; } 
+     else { if(waist + hip - neck <= 0) { $('bf-res').textContent = "Check measurements."; return; } bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(h)) - 450; }
      $('bf-res').innerHTML = `Body Fat: <b style="font-size:1.2rem; color:var(--accent)">${bf.toFixed(1)}%</b>`;
   };
 
   // 4. Trip Budget
   $('bud-btn').onclick = () => {
-      const hotel = parseFloat($('bud-hotel').value)||0;
-      const travel = parseFloat($('bud-travel').value)||0;
-      const food = parseFloat($('bud-food').value)||0;
-      const act = parseFloat($('bud-act').value)||0;
-      const shop = parseFloat($('bud-shop').value)||0;
-      const misc = parseFloat($('bud-misc').value)||0;
+      const hotel = parseFloat($('bud-hotel').value)||0, travel = parseFloat($('bud-travel').value)||0, food = parseFloat($('bud-food').value)||0;
+      const act = parseFloat($('bud-act').value)||0, shop = parseFloat($('bud-shop').value)||0, misc = parseFloat($('bud-misc').value)||0;
       const ppl = parseFloat($('bud-ppl').value)||1;
-      
-      const total = hotel + travel + food + act + shop + misc;
-      const perPerson = total / ppl;
-      
-      $('bud-res').innerHTML = `
-        <div style="font-size:1.1rem; text-align:center; margin-bottom:5px;">Total Trip Cost: <b style="color:var(--accent)">${globalSym}${formatCurrencyAmount(total)}</b></div>
-        <div style="font-size:0.9rem; text-align:center; color:var(--muted)">Cost Per Person: ${globalSym}${formatCurrencyAmount(Math.round(perPerson))}</div>
-      `;
+      const total = hotel + travel + food + act + shop + misc; const perPerson = total / ppl;
+      $('bud-res').innerHTML = `<div style="font-size:1.1rem; text-align:center; margin-bottom:5px;">Total Trip Cost: <b style="color:var(--accent)">${globalSym}${formatCurrencyAmount(total)}</b></div><div style="font-size:0.9rem; text-align:center; color:var(--muted)">Cost Per Person: ${globalSym}${formatCurrencyAmount(Math.round(perPerson))}</div>`;
   };
 
   // 5. Health Station
@@ -1363,19 +1304,15 @@
     const age = parseFloat($('h-age').value), w = parseFloat($('h-weight').value), h = parseFloat($('h-height').value), act = parseFloat($('h-activity').value), gender = $('h-gender').value;
     if (!age || !w || !h) { $('h-msg').textContent = "Please fill all fields"; return; }
     const bmi = (w/((h/100)*(h/100))).toFixed(1);
-    let bmr = (10*w) + (6.25*h) - (5*age); 
-    bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
+    let bmr = (10*w) + (6.25*h) - (5*age); bmr = (gender === 'male' ? bmr + 5 : bmr - 161);
     const tdee = Math.round(bmr * act);
     $('h-result').style.display = 'grid';
     $('res-bmi').textContent = bmi; $('res-bmr').textContent = tdee; $('res-water').textContent = (w/30).toFixed(1); $('res-protein').textContent = Math.round(w * (0.8 + (act - 1.2)));
     $('h-msg').textContent = `Status: ${ bmi < 18.5 ? "Underweight" : bmi < 25 ? "Healthy" : bmi < 30 ? "Overweight" : "Obese" }`;
   };
-  $('bmi-info').onclick = (e) => { 
-      e.stopPropagation(); 
-      showInfoModal("BMI Categories", "• <b>< 18.5:</b> Underweight<br>• <b>18.5 - 24.9:</b> Normal<br>• <b>25 - 29.9:</b> Overweight<br>• <b>30+:</b> Obese");
-  };
+  $('bmi-info').onclick = (e) => { e.stopPropagation(); showInfoModal("BMI Categories", "• <b>< 18.5:</b> Underweight<br>• <b>18.5 - 24.9:</b> Normal<br>• <b>25 - 29.9:</b> Overweight<br>• <b>30+:</b> Obese"); };
 
-  // 6. EMI Calculator
+  // 6. EMI + Amortization + CSV
   $('emi-calc').onclick = () => {
     const p = parseFloat($('emi-principal').value), r = parseFloat($('emi-rate').value), t = parseFloat($('emi-time').value), u = $('emi-unit').value;
     if (!p || !r || !t) { $('emi-result').textContent = "Please fill fields."; return; }
@@ -1384,21 +1321,61 @@
     const total = emi * n;
     
     $('emi-result').innerHTML = `Monthly EMI: <b>${globalSym}${formatCurrencyAmount(Math.round(emi))}</b><br><span style="font-size:0.85rem; color:var(--muted)">Total Interest: ${globalSym}${formatCurrencyAmount(Math.round(total - p))}</span><br><span style="font-size:0.85rem; color:var(--muted)">Total Amount: ${globalSym}${formatCurrencyAmount(Math.round(total))}</span>`;
+    
+    // Setup Download & Table
+    $('emi-extras').style.display = 'block';
+    
+    const generateSchedule = () => {
+        let balance = p;
+        let data = [];
+        for(let i=1; i<=n; i++) {
+            const interest = balance * monthlyRate;
+            const principal = emi - interest;
+            balance -= principal;
+            if(balance < 0) balance = 0;
+            data.push({ month: i, p: principal, i: interest, b: balance });
+        }
+        return data;
+    };
+    
+    const schedule = generateSchedule();
+    
+    $('emi-show-table').onclick = () => {
+        const tbody = $('amort-body'); tbody.innerHTML = '';
+        schedule.forEach(row => {
+            tbody.innerHTML += `<tr><td>${row.month}</td><td>${Math.round(row.p)}</td><td>${Math.round(row.i)}</td><td>${Math.round(row.b)}</td></tr>`;
+        });
+        $('amort-container').classList.toggle('show');
+        $('emi-show-table').textContent = $('amort-container').classList.contains('show') ? "Hide Schedule" : "Show Schedule";
+    };
+    
+    $('emi-download').onclick = () => {
+        let csvContent = "data:text/csv;charset=utf-8,Month,Principal,Interest,Balance\n";
+        schedule.forEach(row => {
+            csvContent += `${row.month},${row.p.toFixed(2)},${row.i.toFixed(2)},${row.b.toFixed(2)}\n`;
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "loan_schedule.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
   };
 
-  // 7. GST Calculator
+  // 7. GST
   const calcGST = (mode) => {
     const amt = parseFloat($('gst-amt').value), rate = parseFloat($('gst-rate').value);
     if (!amt || !rate) { $('gst-res').textContent = "Please fill fields."; return; }
     let net, gst, total; 
     if (mode === 'add') { gst = (amt * rate) / 100; total = amt + gst; net = amt; } 
     else { net = amt / (1 + rate/100); gst = amt - net; total = amt; }
-    
     $('gst-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Net Price:</span><span>${globalSym}${formatCurrencyAmount(parseFloat(net.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>Tax (${rate}%):</span><span>${globalSym}${formatCurrencyAmount(parseFloat(gst.toFixed(1)))}</span></div><div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); margin-top:5px; border-top:1px solid var(--border); padding-top:5px;"><span>Total:</span><span>${globalSym}${formatCurrencyAmount(parseFloat(total.toFixed(1)))}</span></div>`;
   };
   $('gst-add').onclick = () => calcGST('add'); $('gst-rem').onclick = () => calcGST('remove');
 
-  // 8. SIP Calculator
+  // 8. SIP
   $('sip-btn').onclick = () => {
      const p = parseFloat($('sip-amt').value), r = parseFloat($('sip-rate').value), y = parseFloat($('sip-years').value);
      if (!p || !r || !y) { $('sip-res').textContent = "Please fill fields."; return; }
@@ -1416,7 +1393,7 @@
     $('goal-res').innerHTML = `SIP Needed: <b>${globalSym}${formatCurrencyAmount(res)}/mo</b>`;
   };
   
-  // 10. Percentage Calc
+  // 10. Percentage
   $('perc-btn').onclick = () => {
     const total = parseFloat($('perc-total').value), rate = parseFloat($('perc-rate').value);
     if (!total || !rate) { $('perc-res').textContent = "Please fill fields."; return; }
@@ -1448,7 +1425,7 @@
     $('fuel-res').innerHTML = `Total Cost: <b>${globalSym}${formatCurrencyAmount(cost)}</b><br>Fuel Needed: <b>${formatNum(d/m)} L</b>`;
   };
   
-  // 14. ETA Calc
+  // 14. ETA
   $('eta-btn').onclick = () => {
       const d = parseFloat($('eta-dist').value), s = parseFloat($('eta-speed').value), start = $('eta-start').value;
       if (!d || !s || !start) return;
@@ -1457,15 +1434,13 @@
       $('eta-res').innerHTML = `Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
   };
   
-  // 15. Age Calc (Fix: Timezone off-by-one)
+  // 15. Age Calc
   $('age-btn').onclick = () => {
     const dVal = $('dob-input').value; if(!dVal) return;
     const parts = dVal.split('-');
     const d = new Date(parts[0], parts[1]-1, parts[2]);
     const t = new Date();
-    
     if(d > t) { $('age-result').textContent = "Date is in the future!"; return; }
-
     let y = t.getFullYear()-d.getFullYear(), m = t.getMonth()-d.getMonth(), days = t.getDate()-d.getDate();
     if(days<0){ m--; days+=new Date(t.getFullYear(),t.getMonth(),0).getDate(); } if(m<0){ y--; m+=12; }
     $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
@@ -1475,25 +1450,16 @@
   $('cur-btn').onclick = async () => {
     const a = parseFloat($('cur-amt').value);
     if (isNaN(a) || a <= 0) { $('cur-res').innerHTML = `<span style="color:#ef4444">Please enter valid amount</span>`; return; }
-
     const f = $('cur-from').value, t = $('cur-to').value;
     $('cur-res').textContent = "Loading..."; $('cur-source').style.display = 'none';
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); 
-
+    const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 5000); 
     try { 
       const r = await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`, { signal: controller.signal }); 
       clearTimeout(timeoutId);
-      
       if(!r.ok) throw new Error();
       const d = await r.json();
-      $('cur-res').innerHTML = `${a} ${f} = <b>${d.rates[t]} ${t}</b>`;
-      $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display = 'block'; 
-    } catch (err) { 
-        if (err.name === 'AbortError') $('cur-res').innerHTML = `<span style="color:#ef4444">Network timed out.</span>`;
-        else $('cur-res').innerHTML = `<span style="color:#ef4444">Service Unavailable.</span>`; 
-    }
+      $('cur-res').innerHTML = `${a} ${f} = <b>${d.rates[t]} ${t}</b>`; $('cur-date').textContent = `Updated: ${d.date}`; $('cur-source').style.display = 'block'; 
+    } catch (err) { $('cur-res').innerHTML = `<span style="color:#ef4444">Service Unavailable.</span>`; }
   };
   $('cur-swap').onclick = () => { const f=$('cur-from'), t=$('cur-to'), tmp=f.value; f.value=t.value; t.value=tmp; f.dispatchEvent(new Event('change')); t.dispatchEvent(new Event('change')); };
   
@@ -1505,63 +1471,60 @@
     const txt = $('qr-text').value; if (!txt) return; 
     $('qr-container').classList.add('show'); $('qr-image').style.display = 'none'; $('qr-loading').style.display = 'block'; 
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    
     const img = $('qr-image');
-    img.onload = () => { 
-        $('qr-loading').style.display = 'none'; 
-        img.style.display = 'block'; 
-        fetch(url).then(r=>r.blob()).then(b=>{ 
-            $('qr-download').href=URL.createObjectURL(b); 
-            $('qr-download').download="qr.png"; 
-            $('qr-download').style.display="inline-block"; 
-        }); 
-    }; 
+    img.onload = () => { $('qr-loading').style.display = 'none'; img.style.display = 'block'; fetch(url).then(r=>r.blob()).then(b=>{ $('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block"; }); }; 
     img.src = url; 
   };
 
-  // 19. Unit Converter (EXPANDED)
+  // 19. Unit Converter (FULL UPGRADE)
   const uData = {
-    length: { opts:['m','cm','ft','in'], fn:(v,f,t) => { let m=v; if(f=='cm')m=v/100; if(f=='ft')m=v/3.2808; if(f=='in')m=v/39.37; if(t=='m')return m; if(t=='cm')return m*100; if(t=='ft')return m*3.2808; if(t=='in')return m*39.37; } },
-    weight: {
-        opts: ['kg','lb','g','mg','oz','t','q'],
-        fn: (v,f,t) => {
-            // Convert to grams first, then to target
-            const toG = { kg:1000, lb:453.59237, g:1, mg:0.001, oz:28.34952, t:1000000, q:100000 };
-            const valInG = v * toG[f];
-            return valInG / toG[t];
-        }
+    length: { 
+        map: { 'm':'Meter (m)', 'cm':'Centimeter (cm)', 'ft':'Feet (ft)', 'in':'Inches (in)' },
+        fn: (v,f,t) => { let m=v; if(f=='cm')m=v/100; if(f=='ft')m=v/3.2808; if(f=='in')m=v/39.37; if(t=='m')return m; if(t=='cm')return m*100; if(t=='ft')return m*3.2808; if(t=='in')return m*39.37; } 
     },
-    temp: { opts:['C','F'], fn:(v,f,t) => f===t?v:(f==='C'?(v*1.8+32):(v-32)/1.8) },
-    speed: { opts:['kmph','mph'], fn:(v,f,t) => f===t?v:(f==='kmph'?v*0.6213:v/0.6213) },
+    weight: {
+        map: { 'kg':'Kilogram (kg)', 'lb':'Pound (lb)', 'g':'Gram (g)', 'mg':'Milligram (mg)', 'oz':'Ounce (oz)', 't':'Tonne (t)', 'q':'Quintal (q)' },
+        fn: (v,f,t) => { const toG = { kg:1000, lb:453.59237, g:1, mg:0.001, oz:28.34952, t:1000000, q:100000 }; return (v * toG[f]) / toG[t]; }
+    },
+    temp: { 
+        map: { 'C':'Celsius (°C)', 'F':'Fahrenheit (°F)' },
+        fn: (v,f,t) => f===t?v:(f==='C'?(v*1.8+32):(v-32)/1.8) 
+    },
+    speed: { 
+        map: { 'kmph':'Km/h', 'mph':'Miles/h' },
+        fn: (v,f,t) => f===t?v:(f==='kmph'?v*0.6213:v/0.6213) 
+    },
     power: {
-        opts: ['W','kW','hp','mW'],
-        fn: (v,f,t) => {
-            // Convert to Watts
-            const toW = { W:1, kW:1000, hp:745.7, mW:0.001 };
-            return (v * toW[f]) / toW[t];
-        }
+        map: { 'W':'Watt (W)', 'kW':'Kilowatt (kW)', 'hp':'Horsepower (hp)', 'mW':'Milliwatt (mW)' },
+        fn: (v,f,t) => { const toW = { W:1, kW:1000, hp:745.7, mW:0.001 }; return (v * toW[f]) / toW[t]; }
     },
     area: {
-        opts: ['m²','ft²','ac','ha'],
-        fn: (v,f,t) => {
-            // Convert to Square Meters
-            const toM2 = { 'm²':1, 'ft²':0.092903, 'ac':4046.86, 'ha':10000 };
-            return (v * toM2[f]) / toM2[t];
-        }
+        map: { 'm2':'Sq Meter (m²)', 'ft2':'Sq Feet (ft²)', 'ac':'Acre (ac)', 'ha':'Hectare (ha)' },
+        fn: (v,f,t) => { const toM2 = { 'm2':1, 'ft2':0.092903, 'ac':4046.86, 'ha':10000 }; return (v * toM2[f]) / toM2[t]; }
+    },
+    volume: {
+        map: { 'l':'Litre (L)', 'ml':'Milliliter (ml)', 'gal':'US Gallon (gal)', 'cup':'Cup', 'tbsp':'Tablespoon', 'tsp':'Teaspoon' },
+        fn: (v,f,t) => { const toL = { l:1, ml:0.001, gal:3.78541, cup:0.236588, tbsp:0.014787, tsp:0.004929 }; return (v * toL[f]) / toL[t]; }
+    },
+    time: {
+        map: { 's':'Second (s)', 'min':'Minute (min)', 'hr':'Hour (hr)', 'd':'Day (d)', 'wk':'Week (wk)', 'yr':'Year (yr)', 'ms':'Millisecond (ms)' },
+        fn: (v,f,t) => { const toS = { s:1, min:60, hr:3600, d:86400, wk:604800, yr:31536000, ms:0.001 }; return (v * toS[f]) / toS[t]; }
     },
     data: {
-        opts: ['B','KB','MB','GB','TB'],
-        fn: (v,f,t) => {
-            const p = { B:0, KB:1, MB:2, GB:3, TB:4 };
-            return v * Math.pow(1024, p[f] - p[t]);
-        }
+        map: { 'B':'Byte (B)', 'KB':'Kilobyte (KB)', 'MB':'Megabyte (MB)', 'GB':'Gigabyte (GB)', 'TB':'Terabyte (TB)' },
+        fn: (v,f,t) => { const p = { B:0, KB:1, MB:2, GB:3, TB:4 }; return v * Math.pow(1024, p[f] - p[t]); }
     }
   };
 
   function renderUnits(){ 
     const t = $('u-type').value, d = uData[t], f = $('u-from'), to = $('u-to');
     $('u-res').textContent = '';
-    f.innerHTML = ''; to.innerHTML = ''; d.opts.forEach(o => { f.add(new Option(o,o)); to.add(new Option(o,o)); }); if(to.options.length>1) to.selectedIndex = 1; 
+    f.innerHTML = ''; to.innerHTML = ''; 
+    Object.keys(d.map).forEach(k => { 
+        f.add(new Option(d.map[k], k)); 
+        to.add(new Option(d.map[k], k)); 
+    }); 
+    if(to.options.length>1) to.selectedIndex = 1; 
   }
   
   $('u-type').onchange = renderUnits; 
@@ -1571,20 +1534,30 @@
       const v = parseFloat($('u-val').value); if(isNaN(v)) return;
       const type = $('u-type').value, f = $('u-from').value, t = $('u-to').value;
       const converted = uData[type].fn(v, f, t);
-      if (typeof converted === 'number' && !isNaN(converted)) { $('u-res').textContent = `${formatNum(converted)} ${t}`; } 
+      if (typeof converted === 'number' && !isNaN(converted)) { $('u-res').textContent = `${formatNum(converted)} ${uData[type].map[t].split('(')[0].trim()}`; } 
   };
 
   // 20. Other Text & Math Tools
+  // A. Day Counter
   $('time-diff').onclick = () => { 
     const startVal = $('time-start').value, endVal = $('time-end').value; if (!startVal || !endVal) return;
     const d1 = new Date(startVal), d2 = new Date(endVal);
     $('time-result').textContent = `${Math.ceil(Math.abs(d2-d1)/8.64e7)} days`;
   };
+  $('date-calc-btn').onclick = () => {
+      const startVal = $('date-calc-start').value, days = parseInt($('date-calc-days').value);
+      if(!startVal || isNaN(days)) return;
+      const parts = startVal.split('-');
+      const d = new Date(parts[0], parts[1]-1, parts[2]);
+      d.setDate(d.getDate() + days);
+      $('date-calc-res').textContent = `Result Date: ${d.toLocaleDateString(undefined, {weekday:'short', year:'numeric', month:'short', day:'numeric'})}`;
+  };
+
+  // B. Base Converter
   $('base-btn').onclick = () => { 
       try { 
           const d = parseInt($('base-num').value, parseInt($('base-from').value)); 
           if(isNaN(d)) throw Error; 
-          // UPDATED: Added Octal
           $('base-res').innerHTML = `DEC: ${d}<br>BIN: ${d.toString(2)}<br>OCT: ${d.toString(8)}<br>HEX: ${d.toString(16).toUpperCase()}`; 
       } catch { $('base-res').textContent = "Invalid"; } 
   };
@@ -1592,6 +1565,26 @@
   
   const txtStats = () => { const v = $('txt-in').value; $('txt-chars').textContent = v.length; $('txt-words').textContent = v.trim().split(/\s+/).filter(w=>w.length>0).length; };
   $('txt-in').oninput = txtStats; $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); txtStats(); }; $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); txtStats(); }; $('txt-clear').onclick = () => { $('txt-in').value = ''; txtStats(); };
+
+  // NEW: Randomizer Logic
+  $('rnd-btn').onclick = () => {
+      const mode = $('rnd-mode').value;
+      const res = $('rnd-res');
+      
+      if(mode === 'num') {
+          const min = parseInt($('rnd-min').value), max = parseInt($('rnd-max').value);
+          if(min >= max) { res.textContent = "Invalid Range"; return; }
+          const val = Math.floor(Math.random() * (max - min + 1)) + min;
+          res.textContent = val;
+      } else if (mode === 'list') {
+          const txt = $('rnd-list-in').value;
+          const items = txt.split(',').map(s => s.trim()).filter(s => s.length > 0);
+          if(items.length === 0) { res.textContent = "Enter names"; return; }
+          res.textContent = items[Math.floor(Math.random() * items.length)];
+      } else if (mode === 'coin') {
+          res.textContent = Math.random() < 0.5 ? "HEADS" : "TAILS";
+      }
+  };
 
   // ==========================================
   //  REGION 7: INIT & RESTORE STATE
@@ -1607,58 +1600,33 @@
       if(modalSel) modalSel.value = sym;
       
       const taxBtn = $('btn-tax'), invBtn = $('btn-invest'), gstTitle = $('gst-title'), sipTitle = $('sip-title');
+      if (['₹', 'A$', 'C$', 'NZ$', 'CN¥'].includes(sym)) { taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator"; } 
+      else if (['€', '£'].includes(sym)) { taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator"; } 
+      else { taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator"; }
 
-      if (['₹', 'A$', 'C$', 'NZ$', 'CN¥'].includes(sym)) { 
-        taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator"; 
-      } else if (['€', '£'].includes(sym)) { 
-        taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator"; 
-      } else { 
-        taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator"; 
-      }
-
-      if (sym === '₹') { 
-        invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator"; 
-      } else { 
-        invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; 
-      }
+      if (sym === '₹') { invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator"; } 
+      else { invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; }
   }
 
   const savedCurr = localStorage.getItem('calc_currency');
-  if (savedCurr) {
-      setGlobalCurrency(savedCurr);
-  } else {
-      setTimeout(() => {
-          $('currency-modal').classList.add('show');
-          $('modal-currency-select').focus(); 
-      }, 500);
-  }
+  if (savedCurr) setGlobalCurrency(savedCurr);
+  else setTimeout(() => { $('currency-modal').classList.add('show'); $('modal-currency-select').focus(); }, 500);
   
   $('global-currency').onchange = (e) => setGlobalCurrency(e.target.value);
-  $('modal-save-btn').onclick = () => {
-      setGlobalCurrency($('modal-currency-select').value);
-      $('currency-modal').classList.remove('show');
-  };
+  $('modal-save-btn').onclick = () => { setGlobalCurrency($('modal-currency-select').value); $('currency-modal').classList.remove('show'); };
 
   const savedThemeMode = localStorage.getItem('theme_mode');
   if(savedThemeMode) document.body.dataset.theme = savedThemeMode;
-  
   const savedThemeColor = localStorage.getItem('theme_color');
-  if(savedThemeColor) { $('theme-color').value = savedThemeColor; updateThemeColors(savedThemeColor); }
-  else updateThemeColors('mono');
+  if(savedThemeColor) { $('theme-color').value = savedThemeColor; updateThemeColors(savedThemeColor); } else updateThemeColors('mono');
 
   renderUnits();
   
   const lastTab = localStorage.getItem('last_tab');
   if(lastTab) {
-      const tabBtn = document.querySelector(`.tab-btn[data-tab="${lastTab}"]`);
-      if(tabBtn) tabBtn.click();
-      
+      const tabBtn = document.querySelector(`.tab-btn[data-tab="${lastTab}"]`); if(tabBtn) tabBtn.click();
       const lastPanel = localStorage.getItem('last_panel');
-      if(lastPanel) {
-          const panelBtn = document.querySelector(`.chip-btn[data-panel="${lastPanel}"]`);
-          if(panelBtn) panelBtn.click();
-      }
+      if(lastPanel) { const panelBtn = document.querySelector(`.chip-btn[data-panel="${lastPanel}"]`); if(panelBtn) panelBtn.click(); }
   }
-
 </script>
 </html>
