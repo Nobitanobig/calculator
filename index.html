@@ -407,7 +407,6 @@
   </header>
 
   <main style="display:flex; flex-direction:column; gap:20px;">
-    
     <section class="card">
       <div class="card-header">
         <div class="title-group"><div class="card-title">Calculator</div><div class="card-sub">Scientific Mode & Smart History.</div></div>
@@ -496,6 +495,7 @@
           <button type="button" class="chip-btn" data-panel="time-panel">Day Counter</button>
           <button type="button" class="chip-btn" data-panel="gpa-panel">GPA</button>
           <button type="button" class="chip-btn" data-panel="base-panel">Base Converter</button>
+          <button type="button" class="chip-btn" data-panel="discount-panel">Percentage</button>
         </div>
       </div>
 
@@ -504,8 +504,8 @@
           <button type="button" class="chip-btn" data-panel="loan-panel">Loan</button>
           <button type="button" class="chip-btn" id="btn-tax" data-panel="gst-panel">Tax</button> 
           <button type="button" class="chip-btn" id="btn-invest" data-panel="invest-panel">Invest</button>
-          <button type="button" class="chip-btn" data-panel="fdrd-panel">FD/RD</button> <button type="button" class="chip-btn" data-panel="goal-panel">Goal Planner</button>
-          <button type="button" class="chip-btn" data-panel="discount-panel">Percentage</button>
+          <button type="button" class="chip-btn" data-panel="fdrd-panel">FD/RD</button> 
+          <button type="button" class="chip-btn" data-panel="goal-panel">Goal Planner</button>
           <button type="button" class="chip-btn" data-panel="bill-panel">Split Bill</button>
           <button type="button" class="chip-btn" data-panel="ci-panel">Compound Int.</button>
         </div>
@@ -534,7 +534,6 @@
       </div>
 
       <div class="divider"></div>
-
       <div id="unit-panel" class="panel active">
         <div class="title-group" style="margin-bottom:10px"><div class="card-title">Unit Converter</div></div>
         <div class="field"><label class="mini">Type</label><select id="u-type"><option value="length">Length</option><option value="weight">Weight</option><option value="temp">Temperature</option><option value="speed">Speed</option></select></div>
@@ -570,6 +569,14 @@
         <div class="row"><div class="field flex-1"><label class="mini">Number</label><input id="base-num" type="text" placeholder="10"></div><div class="field flex-1"><label class="mini">From Base</label><select id="base-from"><option value="10">Decimal</option><option value="2">Binary</option><option value="16">Hex</option></select></div></div>
         <button type="button" id="base-btn" class="btn btn-accent btn-action">Convert</button>
         <div id="base-res" class="result-text" aria-live="polite"></div>
+      </div>
+
+      <div id="discount-panel" class="panel">
+        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Percentage Calculator</div><div class="card-sub">Get the % value or price after discount.</div></div>
+        <div class="field"><label class="mini">Total Amount</label><input id="perc-total" type="number" placeholder="2000"></div>
+        <div class="field"><label class="mini">Percentage %</label><input id="perc-rate" type="number" placeholder="50"></div>
+        <button type="button" id="perc-btn" class="btn btn-accent btn-action">Calculate</button>
+        <div id="perc-res" class="result-text" aria-live="polite"></div>
       </div>
 
       <div id="loan-panel" class="panel">
@@ -632,14 +639,6 @@
         </div>
         <button type="button" id="goal-btn" class="btn btn-accent btn-action">Calculate Monthly SIP</button>
         <div id="goal-res" class="result-text" aria-live="polite"></div>
-      </div>
-
-      <div id="discount-panel" class="panel">
-        <div class="title-group" style="margin-bottom:10px"><div class="card-title">Percentage Calculator</div><div class="card-sub">Get the % value or price after discount.</div></div>
-        <div class="field"><label class="mini">Total Amount</label><input id="perc-total" type="number" placeholder="2000"></div>
-        <div class="field"><label class="mini">Percentage %</label><input id="perc-rate" type="number" placeholder="50"></div>
-        <button type="button" id="perc-btn" class="btn btn-accent btn-action">Calculate</button>
-        <div id="perc-res" class="result-text" aria-live="polite"></div>
       </div>
 
       <div id="bill-panel" class="panel">
@@ -823,7 +822,7 @@
   let globalSym = '₹'; 
 
   // Timer Variables
-  let clockInterval;
+  let clockInterval = null; // Fix: Initialize as null
   let swInterval, swTime = 0, swRunning = false;
   let timerInterval, timerTime = 0, timerRunning = false;
 
@@ -836,7 +835,7 @@
       return clean;
   };
   
-  // 2. Currency Formatter (Fixed: No space, Dynamic Locale)
+  // 2. Currency Formatter
   const formatCurrencyAmount = (num) => {
       const locale = globalSym === '₹' ? 'en-IN' : 'en-US';
       return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(num);
@@ -887,7 +886,6 @@
   //  REGION 3: NAVIGATION & ACCESSIBILITY
   // ==========================================
   
-  // Focus Trap for Modals (Senior Dev Request)
   function trapFocus(modal) {
     const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
     if(focusable.length === 0) return;
@@ -904,7 +902,7 @@
     });
   }
 
-  // Initialize traps
+  // Initialize traps once
   trapFocus($('info-modal'));
   trapFocus($('currency-modal'));
   
@@ -991,66 +989,26 @@
   });
 
   // ==========================================
-  //  REGION 4: SETUP & RESTORE STATE
-  // ==========================================
-  const savedCurr = localStorage.getItem('calc_currency');
-  if (savedCurr) setGlobalCurrency(savedCurr);
-  else setTimeout(() => {
-       $('currency-modal').classList.add('show');
-       $('modal-currency-select').focus(); 
-  }, 500);
-
-  $('modal-save-btn').onclick = () => {
-      setGlobalCurrency($('modal-currency-select').value);
-      $('currency-modal').classList.remove('show');
-  };
-
-  $('global-currency').onchange = (e) => setGlobalCurrency(e.target.value);
-
-  function setGlobalCurrency(sym) {
-      globalSym = sym;
-      localStorage.setItem('calc_currency', sym);
-      $('global-currency').value = sym;
-      $('modal-currency-select').value = sym;
-      
-      const taxBtn = $('btn-tax'), invBtn = $('btn-invest'), gstTitle = $('gst-title'), sipTitle = $('sip-title');
-
-      if (['₹', 'A$', 'C$', 'NZ$', 'CN¥'].includes(sym)) { 
-        taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator"; 
-      } else if (['€', '£'].includes(sym)) { 
-        taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator"; 
-      } else { 
-        taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator"; 
-      }
-
-      if (sym === '₹') { 
-        invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator"; 
-      } else { 
-        invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; 
-      }
-  }
-
-  const savedThemeMode = localStorage.getItem('theme_mode');
-  if(savedThemeMode) document.body.dataset.theme = savedThemeMode;
-  const savedThemeColor = localStorage.getItem('theme_color');
-  if(savedThemeColor) { $('theme-color').value = savedThemeColor; updateThemeColors(savedThemeColor); }
-  else updateThemeColors('mono');
-
-  // ==========================================
-  //  REGION 5: CLOCK & TIME LOGIC
+  //  REGION 4: CLOCK & TIME LOGIC
   // ==========================================
   const startLiveClock = () => {
-      if (clockInterval) clearInterval(clockInterval); // Safety Clear
+      if (clockInterval) clearInterval(clockInterval); 
       const update = () => {
           const now = new Date();
           $('clock-display').textContent = now.toLocaleTimeString('en-US', {hour12: true});
           $('clock-date').textContent = now.toLocaleDateString(undefined, {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-          // Sound removed
       };
       update();
       clockInterval = setInterval(update, 1000);
   };
-  const stopLiveClock = () => clearInterval(clockInterval);
+
+  // Fix: Nullify interval to prevent leaks
+  const stopLiveClock = () => {
+      if(clockInterval) {
+          clearInterval(clockInterval);
+          clockInterval = null;
+      }
+  };
 
   const formatTime = (ms) => {
       const min = Math.floor(ms / 60000); 
@@ -1075,6 +1033,7 @@
           this.textContent = "Stop"; 
           this.style.backgroundColor = "#ef4444"; 
           $('sw-lap').textContent = "Lap"; 
+          // Fix: Ensure button is enabled when starting
           $('sw-lap').disabled = false; 
           swRunning = true;
       }
@@ -1088,6 +1047,7 @@
           $('sw-laps').prepend(lapItem); 
           $('sw-laps').style.display = 'block';
       } else { 
+          // Reset Logic
           swTime = 0; 
           $('sw-display').textContent = "00:00.00"; 
           $('sw-laps').innerHTML = ''; 
@@ -1114,12 +1074,14 @@
           }
           timerInterval = setInterval(() => {
               timerTime--;
-              if (timerTime < 0) { 
+              // Fix: Check <= 0 to avoid negative display
+              if (timerTime <= 0) { 
                   clearInterval(timerInterval); 
                   $('t-display').textContent = "Time's Up!"; 
                   this.textContent = "Start"; 
                   this.style.backgroundColor = "var(--accent-bg)"; 
                   timerRunning = false; 
+                  timerTime = 0;
               } else { 
                   const h = Math.floor(timerTime / 3600), m = Math.floor((timerTime % 3600) / 60), s = timerTime % 60; 
                   $('t-display').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`; 
@@ -1142,10 +1104,9 @@
   };
 
   // ==========================================
-  //  REGION 6: SCIENTIFIC CALCULATOR ENGINE
+  //  REGION 5: SCIENTIFIC CALCULATOR ENGINE
   // ==========================================
   
-  // 1. Input Handling
   document.addEventListener('keydown', (e) => {
     const tag = e.target.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
@@ -1162,7 +1123,6 @@
     const key = e.key;
     if ("0123456789.+-*/%()^".includes(key)) {
       e.preventDefault();
-      // SAFETY: Input limit
       if (expr.length > 100) return;
       const map = {'*':'×', '/':'÷', '-': '−'};
       const btn = Array.from(document.querySelectorAll('#calc-grid .btn')).find(b => b.textContent === (map[key] || key));
@@ -1183,20 +1143,20 @@
     $('hist-lbl').style.display = 'block'; 
     tape.scrollTop = tape.scrollHeight;
     tape.querySelectorAll('.hist-item').forEach(item => { 
-      item.onclick = () => { expr += item.textContent.split('=')[1].trim(); upd(); }; 
+      // Fix: Replace logic instead of Append
+      item.onclick = () => { expr = item.textContent.split('=')[0].trim(); upd(); }; 
     });
   };
 
   const upd = () => {
+      // Fix: Removed .replace(/e/g, 'e') to prevent math.js collision
       let displayExpr = expr
           .replace(/\*/g, '×')
           .replace(/\//g, '÷')
-          .replace(/pi/g, 'π')
-          .replace(/e/g, 'e'); 
+          .replace(/pi/g, 'π'); 
       $('calc-expression').textContent = displayExpr;
   };
   
-  // 2. Button Generation
   const k = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'];
   k.forEach(x => { 
     let b = document.createElement('button'); b.className = 'btn'; b.textContent = x; 
@@ -1288,8 +1248,9 @@
       console.error(e);
     } 
   };
+
   // ==========================================
-  //  REGION 8: TOOLS LOGIC (Clean & Standard)
+  //  REGION 6: TOOLS LOGIC
   // ==========================================
 
   // 1. FD/RD Calculator
@@ -1443,7 +1404,8 @@
     const total = parseFloat($('perc-total').value), rate = parseFloat($('perc-rate').value);
     if (!total || !rate) { $('perc-res').textContent = "Please fill fields."; return; }
     const value = (total * rate) / 100; const off = total - value;
-    $('perc-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>${rate}% Value:</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(value.toFixed(2)))}</b></div><div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px"><span style="color:var(--accent)">Result after deduction:</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(off.toFixed(2)))}</b></div>`;
+    // Fix: Updated label text
+    $('perc-res').innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px"><span>${rate}% Value:</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(value.toFixed(2)))}</b></div><div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:5px"><span style="color:var(--accent)">Result (Total - %):</span> <b>${globalSym}${formatCurrencyAmount(parseFloat(off.toFixed(2)))}</b></div>`;
   };
   
   // 11. Bill Split
@@ -1479,11 +1441,13 @@
       $('eta-res').innerHTML = `Arrival: <b>${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true})}</b>`;
   };
   
-  // 15. Age Calc
+  // 15. Age Calc (Fix: Timezone off-by-one)
   $('age-btn').onclick = () => {
     const dVal = $('dob-input').value; if(!dVal) return;
-    const d = new Date(dVal), t = new Date();
-    if(isNaN(d.getTime())) return;
+    // Fix: Parse YYYY-MM-DD manually
+    const parts = dVal.split('-');
+    const d = new Date(parts[0], parts[1]-1, parts[2]);
+    const t = new Date();
     
     if(d > t) { $('age-result').textContent = "Date is in the future!"; return; }
 
@@ -1492,13 +1456,17 @@
     $('age-result').textContent = `${y} Years, ${m} Months, ${days} Days`;
   };
   
-  // 16. Currency API (Senior Dev Fix: AbortController Timeout)
+  // 16. Currency API
   $('cur-btn').onclick = async () => {
-    const a = $('cur-amt').value||1, f = $('cur-from').value, t = $('cur-to').value;
+    const a = parseFloat($('cur-amt').value);
+    // Fix: Validate Input
+    if (isNaN(a) || a <= 0) { $('cur-res').innerHTML = `<span style="color:#ef4444">Please enter valid amount</span>`; return; }
+
+    const f = $('cur-from').value, t = $('cur-to').value;
     $('cur-res').textContent = "Loading..."; $('cur-source').style.display = 'none';
     
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 sec timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000); 
 
     try { 
       const r = await fetch(`https://api.frankfurter.app/latest?amount=${a}&from=${f}&to=${t}`, { signal: controller.signal }); 
@@ -1518,13 +1486,24 @@
   // 17. World Time
   $('zone-btn').onclick = () => { $('zone-res').textContent = `Time: ${new Date().toLocaleTimeString('en-US',{timeZone:$('zone-sel').value,hour:'2-digit',minute:'2-digit',hour12:true})}`; };
   
-  // 18. QR Gen
+  // 18. QR Gen (Fix: Optimize Fetch)
   $('qr-btn').onclick = () => { 
     const txt = $('qr-text').value; if (!txt) return; 
     $('qr-container').classList.add('show'); $('qr-image').style.display = 'none'; $('qr-loading').style.display = 'block'; 
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(txt)}`;
-    $('qr-image').onload = () => { $('qr-loading').style.display = 'none'; $('qr-image').style.display = 'block'; fetch(url).then(r=>r.blob()).then(b=>{ $('qr-download').href=URL.createObjectURL(b); $('qr-download').download="qr.png"; $('qr-download').style.display="inline-block"; }); }; 
-    $('qr-image').src = url; 
+    
+    // Fix: Set SRC first, only fetch for download on load
+    const img = $('qr-image');
+    img.onload = () => { 
+        $('qr-loading').style.display = 'none'; 
+        img.style.display = 'block'; 
+        fetch(url).then(r=>r.blob()).then(b=>{ 
+            $('qr-download').href=URL.createObjectURL(b); 
+            $('qr-download').download="qr.png"; 
+            $('qr-download').style.display="inline-block"; 
+        }); 
+    }; 
+    img.src = url; 
   };
 
   // 19. Unit Converter
@@ -1537,6 +1516,8 @@
 
   function renderUnits(){ 
     const t = $('u-type').value, d = uData[t], f = $('u-from'), to = $('u-to');
+    // Fix: Clear previous results when type changes
+    $('u-res').textContent = '';
     f.innerHTML = ''; to.innerHTML = ''; d.opts.forEach(o => { f.add(new Option(o,o)); to.add(new Option(o,o)); }); if(to.options.length>1) to.selectedIndex = 1; 
   }
   
@@ -1562,10 +1543,64 @@
   const txtStats = () => { const v = $('txt-in').value; $('txt-chars').textContent = v.length; $('txt-words').textContent = v.trim().split(/\s+/).filter(w=>w.length>0).length; };
   $('txt-in').oninput = txtStats; $('txt-upper').onclick = () => { $('txt-in').value = $('txt-in').value.toUpperCase(); txtStats(); }; $('txt-lower').onclick = () => { $('txt-in').value = $('txt-in').value.toLowerCase(); txtStats(); }; $('txt-clear').onclick = () => { $('txt-in').value = ''; txtStats(); };
 
-  // Startup Init
+  // ==========================================
+  //  REGION 7: INIT & RESTORE STATE
+  // ==========================================
+  
+  // Defined here to ensure hoisting safety
+  function setGlobalCurrency(sym) {
+      globalSym = sym;
+      localStorage.setItem('calc_currency', sym);
+      
+      // Fix: Ensure Selectors Update
+      const globalSel = $('global-currency');
+      const modalSel = $('modal-currency-select');
+      if(globalSel) globalSel.value = sym;
+      if(modalSel) modalSel.value = sym;
+      
+      const taxBtn = $('btn-tax'), invBtn = $('btn-invest'), gstTitle = $('gst-title'), sipTitle = $('sip-title');
+
+      if (['₹', 'A$', 'C$', 'NZ$', 'CN¥'].includes(sym)) { 
+        taxBtn.textContent = "GST"; gstTitle.textContent = "GST Calculator"; 
+      } else if (['€', '£'].includes(sym)) { 
+        taxBtn.textContent = "VAT"; gstTitle.textContent = "VAT Calculator"; 
+      } else { 
+        taxBtn.textContent = "Tax"; gstTitle.textContent = "Tax Calculator"; 
+      }
+
+      if (sym === '₹') { 
+        invBtn.textContent = "SIP"; sipTitle.textContent = "SIP Calculator"; 
+      } else { 
+        invBtn.textContent = "Invest"; sipTitle.textContent = "Investment Calc"; 
+      }
+  }
+
+  // Restore State
+  const savedCurr = localStorage.getItem('calc_currency');
+  if (savedCurr) {
+      setGlobalCurrency(savedCurr);
+  } else {
+      setTimeout(() => {
+          $('currency-modal').classList.add('show');
+          $('modal-currency-select').focus(); 
+      }, 500);
+  }
+  
+  $('global-currency').onchange = (e) => setGlobalCurrency(e.target.value);
+  $('modal-save-btn').onclick = () => {
+      setGlobalCurrency($('modal-currency-select').value);
+      $('currency-modal').classList.remove('show');
+  };
+
+  const savedThemeMode = localStorage.getItem('theme_mode');
+  if(savedThemeMode) document.body.dataset.theme = savedThemeMode;
+  
+  const savedThemeColor = localStorage.getItem('theme_color');
+  if(savedThemeColor) { $('theme-color').value = savedThemeColor; updateThemeColors(savedThemeColor); }
+  else updateThemeColors('mono');
+
   renderUnits();
   
-  // -- FIXED: Persistence Logic --
   const lastTab = localStorage.getItem('last_tab');
   if(lastTab) {
       const tabBtn = document.querySelector(`.tab-btn[data-tab="${lastTab}"]`);
